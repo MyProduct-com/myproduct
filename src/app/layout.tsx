@@ -2,20 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "My Products",
-  description: "Your app description",
+  title: "MyProducts — Kenya's Online Marketplace",
+  description: "Shop electronics, fashion, groceries, beauty and more. Fast delivery across Kenya. Thousands of verified sellers.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
