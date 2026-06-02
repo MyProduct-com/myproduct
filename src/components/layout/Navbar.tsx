@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconSearch,
   IconShoppingCart,
@@ -33,7 +33,10 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => { setMounted(true); }, []);
   const cartCount = useCartStore((s) => s.count());
   const wishlistCount = useWishlistStore((s) => s.count());
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -114,7 +117,7 @@ export default function Navbar() {
               title="Wishlist"
             >
               <IconHeart size={22} />
-              {wishlistCount > 0 && (
+              {mounted && wishlistCount > 0 && (
                 <span className="absolute top-1 right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
                   {wishlistCount}
                 </span>
@@ -128,7 +131,7 @@ export default function Navbar() {
               title="Cart"
             >
               <IconShoppingCart size={22} />
-              {cartCount > 0 && (
+              {mounted && cartCount > 0 && (
                 <span className="absolute top-1 right-1 bg-orange-500 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center px-0.5">
                   {cartCount}
                 </span>
@@ -136,7 +139,7 @@ export default function Navbar() {
             </Link>
 
             {/* Auth */}
-            {isAuthenticated && user ? (
+            {mounted && isAuthenticated && user ? (
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -262,7 +265,7 @@ export default function Navbar() {
                 </Link>
               ))}
             </div>
-            {!isAuthenticated && (
+            {mounted && !isAuthenticated && (
               <div className="flex gap-2 pt-3 mt-2 border-t border-gray-100">
                 <Link
                   href="/auth/login"
