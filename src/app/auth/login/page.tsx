@@ -47,25 +47,24 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-800 to-green-600 flex-col justify-between p-12">
-        <Link
-          href="/"
-          className="text-3xl font-bold text-white"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          My<span className="text-green-200">Products</span>
+    <div className="min-h-screen bg-[#F2F9F5] flex">
+      {/* Left panel — solid Forest Green */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1A6B3C] flex-col justify-between p-12">
+        <Link href="/" className="text-[18px] font-[600] tracking-[-0.01em]">
+          <span className="text-[#D4F0E2]">My</span>
+          <span className="text-white">Products</span>
         </Link>
         <div>
-          <h2 className="text-4xl font-bold text-white leading-tight mb-4" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="text-[26px] font-[600] text-white leading-tight tracking-[-0.02em] mb-4">
             Welcome Back to Kenya&apos;s Marketplace
           </h2>
-          <p className="text-green-100 text-lg leading-relaxed">
+          <p className="text-[#D4F0E2] text-[15px] leading-[1.6]">
             Thousands of products from verified sellers. Fast delivery, secure payments, and great prices — all in one place.
           </p>
         </div>
-        <p className="text-green-300 text-sm">&copy; {new Date().getFullYear()} MyProducts Kenya</p>
+        <p className="text-[#D4F0E2] text-[12px] font-[400]">
+          &copy; {new Date().getFullYear()} MyProducts Kenya
+        </p>
       </div>
 
       {/* Right panel */}
@@ -73,67 +72,67 @@ function LoginContent() {
         <div className="w-full max-w-md">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-green-600 mb-6 transition-colors"
+            className="inline-flex items-center gap-1.5 text-[13px] text-[#6B7280] hover:text-[#1A6B3C] mb-6 transition-colors"
           >
-            <IconArrowLeft size={15} />
+            <IconArrowLeft size={14} />
             Back to marketplace
           </Link>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Sign in to your account</h1>
-            <p className="text-sm text-gray-500 mb-6">
+          <div className="bg-white rounded-[12px] border border-[0.5px] border-[#E5E7EB] p-8">
+            <h1 className="text-[20px] font-[600] text-[#111827] mb-1">Sign in to your account</h1>
+            <p className="text-[13px] text-[#6B7280] mb-6">
               Don&apos;t have an account?{" "}
-              <Link href="/auth/signup" className="text-green-600 font-semibold hover:underline">
+              <Link href="/auth/signup" className="text-[#25A55A] font-[500] hover:text-[#1A6B3C]">
                 Create one free
               </Link>
             </p>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-5">
+              <div className="bg-[#fef2f2] border border-[#fecaca] text-[#dc2626] text-[13px] px-4 py-3 rounded-[8px] mb-5">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
                   Email address
                 </label>
                 <div className="relative">
-                  <IconMail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <IconMail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all"
+                    className="w-full pl-10 pr-4 py-[9px] border border-[#E5E7EB] rounded-[8px] text-[13px] outline-none focus:border-[#25A55A] bg-white text-[#111827] placeholder-[#9CA3AF] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
                   Password
                 </label>
                 <div className="relative">
-                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <IconLock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type={showPw ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="w-full pl-10 pr-11 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all"
+                    className="w-full pl-10 pr-11 py-[9px] border border-[#E5E7EB] rounded-[8px] text-[13px] outline-none focus:border-[#25A55A] bg-white text-[#111827] placeholder-[#9CA3AF] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPw(!showPw)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#6B7280]"
                   >
-                    {showPw ? <IconEyeOff size={17} /> : <IconEye size={17} />}
+                    {showPw ? <IconEyeOff size={15} /> : <IconEye size={15} />}
                   </button>
                 </div>
                 <div className="flex justify-end mt-1.5">
-                  <Link href="/auth/forgot-password" className="text-xs text-green-600 hover:underline">
+                  <Link href="/auth/forgot-password" className="text-[12px] text-[#25A55A] hover:text-[#1A6B3C]">
                     Forgot password?
                   </Link>
                 </div>
@@ -142,31 +141,31 @@ function LoginContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold py-3 rounded-xl text-sm transition-colors"
+                className="w-full bg-[#25A55A] hover:bg-[#1A6B3C] disabled:bg-[#9CA3AF] text-white font-[500] py-[9px] rounded-[8px] text-[13px] transition-colors"
               >
                 {loading ? "Signing in..." : "Sign In"}
               </button>
             </form>
 
             {/* Demo accounts */}
-            <div className="mt-6 pt-5 border-t border-gray-100">
-              <p className="text-xs text-gray-400 font-medium mb-3 text-center uppercase tracking-wider">
-                Demo accounts (any password)
+            <div className="mt-6 pt-5 border-t border-[#F3F4F6]">
+              <p className="text-[11px] font-[500] text-[#9CA3AF] mb-3 text-center uppercase tracking-[0.05em]">
+                Demo accounts — any password
               </p>
               <div className="space-y-2">
                 {[
-                  { role: "Customer", email: "john.kamau@gmail.com", color: "bg-blue-50 text-blue-700 border-blue-100" },
-                  { role: "Seller", email: "techhub@myproducts.co.ke", color: "bg-orange-50 text-orange-700 border-orange-100" },
-                  { role: "Admin", email: "admin@myproducts.co.ke", color: "bg-red-50 text-red-700 border-red-100" },
+                  { role: "Customer", email: "john.kamau@gmail.com",      cls: "bg-[#F2F9F5] text-[#1A6B3C] border-[#D4F0E2]" },
+                  { role: "Seller",   email: "techhub@myproducts.co.ke",  cls: "bg-[#FFF0E8] text-[#B84000] border-[#fbd5b8]" },
+                  { role: "Admin",    email: "admin@myproducts.co.ke",    cls: "bg-[#F3F4F6] text-[#374151] border-[#E5E7EB]" },
                 ].map((d) => (
                   <button
                     key={d.email}
                     type="button"
                     onClick={() => { setEmail(d.email); setPassword("demo123"); }}
-                    className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm ${d.color} flex items-center justify-between hover:opacity-80 transition-opacity`}
+                    className={`w-full text-left px-3 py-2.5 rounded-[8px] border text-[13px] ${d.cls} flex items-center justify-between hover:opacity-80 transition-opacity`}
                   >
-                    <span className="font-semibold">{d.role}</span>
-                    <span className="text-xs opacity-70">{d.email}</span>
+                    <span className="font-[500]">{d.role}</span>
+                    <span className="text-[11px] opacity-70">{d.email}</span>
                   </button>
                 ))}
               </div>

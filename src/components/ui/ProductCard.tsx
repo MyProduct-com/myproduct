@@ -61,54 +61,54 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.id}`}
-      className="group block bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md hover:border-gray-200 transition-all"
+      className="group block bg-white rounded-[12px] border border-[0.5px] border-[#E5E7EB] overflow-hidden hover:border-[#D4F0E2] transition-colors"
     >
       {/* Image */}
       <div className="relative">
-        <div className="aspect-square bg-gray-50 overflow-hidden">
+        <div className="aspect-square bg-[#F3F4F6] overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
           />
         </div>
 
-        {/* Discount / status badge */}
+        {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {discount && (
-            <span className="bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+            <span className="bg-[#E8500A] text-white text-[11px] font-[500] px-[10px] py-[3px] rounded-full">
               -{discount}%
             </span>
           )}
           {product.isNew && !discount && (
-            <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+            <span className="bg-[#D4F0E2] text-[#1A6B3C] text-[11px] font-[500] px-[10px] py-[3px] rounded-full">
               NEW
             </span>
           )}
           {product.isFlashDeal && !discount && !product.isNew && (
-            <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+            <span className="bg-[#FFF0E8] text-[#B84000] text-[11px] font-[500] px-[10px] py-[3px] rounded-full">
               DEAL
             </span>
           )}
         </div>
 
-        {/* Wishlist button */}
+        {/* Wishlist */}
         <button
           onClick={handleWishlist}
-          className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center hover:scale-110 transition-transform"
+          className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center hover:border-[#D4F0E2] transition-colors"
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
           {isWishlisted ? (
-            <IconHeartFilled size={14} className="text-red-500" />
+            <IconHeartFilled size={13} className="text-[#E8500A]" />
           ) : (
-            <IconHeart size={14} className="text-gray-400" />
+            <IconHeart size={13} className="text-[#9CA3AF]" />
           )}
         </button>
 
-        {/* Out of stock overlay */}
+        {/* Out of stock */}
         {product.status === "out_of_stock" && (
           <div className="absolute inset-0 bg-white/75 flex items-center justify-center">
-            <span className="text-sm font-semibold text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200">
+            <span className="text-[11px] font-[500] text-[#6B7280] bg-white px-[10px] py-[3px] rounded-full border border-[#E5E7EB]">
               Out of Stock
             </span>
           </div>
@@ -117,8 +117,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Info */}
       <div className="p-3">
-        <p className="text-[11px] text-gray-400 mb-0.5 font-medium">{product.brand}</p>
-        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-[1.35rem] min-h-[2.7rem]">
+        <p className="text-[11px] font-[500] text-[#6B7280] mb-0.5">{product.brand}</p>
+        <h3 className="text-[13px] font-[500] text-[#111827] line-clamp-2 leading-[1.4] min-h-[36px]">
           {product.name}
         </h3>
 
@@ -128,25 +128,25 @@ export default function ProductCard({ product }: ProductCardProps) {
             {[1, 2, 3, 4, 5].map((s) => (
               <IconStar
                 key={s}
-                size={11}
+                size={10}
                 className={
                   s <= Math.round(product.rating)
-                    ? "fill-orange-400 text-orange-400"
-                    : "fill-gray-200 text-gray-200"
+                    ? "fill-[#E8500A] text-[#E8500A]"
+                    : "fill-[#E5E7EB] text-[#E5E7EB]"
                 }
               />
             ))}
           </div>
-          <span className="text-[11px] text-gray-400">({product.reviewCount})</span>
+          <span className="text-[11px] text-[#9CA3AF]">({product.reviewCount})</span>
         </div>
 
         {/* Price */}
         <div className="flex items-baseline gap-2 mt-1.5">
-          <span className="text-base font-bold text-gray-900">
+          <span className="font-mono text-[13px] font-[600] text-[#25A55A]">
             KES {product.price.toLocaleString()}
           </span>
           {product.originalPrice && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-[11px] text-[#E8500A] line-through">
               KES {product.originalPrice.toLocaleString()}
             </span>
           )}
@@ -156,14 +156,14 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.status !== "out_of_stock" && (
           <button
             onClick={handleAddToCart}
-            className={`mt-2.5 w-full py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            className={`mt-2.5 w-full py-[9px] rounded-[8px] text-[13px] font-[500] transition-all flex items-center justify-center gap-1.5 ${
               addedToCart
-                ? "bg-green-600 text-white"
-                : "bg-green-50 text-green-700 hover:bg-green-600 hover:text-white"
+                ? "bg-[#D4F0E2] text-[#1A6B3C]"
+                : "bg-[#F3F4F6] text-[#111827] hover:bg-[#25A55A] hover:text-white"
             }`}
           >
-            <IconShoppingCart size={15} />
-            {addedToCart ? "Added to Cart!" : "Add to Cart"}
+            <IconShoppingCart size={14} />
+            {addedToCart ? "Added!" : "Add to Cart"}
           </button>
         )}
       </div>

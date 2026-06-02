@@ -102,25 +102,19 @@ function SignupContent() {
   };
 
   const inputCls =
-    "w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all";
-  const errCls = "text-xs text-red-600 mt-1";
+    "w-full px-4 py-[9px] border border-[#E5E7EB] rounded-[8px] text-[13px] outline-none focus:border-[#25A55A] bg-white text-[#111827] placeholder-[#9CA3AF] transition-colors";
+  const errCls = "text-[11px] text-[#dc2626] mt-1";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-800 to-green-600 flex-col justify-between p-12">
-        <Link
-          href="/"
-          className="text-3xl font-bold text-white"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          My<span className="text-green-200">Products</span>
+    <div className="min-h-screen bg-[#F2F9F5] flex">
+      {/* Left panel — solid Forest Green */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1A6B3C] flex-col justify-between p-12">
+        <Link href="/" className="text-[18px] font-[600] tracking-[-0.01em]">
+          <span className="text-[#D4F0E2]">My</span>
+          <span className="text-white">Products</span>
         </Link>
         <div>
-          <h2
-            className="text-4xl font-bold text-white leading-tight mb-4"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
+          <h2 className="text-[26px] font-[600] text-white leading-tight tracking-[-0.02em] mb-4">
             {role === "seller"
               ? "Start Selling on Kenya's Fastest-Growing Marketplace"
               : "Join Thousands of Happy Shoppers"}
@@ -140,14 +134,14 @@ function SignupContent() {
                   "Easy 7-day returns",
                 ]
             ).map((item) => (
-              <li key={item} className="flex items-center gap-2.5 text-green-100 text-sm">
-                <IconCheck size={16} className="text-green-300 flex-shrink-0" />
+              <li key={item} className="flex items-center gap-2.5 text-[#D4F0E2] text-[14px]">
+                <IconCheck size={15} className="text-[#D4F0E2] shrink-0" />
                 {item}
               </li>
             ))}
           </ul>
         </div>
-        <p className="text-green-300 text-sm">&copy; {new Date().getFullYear()} MyProducts Kenya</p>
+        <p className="text-[#D4F0E2] text-[12px]">&copy; {new Date().getFullYear()} MyProducts Kenya</p>
       </div>
 
       {/* Right panel */}
@@ -155,32 +149,32 @@ function SignupContent() {
         <div className="w-full max-w-md py-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-green-600 mb-6 transition-colors"
+            className="inline-flex items-center gap-1.5 text-[13px] text-[#6B7280] hover:text-[#1A6B3C] mb-6 transition-colors"
           >
-            <IconArrowLeft size={15} />
+            <IconArrowLeft size={14} />
             Back to marketplace
           </Link>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Create your account</h1>
-            <p className="text-sm text-gray-500 mb-5">
+          <div className="bg-white rounded-[12px] border border-[0.5px] border-[#E5E7EB] p-8">
+            <h1 className="text-[20px] font-[600] text-[#111827] mb-1">Create your account</h1>
+            <p className="text-[13px] text-[#6B7280] mb-5">
               Already have one?{" "}
-              <Link href="/auth/login" className="text-green-600 font-semibold hover:underline">
+              <Link href="/auth/login" className="text-[#25A55A] font-[500] hover:text-[#1A6B3C]">
                 Sign in
               </Link>
             </p>
 
             {/* Role toggle */}
-            <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
+            <div className="flex gap-1.5 mb-6 p-1 bg-[#F3F4F6] rounded-[8px]">
               {(["customer", "seller"] as Role[]).map((r) => (
                 <button
                   key={r}
                   type="button"
                   onClick={() => setRole(r)}
-                  className={`flex-1 py-2.5 rounded-lg text-sm font-semibold capitalize transition-all ${
+                  className={`flex-1 py-2 rounded-[6px] text-[13px] font-[500] capitalize transition-all ${
                     role === r
-                      ? "bg-white text-green-700 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "bg-white text-[#1A6B3C] border border-[#D4F0E2]"
+                      : "text-[#6B7280] hover:text-[#374151]"
                   }`}
                 >
                   {r === "seller" ? "Seller Account" : "Customer Account"}
@@ -191,9 +185,9 @@ function SignupContent() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Full Name</label>
                 <div className="relative">
-                  <IconUser size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <IconUser size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type="text"
                     value={form.name}
@@ -207,9 +201,9 @@ function SignupContent() {
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Email Address</label>
                 <div className="relative">
-                  <IconMail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <IconMail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type="email"
                     value={form.email}
@@ -223,9 +217,9 @@ function SignupContent() {
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
+                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Phone Number</label>
                 <div className="relative">
-                  <IconPhone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <IconPhone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type="tel"
                     value={form.phone}
@@ -241,9 +235,9 @@ function SignupContent() {
               {role === "seller" && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Store Name</label>
+                    <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Store Name</label>
                     <div className="relative">
-                      <IconBuilding size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <IconBuilding size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                       <input
                         type="text"
                         value={form.storeName}
@@ -255,7 +249,7 @@ function SignupContent() {
                     {errors.storeName && <p className={errCls}>{errors.storeName}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
                       Main Category
                     </label>
                     <select
@@ -273,7 +267,7 @@ function SignupContent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
                       Business Location
                     </label>
                     <input
@@ -289,9 +283,9 @@ function SignupContent() {
 
               {/* Password */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Password</label>
                 <div className="relative">
-                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type={showPw ? "text" : "password"}
                     value={form.password}
@@ -312,11 +306,11 @@ function SignupContent() {
 
               {/* Confirm password */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type="password"
                     value={form.confirmPassword}
@@ -331,7 +325,7 @@ function SignupContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold py-3 rounded-xl text-sm transition-colors mt-2"
+                className="w-full bg-[#25A55A] hover:bg-[#1A6B3C] disabled:bg-[#9CA3AF] text-white font-[500] py-[9px] rounded-[8px] text-[13px] transition-colors mt-2"
               >
                 {loading
                   ? "Creating account..."
@@ -340,10 +334,10 @@ function SignupContent() {
                   : "Create Account"}
               </button>
 
-              <p className="text-xs text-gray-400 text-center">
+              <p className="text-[11px] text-[#9CA3AF] text-center">
                 By creating an account, you agree to our{" "}
-                <Link href="/terms" className="text-green-600 hover:underline">Terms</Link> and{" "}
-                <Link href="/privacy" className="text-green-600 hover:underline">Privacy Policy</Link>.
+                <Link href="/terms" className="text-[#25A55A] hover:text-[#1A6B3C]">Terms</Link> and{" "}
+                <Link href="/privacy" className="text-[#25A55A] hover:text-[#1A6B3C]">Privacy Policy</Link>.
               </p>
             </form>
           </div>

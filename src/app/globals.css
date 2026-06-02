@@ -1,48 +1,57 @@
 @import "tailwindcss";
-@import "@fontsource/dm-sans/400.css";
-@import "@fontsource/dm-sans/500.css";
-@import "@fontsource/dm-sans/600.css";
-@import "@fontsource/playfair-display/600.css";
 
 @theme {
-  /* Primary brand = Green */
-  --color-brand-50:  #f0fdf4;
-  --color-brand-100: #dcfce7;
-  --color-brand-200: #bbf7d0;
-  --color-brand-300: #86efac;
-  --color-brand-400: #4ade80;
-  --color-brand-500: #22c55e;
-  --color-brand-600: #16a34a;
-  --color-brand-700: #15803d;
-  --color-brand-800: #166534;
-  --color-brand-900: #14532d;
+  /* ── Brand ─────────────────────────────────── */
+  --color-brand-forest:  #1A6B3C;   /* Forest Green — primary brand */
+  --color-brand-action:  #25A55A;   /* Action Green — buttons, links */
+  --color-brand-mint:    #D4F0E2;   /* Mint Surface — icon bg, tags */
+  --color-canvas:        #F2F9F5;   /* Canvas — page background */
 
-  /* Accent = Orange */
-  --color-accent-50:  #fff7ed;
-  --color-accent-100: #ffedd5;
-  --color-accent-400: #fb923c;
-  --color-accent-500: #f97316;
-  --color-accent-600: #ea580c;
-  --color-accent-700: #c2410c;
+  /* ── Ember ──────────────────────────────────── */
+  --color-ember:         #E8500A;   /* sale badges, deal CTAs */
+  --color-ember-surface: #FFF0E8;   /* deal card bg */
 
-  /* Status */
-  --color-danger-50:  #fef2f2;
-  --color-danger-400: #f87171;
-  --color-danger-600: #dc2626;
+  /* ── Neutral ────────────────────────────────── */
+  --color-ink:           #111827;
+  --color-charcoal:      #374151;
+  --color-slate:         #6B7280;
+  --color-surface:       #F3F4F6;
+  --color-border:        #E5E7EB;
+  --color-border-mint:   #D4F0E2;
+
+  /* ── brand-* aliases (used by existing dashboard pages) */
+  --color-brand-50:  #D4F0E2;
+  --color-brand-100: #D4F0E2;
+  --color-brand-200: #b2e4ca;
+  --color-brand-300: #87d4ae;
+  --color-brand-400: #52bf87;
+  --color-brand-500: #25A55A;
+  --color-brand-600: #25A55A;
+  --color-brand-700: #1A6B3C;
+  --color-brand-800: #145430;
+  --color-brand-900: #0e3d22;
+
+  /* ── accent-* aliases */
+  --color-accent-500: #E8500A;
+  --color-accent-600: #c94208;
+
+  /* ── Status */
+  --color-danger-50:   #fef2f2;
+  --color-danger-400:  #f87171;
+  --color-danger-600:  #dc2626;
 
   --color-warning-50:  #fffbeb;
   --color-warning-400: #fbbf24;
   --color-warning-600: #d97706;
 
-  /* Typography */
-  --font-sans: "DM Sans", sans-serif;
-  --font-display: "Playfair Display", serif;
+  /* ── Typography */
+  --font-sans: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Border radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* ── Radius */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
   --radius-2xl: 20px;
 }
 
@@ -51,12 +60,15 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: #f9fafb;
-    color: #111827;
+    background-color: #F2F9F5;
+    color: #374151;
+    font-size: 15px;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
 }
