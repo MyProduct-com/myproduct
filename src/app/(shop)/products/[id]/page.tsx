@@ -103,7 +103,7 @@ export default function ProductDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        {/* Left — Image */}
+        {/* Product image */}
         <div>
           <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden relative">
             <img
@@ -124,7 +124,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Right — Details */}
+        {/* Product details */}
         <div>
           <div className="flex items-start justify-between gap-2 mb-2">
             <p className="text-sm font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded-full">
@@ -192,7 +192,7 @@ export default function ProductDetailPage() {
               </span>
             ) : product.stock <= 5 ? (
               <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-orange-700 bg-orange-50 px-3 py-1.5 rounded-lg">
-                Only {product.stock} left in stock — order soon
+                Only {product.stock} left in stock, order soon
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-lg">

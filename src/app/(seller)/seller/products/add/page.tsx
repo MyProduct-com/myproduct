@@ -342,7 +342,7 @@ export default function AddProductPage() {
           <textarea
             value={form.description}
             onChange={(e) => set("description", e.target.value)}
-            placeholder="Describe your product in detail — features, specifications, materials, dimensions, etc. Good descriptions help customers make buying decisions."
+            placeholder="Describe your product in detail: features, specifications, materials, dimensions, etc. Good descriptions help customers make buying decisions."
             rows={6}
             maxLength={2000}
             className={`${inputCls("description")} resize-none`}

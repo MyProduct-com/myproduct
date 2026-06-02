@@ -44,7 +44,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Platform Overview</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Admin dashboard — MyProducts Kenya</p>
+          <p className="text-sm text-gray-500 mt-0.5">Admin dashboard, MyProducts Kenya</p>
         </div>
         <div className="flex items-center gap-1.5 bg-green-50 text-green-700 text-sm font-semibold px-3 py-1.5 rounded-full">
           <IconShieldCheck size={15} />

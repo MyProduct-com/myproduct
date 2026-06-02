@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MyProducts — Kenya's Online Marketplace",
+  title: "MyProducts | Kenya's Online Marketplace",
   description: "Shop electronics, fashion, groceries, beauty and more. Fast delivery across Kenya. Thousands of verified sellers.",
 };
 

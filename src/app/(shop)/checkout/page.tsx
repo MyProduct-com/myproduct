@@ -130,7 +130,7 @@ export default function CheckoutPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left — Delivery + Payment */}
+        {/* Delivery and payment */}
         <div className="lg:col-span-2 space-y-5">
           {/* Delivery details */}
           <div className="bg-white rounded-xl border border-gray-100 p-6">
@@ -215,7 +215,7 @@ export default function CheckoutPage() {
                   id: "card" as PaymentMethod,
                   icon: <IconCreditCard size={20} />,
                   label: "Debit / Credit Card",
-                  sub: "Visa, Mastercard — secure online payment",
+                  sub: "Visa, Mastercard. Secure online payment",
                 },
                 {
                   id: "cash_on_delivery" as PaymentMethod,
@@ -275,7 +275,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Right — Order summary */}
+        {/* Order summary */}
         <div>
           <div className="bg-white rounded-xl border border-gray-100 p-5 sticky top-24">
             <h2 className="font-bold text-gray-900 mb-4">Order Summary</h2>
@@ -331,7 +331,7 @@ export default function CheckoutPage() {
               ) : (
                 <>
                   <IconCheck size={17} />
-                  Place Order — KES {orderTotal.toLocaleString()}
+                  Place Order · KES {orderTotal.toLocaleString()}
                 </>
               )}
             </button>

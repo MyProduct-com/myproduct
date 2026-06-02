@@ -2,10 +2,10 @@
 
 @theme {
   /* ── Brand ─────────────────────────────────── */
-  --color-brand-forest:  #1A6B3C;   /* Forest Green — primary brand */
-  --color-brand-action:  #25A55A;   /* Action Green — buttons, links */
-  --color-brand-mint:    #D4F0E2;   /* Mint Surface — icon bg, tags */
-  --color-canvas:        #F2F9F5;   /* Canvas — page background */
+  --color-brand-forest:  #1A6B3C;   /* Forest Green, primary brand */
+  --color-brand-action:  #25A55A;   /* Action Green, buttons and links */
+  --color-brand-mint:    #D4F0E2;   /* Mint Surface, icon bg and tags */
+  --color-canvas:        #F2F9F5;   /* Canvas, page background */
 
   /* ── Ember ──────────────────────────────────── */
   --color-ember:         #E8500A;   /* sale badges, deal CTAs */

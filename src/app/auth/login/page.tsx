@@ -48,7 +48,7 @@ function LoginContent() {
 
   return (
     <div className="min-h-screen bg-[#F2F9F5] flex">
-      {/* Left panel — solid Forest Green */}
+      {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#1A6B3C] flex-col justify-between p-12">
         <Link href="/" className="text-[18px] font-[600] tracking-[-0.01em]">
           <span className="text-[#D4F0E2]">My</span>
@@ -59,7 +59,7 @@ function LoginContent() {
             Welcome Back to Kenya&apos;s Marketplace
           </h2>
           <p className="text-[#D4F0E2] text-[15px] leading-[1.6]">
-            Thousands of products from verified sellers. Fast delivery, secure payments, and great prices — all in one place.
+            Thousands of products from verified sellers. Fast delivery, secure payments, and great prices, all in one place.
           </p>
         </div>
         <p className="text-[#D4F0E2] text-[12px] font-[400]">
@@ -150,7 +150,7 @@ function LoginContent() {
             {/* Demo accounts */}
             <div className="mt-6 pt-5 border-t border-[#F3F4F6]">
               <p className="text-[11px] font-[500] text-[#9CA3AF] mb-3 text-center uppercase tracking-[0.05em]">
-                Demo accounts — any password
+                Demo accounts (any password)
               </p>
               <div className="space-y-2">
                 {[

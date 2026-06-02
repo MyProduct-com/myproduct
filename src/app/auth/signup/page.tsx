@@ -107,7 +107,7 @@ function SignupContent() {
 
   return (
     <div className="min-h-screen bg-[#F2F9F5] flex">
-      {/* Left panel — solid Forest Green */}
+      {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#1A6B3C] flex-col justify-between p-12">
         <Link href="/" className="text-[18px] font-[600] tracking-[-0.01em]">
           <span className="text-[#D4F0E2]">My</span>

@@ -115,7 +115,7 @@ export const mockProducts: Product[] = [
     views: 2840,
     sku: "ELC-001",
     image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop&q=80",
-    description: "Industry-leading noise canceling with Auto NC Optimizer. Crystal clear hands-free calling with 5 microphones. Up to 24 hours total battery life with charging case. Multipoint connection — stay connected to two devices simultaneously.",
+    description: "Industry-leading noise canceling with Auto NC Optimizer. Crystal clear hands-free calling with 5 microphones. Up to 24 hours total battery life with charging case. Multipoint connection: stay connected to two devices simultaneously.",
     brand: "Sony",
     rating: 4.7,
     reviewCount: 89,
@@ -383,7 +383,7 @@ export const mockProducts: Product[] = [
     views: 2100,
     sku: "BTY-005",
     image: "https://images.unsplash.com/photo-1601612628452-9e99ced43524?w=400&h=400&fit=crop&q=80",
-    description: "Rich unrefined Grade A shea butter cream. Deeply moisturizes dry, rough, and ashy skin. 100% natural — no parabens, sulfates, or artificial fragrances. Can be used on both body and face.",
+    description: "Rich unrefined Grade A shea butter cream. Deeply moisturizes dry, rough, and ashy skin. 100% natural, no parabens, sulfates, or artificial fragrances. Can be used on both body and face.",
     brand: "Organics KE",
     rating: 4.4,
     reviewCount: 143,
@@ -453,7 +453,7 @@ export const mockProducts: Product[] = [
   },
   {
     id: "prod-18",
-    name: "Kenyan Hass Avocados — 6 Pack",
+    name: "Kenyan Hass Avocados 6 Pack",
     category: "Grocery",
     price: 280,
     stock: 40,
@@ -494,7 +494,7 @@ export const mockProducts: Product[] = [
   // --- HOME & OFFICE ---
   {
     id: "prod-20",
-    name: "LED Flexible Desk Lamp — USB Powered",
+    name: "LED Flexible Desk Lamp, USB Powered",
     category: "Home & Office",
     price: 1800,
     originalPrice: 2500,
@@ -505,7 +505,7 @@ export const mockProducts: Product[] = [
     views: 2100,
     sku: "HOM-001",
     image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=400&fit=crop&q=80",
-    description: "3-level brightness LED desk lamp with warm, neutral, and cool white modes. USB-C powered — works with laptops, power banks, and adapters. 360° flexible gooseneck. Eye-care technology reduces blue light by 30%.",
+    description: "3-level brightness LED desk lamp with warm, neutral, and cool white modes. USB-C powered, works with laptops, power banks, and adapters. 360° flexible gooseneck. Eye-care technology reduces blue light by 30%.",
     brand: "LightKe",
     rating: 4.4,
     reviewCount: 71,
@@ -568,7 +568,7 @@ export const mockProducts: Product[] = [
     views: 1900,
     sku: "CMP-002",
     image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop&q=80",
-    description: "2.4GHz wireless mouse with whisper-quiet click technology — 90% quieter than standard mice. Up to 18-month battery life on a single AA battery. Adjustable DPI 1200/2400/3200. 6 buttons. Nano USB receiver included.",
+    description: "2.4GHz wireless mouse with whisper-quiet click technology, 90% quieter than standard mice. Up to 18-month battery life on a single AA battery. Adjustable DPI 1200/2400/3200. 6 buttons. Nano USB receiver included.",
     brand: "Anker",
     rating: 4.6,
     reviewCount: 89,
@@ -578,7 +578,7 @@ export const mockProducts: Product[] = [
   // --- STATIONERY ---
   {
     id: "prod-24",
-    name: "Hard Cover A4 Notebook — 200 Pages",
+    name: "Hard Cover A4 Notebook 200 Pages",
     category: "Stationery",
     price: 350,
     stock: 200,
@@ -718,7 +718,7 @@ export const mockOrders: Order[] = [
       },
       {
         productId: "prod-18",
-        productName: "Kenyan Hass Avocados — 6 Pack",
+        productName: "Kenyan Hass Avocados 6 Pack",
         productImage: "https://images.unsplash.com/photo-1519162808019-7de1683fa2ad?w=80&h=80&fit=crop&q=80",
         sellerId: "seller-1",
         sellerName: "GreenStore KE",

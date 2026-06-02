@@ -85,7 +85,7 @@ export default function HomePage() {
                   Shop the Best of Kenya
                 </h1>
                 <p className="text-[#D4F0E2] text-[15px] font-[400] leading-[1.6] mb-6">
-                  Electronics, Fashion, Groceries & more from verified local sellers — delivered to your door.
+                  Electronics, Fashion, Groceries & more from verified local sellers, delivered to your door.
                 </p>
                 <div className="flex gap-3 flex-wrap">
                   <Link
@@ -106,7 +106,7 @@ export default function HomePage() {
 
             {/* Side panels */}
             <div className="flex flex-col gap-3">
-              {/* Deal panel — dark */}
+              {/* Deal panel */}
               <div className="flex-1 rounded-[12px] bg-[#145430] border border-white/10 p-6 min-h-[124px] flex flex-col justify-between overflow-hidden relative">
                 <div>
                   <p className="text-[#D4F0E2] text-[11px] font-[500] uppercase tracking-[0.05em] mb-1.5">
@@ -124,7 +124,7 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* New arrivals panel — light */}
+              {/* New arrivals panel */}
               <div className="flex-1 rounded-[12px] bg-[#F2F9F5] border border-[#D4F0E2] p-6 min-h-[124px] flex flex-col justify-between">
                 <div>
                   <p className="text-[#6B7280] text-[11px] font-[500] uppercase tracking-[0.05em] mb-1.5">
@@ -267,7 +267,7 @@ export default function HomePage() {
       <section className="py-6 bg-white border-y border-[0.5px] border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Deal banner — Forest Green */}
+            {/* Deal banner */}
             <div className="rounded-[12px] bg-[#1A6B3C] p-7 flex flex-col justify-between min-h-[160px] overflow-hidden relative">
               <div>
                 <p className="text-[#D4F0E2] text-[11px] font-[500] uppercase tracking-[0.05em] mb-1.5">
@@ -288,7 +288,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* New arrivals banner — Canvas */}
+            {/* New arrivals banner */}
             <div className="rounded-[12px] bg-[#F2F9F5] border border-[0.5px] border-[#D4F0E2] p-7 flex flex-col justify-between min-h-[160px]">
               <div>
                 <p className="text-[#6B7280] text-[11px] font-[500] uppercase tracking-[0.05em] mb-1.5">
