@@ -7,8 +7,10 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  icon: string;
+  image: string;
   category: string;
+  sellerId: string;
+  sellerName: string;
 }
 
 interface CartStore {
