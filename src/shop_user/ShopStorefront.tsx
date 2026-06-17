@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { Theme, CartItem, Order, User, Product, PlacedOrderPayload, CartItemResolved } from "./types/index.ts";
+import type { User, Theme, CartItem, Product, Order, PlacedOrderPayload } from "./types/index";
 import { DEFAULT_THEME }  from "./data/theme";
 import { MOCK_PRODUCTS }  from "./data/products";
 import { genOrderId }     from "./utils/helpers";
@@ -13,6 +13,7 @@ import CartModal     from "./components/CartModal";
 import CheckoutModal from "./components/CheckoutModal";
 import OrdersView    from "./components/OrdersView";
 import AuthModal     from "./components/AuthModal";
+import Footer        from "./components/Footer";
 
 type ActiveTab = "shop" | "orders";
 
@@ -125,7 +126,7 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
       </div>
 
       {/* Main content */}
-      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px 60px" }}>
+      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px 60px", maxHeight: "calc(2 * 340px + 44px)", overflowY: "auto" }}>
         {activeTab === "shop" && (
           <>
             {/* Search */}
@@ -220,6 +221,13 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
           onClose={() => setShowAuth(false)}
         />
       )}
+
+      <Footer
+        theme={theme}
+        onLoginClick={openLogin}
+        onSignupClick={openSignup}
+        onCartOpen={() => setShowCart(true)}
+      />
     </div>
   );
 }

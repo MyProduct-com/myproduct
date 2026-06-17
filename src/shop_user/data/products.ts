@@ -1,4 +1,4 @@
-import type { Product, PaymentMethod } from "../types/index.js";
+import type { Product, PaymentMethod } from "../types/index";
 
 export const MOCK_PRODUCTS: Product[] = [
   {

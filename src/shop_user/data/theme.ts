@@ -1,4 +1,4 @@
-import type { Theme } from "./types/index.js";
+import type { Theme } from "../types/index";
 
 export const DEFAULT_THEME: Theme = {
   // Colors
