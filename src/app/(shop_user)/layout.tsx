@@ -1,4 +1,3 @@
-"use client";
 import  ShopStorefront  from "@/shop_user/ShopStorefront";
 
 export default function ShopUserLayout({

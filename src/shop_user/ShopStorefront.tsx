@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 
 import type { User, Theme, CartItem, Product, Order, PlacedOrderPayload } from "./types/index";
