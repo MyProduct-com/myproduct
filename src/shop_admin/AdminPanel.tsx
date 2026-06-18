@@ -1,3 +1,4 @@
+"use client";
 import { useState, useCallback } from "react";
 import type {
   AdminView, AdminProduct, AdminOrder, SubAdmin, AccountingEntry,
@@ -14,13 +15,13 @@ import {
 } from "./constants/mockData";
 import { genId } from "./utils/helpers";
 
-import AdminHeader    from "./components/layout/adminHeader";
-import Sidebar        from "./components/layout/sidebar";
+import AdminHeader    from "./components/layout/AdminHeader";
+import Sidebar        from "./components/layout/Sidebar";
 import ToastContainer from "./components/layout/ToastContainer";
-import Dashboard      from "./components/dashboard/dashboard";
+import Dashboard      from "./components/dashboard/Dashboard";
 import ProductsView   from "./components/products/ProductsView";
 import OrdersView     from "./components/orders/OrdersView";
-import POSView        from "./components/POS/PosView";
+import POSView        from "./components/POS/POSView";
 import InventoryView  from "./components/inventory/InventoryView";
 import AccountingView from "./components/accounting/AccountingView";
 import StaffView      from "./components/staff/StaffView";
