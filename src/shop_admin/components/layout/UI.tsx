@@ -2,7 +2,6 @@ import { type ReactNode } from "react";
 import type { Theme } from "../../types/index";
 import { statusColor } from "../../utils/helpers";
 
-// ─── Card ─────────────────────────────────────────────────────────────────────
 interface CardProps {
   children: ReactNode;
   theme: Theme;
@@ -24,7 +23,6 @@ export function Card({ children, theme, style, onClick }: CardProps) {
   );
 }
 
-// ─── StatCard ─────────────────────────────────────────────────────────────────
 interface StatCardProps {
   label: string;
   value: string | number;
@@ -55,7 +53,6 @@ export function StatCard({ label, value, sub, icon, color, theme }: StatCardProp
   );
 }
 
-// ─── Badge ────────────────────────────────────────────────────────────────────
 interface BadgeProps { status: string; }
 export function Badge({ status }: BadgeProps) {
   const c = statusColor(status);
@@ -70,10 +67,9 @@ export function Badge({ status }: BadgeProps) {
   );
 }
 
-// ─── Btn ──────────────────────────────────────────────────────────────────────
 interface BtnProps {
   children: ReactNode;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   variant?: "primary" | "secondary" | "danger" | "ghost";
   theme: Theme;
   disabled?: boolean;
@@ -105,7 +101,6 @@ export function Btn({ children, onClick, variant = "primary", theme, disabled, s
   );
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
 interface ModalProps {
   title: string;
   onClose: () => void;
@@ -143,7 +138,6 @@ export function Modal({ title, onClose, theme, children, width = 520 }: ModalPro
   );
 }
 
-// ─── Input ────────────────────────────────────────────────────────────────────
 interface InputProps {
   label: string;
   value: string | number;
@@ -174,7 +168,6 @@ export function Input({ label, value, onChange, type = "text", theme, placeholde
   );
 }
 
-// ─── Section Header ───────────────────────────────────────────────────────────
 interface SectionHeaderProps {
   title: string;
   subtitle?: string;
@@ -193,7 +186,6 @@ export function SectionHeader({ title, subtitle, action, theme }: SectionHeaderP
   );
 }
 
-// ─── Table ────────────────────────────────────────────────────────────────────
 interface Column<T> {
   header: string;
   key: string;
@@ -256,7 +248,6 @@ export function Table<T>({ columns, data, theme, onRowClick, emptyMessage }: Tab
   );
 }
 
-// ─── Select ───────────────────────────────────────────────────────────────────
 interface SelectProps {
   label: string;
   value: string;

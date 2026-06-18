@@ -107,7 +107,7 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
             key={s}
             onClick={() => setStatusFilter(s)}
             style={{
-              padding: "5px 14px", borderRadius: 20, border: "none", cursor: "pointer",
+              padding: "5px 14px", borderRadius: 20, cursor: "pointer",
               background: statusFilter === s ? theme.primary : theme.surface,
               color: statusFilter === s ? "#fff" : theme.textMuted,
               fontWeight: 600, fontSize: 12, border: `1px solid ${statusFilter === s ? theme.primary : theme.border}`,
