@@ -1,4 +1,3 @@
-import AdminPanel from "@/shop_admin/AdminPanel";
 
 export default function ShopAdminLayout({
   children,
@@ -7,7 +6,6 @@ export default function ShopAdminLayout({
 }) {
   return (
     <div>
-      <AdminPanel />
       {children}
     </div>
   );
