@@ -71,7 +71,7 @@ function LoginContent() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <Link
-            href="/"
+            href="/market"
             className="inline-flex items-center gap-1.5 text-[13px] text-[#6B7280] hover:text-[#1A6B3C] mb-6 transition-colors"
           >
             <IconArrowLeft size={14} />
