@@ -7,7 +7,6 @@ export default function ShopUserLayout({
 }) {
   return (
     <div>
-      <ShopStorefront />
       {children}
     </div>
   );
