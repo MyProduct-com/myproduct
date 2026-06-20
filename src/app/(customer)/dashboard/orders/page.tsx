@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { IconPackage, IconArrowRight, IconTruck } from "@tabler/icons-react";
 import { mockOrders } from "@/lib/mock-data";
-import { OrderStatus } from "@/types/order";
+import type { OrderStatus } from "@/types/order";
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
   pending: "bg-yellow-50 text-yellow-700 border-yellow-200",

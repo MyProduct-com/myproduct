@@ -10,7 +10,7 @@ import {
   IconPlus,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { ProductCategory, ProductStatus } from "@/types/product";
+import type { ProductCategory, ProductStatus } from "@/types/product";
 
 const CATEGORIES: ProductCategory[] = [
   "Electronics",

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { IconSearch, IconTruck } from "@tabler/icons-react";
 import { mockOrders } from "@/lib/mock-data";
-import { OrderStatus } from "@/types/order";
+import type { OrderStatus } from "@/types/order";
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; cls: string }> = {
   pending: { label: "Pending", cls: "bg-yellow-50 text-yellow-700 border-yellow-200" },

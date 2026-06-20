@@ -15,7 +15,7 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import { useAuthStore } from "@/store/authStore";
-import { Customer, Seller } from "@/types/user";
+import type { Customer, Seller } from "@/types/user";
 
 type Role = "customer" | "seller";
 

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { IconSearch, IconFilter, IconX, IconAdjustmentsHorizontal } from "@tabler/icons-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { mockProducts } from "@/lib/mock-data";
-import { ProductCategory } from "@/types/product";
+import type { ProductCategory } from "@/types/product";
 
 const CATEGORIES: ProductCategory[] = [
   "Electronics", "Fashion", "Beauty & Health", "Grocery",

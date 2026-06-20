@@ -1,4 +1,4 @@
-import { ProductStatus } from "@/types/product";
+import type { ProductStatus } from "@/types/product";
 
 const config: Record<ProductStatus, { label: string; className: string }> = {
   live: {
