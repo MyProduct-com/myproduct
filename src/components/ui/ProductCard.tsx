@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { IconHeart, IconHeartFilled, IconShoppingCart, IconStar } from "@tabler/icons-react";
-import { Product } from "@/types/product";
+import type { Product } from "@/types/product";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useAuthStore } from "@/store/authStore";

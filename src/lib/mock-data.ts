@@ -1,6 +1,6 @@
-import { Product } from "@/types/product";
-import { Seller, Customer, Admin } from "@/types/user";
-import { Order } from "@/types/order";
+import type { Product } from "@/types/product";
+import type { Seller, Customer, Admin } from "@/types/user";
+import type { Order } from "@/types/order";
 
 export const mockCategories = [
   { name: "Electronics", slug: "electronics", color: "bg-blue-50 text-blue-700 border-blue-100" },

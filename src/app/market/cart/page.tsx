@@ -18,7 +18,7 @@ const DELIVERY_FEE = 150;
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, removeItem, updateQty, total, count } = useCartStore();
+  const { items, removeItem, updateQty, clearCart, total, count } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const subtotal = total();
   const cartCount = count();
@@ -31,6 +31,13 @@ export default function CartPage() {
       return;
     }
     router.push("/checkout");
+  };
+
+  const handleCancelPurchase = () => {
+    if (window.confirm("Cancel this purchase and clear your cart?")) {
+      clearCart();
+      router.push("/products");
+    }
   };
 
   if (cartCount === 0) {
@@ -174,6 +181,14 @@ export default function CartPage() {
               className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-3.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
             >
               Proceed to Checkout <IconArrowRight size={16} />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCancelPurchase}
+              className="w-full mt-3 border border-red-200 hover:border-red-300 text-red-600 hover:text-red-700 font-semibold py-3.5 rounded-xl text-sm transition-colors"
+            >
+              Cancel Purchase
             </button>
 
             <Link

@@ -31,6 +31,13 @@ export default function CheckoutPage() {
   const deliveryFee = subtotal >= DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
   const orderTotal = subtotal + deliveryFee;
 
+  const handleCancelOrder = () => {
+    if (window.confirm("Decline payment and cancel this order?")) {
+      clearCart();
+      router.push("/products");
+    }
+  };
+
   const [form, setForm] = useState({
     name: user?.name ?? "",
     phone: user?.phone ?? "",
@@ -334,6 +341,14 @@ export default function CheckoutPage() {
                   Place Order · KES {orderTotal.toLocaleString()}
                 </>
               )}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCancelOrder}
+              className="w-full mt-3 border border-red-200 hover:border-red-300 text-red-600 hover:text-red-700 font-semibold py-3.5 rounded-xl text-sm transition-colors"
+            >
+              Decline Payment
             </button>
 
             <p className="text-xs text-gray-400 text-center mt-3">

@@ -11,7 +11,7 @@ import {
   IconChevronDown,
 } from "@tabler/icons-react";
 import { mockProducts } from "@/lib/mock-data";
-import { ProductStatus } from "@/types/product";
+import type { ProductStatus } from "@/types/product";
 
 const STATUS_CONFIG: Record<ProductStatus, { label: string; cls: string }> = {
   live: { label: "Live", cls: "bg-green-50 text-green-700 border-green-200" },
