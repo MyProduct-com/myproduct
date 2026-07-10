@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import type { User, Theme, CartItem, Product, Order, PlacedOrderPayload } from "./types/index";
+import type { User, Theme, CartItem, Order, PlacedOrderPayload } from "./types/index";
 import { DEFAULT_THEME } from "./data/theme";
-import { MOCK_PRODUCTS } from "./data/products";
 import { genOrderId } from "./utils/helpers";
+import { useProductStore } from "@/store/productStore";
+import type { SharedProduct } from "@/store/productStore";
 
 import Header        from "./components/Header";
 import ProductCard   from "./components/ProductCard";
@@ -21,23 +22,48 @@ interface ShopStorefrontProps {
   initialTheme?: Partial<Theme>;
 }
 
-// All unique categories from products
-const ALL_CATEGORIES = ["All", ...Array.from(new Set(MOCK_PRODUCTS.map((p) => p.unit)))];
-
 export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProps) {
-  const [theme]                               = useState<Theme>({ ...DEFAULT_THEME, ...initialTheme });
-  const [user, setUser]                       = useState<User | null>(null);
-  const [showAuth, setShowAuth]               = useState(false);
-  const [authInitMode, setAuthInitMode]       = useState<"login" | "signup">("login");
-  const [activeTab, setActiveTab]             = useState<ActiveTab>("shop");
-  const [cart, setCart]                       = useState<CartItem[]>([]);
-  const [showCart, setShowCart]               = useState(false);
-  const [showCheckout, setShowCheckout]       = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [search, setSearch]                   = useState("");
-  const [orders, setOrders]                   = useState<Order[]>([]);
-  const [showScrollTop, setShowScrollTop]     = useState(false);
-  const [mounted, setMounted]                 = useState(false);
+  // ── Theme ──────────────────────────────────────────────────────────────────
+  const [theme] = useState<Theme>({ ...DEFAULT_THEME, ...initialTheme });
+
+  // ── Shared product store — reads only published + in-stock products ────────
+  // FIX: select the raw `products` array (stable reference from Zustand) instead
+  // of calling `getShopProducts()` inline as the selector. Calling a method that
+  // does `.filter(...)` inside the selector returns a brand-new array on every
+  // render/snapshot check, which triggers the
+  // "getServerSnapshot should be cached to avoid an infinite loop" error.
+  const products = useProductStore((s) => s.products);
+
+  const shopProducts = useMemo(
+    () => products.filter((p) => p.published && p.stock > 0),
+    [products]
+  );
+
+  // ── Auth ───────────────────────────────────────────────────────────────────
+  const [user, setUser]             = useState<User | null>(null);
+  const [showAuth, setShowAuth]     = useState(false);
+  const [authInitMode, setAuthInitMode] = useState<"login" | "signup">("login");
+
+  // ── Tab ────────────────────────────────────────────────────────────────────
+  const [activeTab, setActiveTab] = useState<ActiveTab>("shop");
+
+  // ── Cart ───────────────────────────────────────────────────────────────────
+  const [cart, setCart]           = useState<CartItem[]>([]);
+  const [showCart, setShowCart]   = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  // ── Product modal ──────────────────────────────────────────────────────────
+  const [selectedProduct, setSelectedProduct] = useState<SharedProduct | null>(null);
+
+  // ── Search ─────────────────────────────────────────────────────────────────
+  const [search, setSearch] = useState("");
+
+  // ── Orders ─────────────────────────────────────────────────────────────────
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  // ── UI helpers ─────────────────────────────────────────────────────────────
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [mounted, setMounted]             = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -47,49 +73,65 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // ── Auth handlers ──────────────────────────────────────────────────────────
   const openLogin  = () => { setAuthInitMode("login");  setShowAuth(true); };
   const openSignup = () => { setAuthInitMode("signup"); setShowAuth(true); };
   const handleAuth = (u: User) => { setUser(u); setShowAuth(false); };
 
+  // ── Cart helpers ───────────────────────────────────────────────────────────
   const getCartItem = (id: number) => cart.find((c) => c.productId === id);
-  const cartCount   = cart.reduce((s, i) => s + i.qty, 0);
-  const cartTotal   = cart.reduce((s, i) => {
-    const p = MOCK_PRODUCTS.find((p) => p.id === i.productId);
+
+  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
+
+  const cartTotal = cart.reduce((s, i) => {
+    const p = shopProducts.find((p) => p.id === i.productId);
     return s + (p ? p.price * i.qty : 0);
   }, 0);
 
-  const addToCart   = (id: number) => setCart((c) => c.find((i) => i.productId === id) ? c : [...c, { productId: id, qty: 1 }]);
-  const increaseQty = (id: number) => setCart((c) => c.map((i) => i.productId === id ? { ...i, qty: i.qty + 1 } : i));
-  const decreaseQty = (id: number) => setCart((c) => {
-    const item = c.find((i) => i.productId === id);
-    if (!item) return c;
-    return item.qty <= 1 ? c.filter((i) => i.productId !== id) : c.map((i) => i.productId === id ? { ...i, qty: i.qty - 1 } : i);
-  });
+  const addToCart = (id: number) =>
+    setCart((c) =>
+      c.find((i) => i.productId === id) ? c : [...c, { productId: id, qty: 1 }]
+    );
 
+  const increaseQty = (id: number) =>
+    setCart((c) => c.map((i) => i.productId === id ? { ...i, qty: i.qty + 1 } : i));
+
+  const decreaseQty = (id: number) =>
+    setCart((c) => {
+      const item = c.find((i) => i.productId === id);
+      if (!item) return c;
+      return item.qty <= 1
+        ? c.filter((i) => i.productId !== id)
+        : c.map((i) => i.productId === id ? { ...i, qty: i.qty - 1 } : i);
+    });
+
+  // ── Order handler ──────────────────────────────────────────────────────────
   const handleOrderPlaced = ({ items, total, payMethod }: PlacedOrderPayload) => {
     setOrders((o) => [{
-      id: genOrderId(),
-      date: new Date().toLocaleDateString("en-KE", { day: "2-digit", month: "short", year: "numeric" }),
-      items, total, payMethod,
-      status: "Under Processing",
+      id:        genOrderId(),
+      date:      new Date().toLocaleDateString("en-KE", { day: "2-digit", month: "short", year: "numeric" }),
+      items,     total, payMethod,
+      status:    "Under Processing",
       payStatus: payMethod === "cod" ? "Pending" : "Paid",
     }, ...o]);
     setCart([]);
     setShowCheckout(false);
   };
 
+  // ── Filtered products (search) ─────────────────────────────────────────────
   const filtered = useMemo(() =>
-    MOCK_PRODUCTS.filter((p) =>
+    shopProducts.filter((p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.description.toLowerCase().includes(search.toLowerCase())
     ),
-    [search]
+    [shopProducts, search]
   );
 
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: theme.fontFamily, color: theme.text }}>
 
-      {/* ── Header (ThemeEditor removed — admin-only now) ── */}
+      {/* Header */}
       <Header
         theme={theme}
         user={user}
@@ -101,33 +143,30 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
         onThemeEdit={() => {}}
       />
 
-      {/* ── Announcement bar ── */}
+      {/* Announcement bar */}
       <div
         className="hidden sm:block text-center text-xs font-medium py-2 px-4 tracking-wide"
         style={{ background: theme.surface, borderBottom: `1px solid ${theme.border}`, color: theme.accent }}
       >
         {theme.shopTagline} &nbsp;·&nbsp; Free delivery on orders over KSh 500 &nbsp;·&nbsp;
-        <span className="font-semibold"> Same-day delivery in Nairobi</span>
+        <span className="font-semibold">Same-day delivery in Nairobi</span>
       </div>
 
-      {/* ── Tabs ── */}
+      {/* Tabs */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4">
-        <div className="flex gap-1" style={{ borderBottom: `2px solid ${theme.border}`, marginBottom: 0 }}>
+        <div className="flex gap-1" style={{ borderBottom: `2px solid ${theme.border}` }}>
           {(["shop", "orders"] as ActiveTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className="px-5 py-2.5 text-sm font-semibold transition-colors capitalize relative"
+              className="px-5 py-2.5 text-sm font-semibold transition-colors capitalize"
               style={{
-                color: activeTab === tab ? theme.primary : theme.textMuted,
-                borderBottom: activeTab === tab ? `2.5px solid ${theme.primary}` : "2.5px solid transparent",
-                marginBottom: -2,
-                background: "none",
-                border: "none",
-                borderBottomStyle: "solid",
-                borderBottomWidth: 2.5,
-                borderBottomColor: activeTab === tab ? theme.primary : "transparent",
-                cursor: "pointer",
+                color:            activeTab === tab ? theme.primary : theme.textMuted,
+                background:       "none",
+                border:           "none",
+                borderBottom:     activeTab === tab ? `2.5px solid ${theme.primary}` : "2.5px solid transparent",
+                marginBottom:     -2,
+                cursor:           "pointer",
               }}
             >
               {tab === "orders" ? "📦 My Orders" : "🏪 Marketplace"}
@@ -144,12 +183,13 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
         </div>
       </div>
 
-      {/* ── Main content ── */}
+      {/* Main content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-32">
 
+        {/* ── Shop tab ── */}
         {activeTab === "shop" && (
           <>
-            {/* ── Search bar ── */}
+            {/* Search */}
             <div className="py-4">
               <div
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all"
@@ -175,11 +215,15 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
               </div>
             </div>
 
-            {/* ── Stats bar ── */}
+            {/* Stats */}
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm" style={{ color: theme.textMuted }}>
                 {filtered.length} product{filtered.length !== 1 ? "s" : ""} available
-                {search && <span className="ml-1">for &ldquo;<strong style={{ color: theme.primary }}>{search}</strong>&rdquo;</span>}
+                {search && (
+                  <span className="ml-1">
+                    for &ldquo;<strong style={{ color: theme.primary }}>{search}</strong>&rdquo;
+                  </span>
+                )}
               </p>
               {search && (
                 <button
@@ -192,7 +236,7 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
               )}
             </div>
 
-            {/* ── Product grid ── */}
+            {/* Product grid */}
             {filtered.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {filtered.map((p) => (
@@ -210,25 +254,32 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
               </div>
             ) : (
               <div className="text-center py-20">
-                <div className="text-5xl mb-4">🔍</div>
+                <div className="text-5xl mb-4">
+                  {search ? "🔍" : "🛒"}
+                </div>
                 <p className="text-base font-semibold mb-1" style={{ color: theme.text }}>
-                  No products found
+                  {search ? "No products found" : "No products available yet"}
                 </p>
                 <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
-                  Try a different search term
+                  {search
+                    ? "Try a different search term"
+                    : "The shop admin hasn't published any products yet"}
                 </p>
-                <button
-                  onClick={() => setSearch("")}
-                  className="text-sm font-semibold hover:underline"
-                  style={{ color: theme.primary }}
-                >
-                  Show all products
-                </button>
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="text-sm font-semibold hover:underline"
+                    style={{ color: theme.primary }}
+                  >
+                    Show all products
+                  </button>
+                )}
               </div>
             )}
           </>
         )}
 
+        {/* ── Orders tab ── */}
         {activeTab === "orders" && (
           orders.length > 0 ? (
             <div className="pt-4">
@@ -255,7 +306,7 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
         )}
       </main>
 
-      {/* ── Floating cart bar — mobile ── */}
+      {/* Floating cart bar — mobile only */}
       {mounted && cartCount > 0 && (
         <div className="fixed bottom-4 left-4 right-4 z-50 sm:hidden">
           <button
@@ -264,8 +315,10 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
             style={{ background: theme.primary }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[11px] font-bold shrink-0"
-                style={{ color: theme.primary }}>
+              <div
+                className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[11px] font-bold shrink-0"
+                style={{ color: theme.primary }}
+              >
                 {cartCount}
               </div>
               <span className="text-sm font-medium">
@@ -279,7 +332,7 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
         </div>
       )}
 
-      {/* ── Scroll to top ── */}
+      {/* Scroll to top */}
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -290,7 +343,7 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
         </button>
       )}
 
-      {/* ── Modals ── */}
+      {/* Modals */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
@@ -302,10 +355,11 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
           onClose={() => setSelectedProduct(null)}
         />
       )}
+
       {showCart && (
         <CartModal
           cart={cart}
-          products={MOCK_PRODUCTS}
+          products={shopProducts}
           theme={theme}
           onClose={() => setShowCart(false)}
           onIncrease={increaseQty}
@@ -314,15 +368,17 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
           onCheckout={() => { setShowCart(false); setShowCheckout(true); }}
         />
       )}
+
       {showCheckout && (
         <CheckoutModal
           cart={cart}
-          products={MOCK_PRODUCTS}
+          products={shopProducts}
           theme={theme}
           onClose={() => setShowCheckout(false)}
           onOrderPlaced={handleOrderPlaced}
         />
       )}
+
       {showAuth && (
         <AuthModal
           theme={theme}
