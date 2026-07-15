@@ -27,6 +27,8 @@ import AccountingView from "./components/accounting/AccountingView";
 import StaffView      from "./components/staff/StaffView";
 import SettingsView   from "./components/Setting/SettingsView";
 import SubscriptionView from "./components/Subscription/SubscriptionView";
+import { useThemeStore } from "@/store/themeStore";
+import type { ShopTheme } from "@/store/themeStore";
 
 const INITIAL_SHOP: Shop = {
   id: "shop_001",
@@ -43,10 +45,14 @@ const INITIAL_SHOP: Shop = {
 export default function AdminPanel() {
   const [activeView, setActiveView] = useState<AdminView>("dashboard");
 
-  const [theme, setTheme] = useState<Theme>(ADMIN_THEME);
-  const updateTheme = (key: keyof Theme, val: string) =>
-    setTheme(t => ({ ...t, [key]: val }));
-  const resetTheme = () => setTheme(ADMIN_THEME);
+  const { theme: shopTheme, updateTheme: updateShopTheme, resetTheme: resetShopTheme } = useThemeStore();
+  const theme = ADMIN_THEME;
+  const updateTheme = (key: keyof Theme, val: string) => {
+    updateShopTheme(key as keyof ShopTheme, val);
+  };
+  const resetTheme = () => {
+    resetShopTheme();
+  }
 
   const [shop, setShop] = useState<Shop>(INITIAL_SHOP);
 

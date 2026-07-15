@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect } from "react";
 import type { User, Theme, CartItem, Order, PlacedOrderPayload } from "./types/index";
-import { DEFAULT_THEME } from "./data/theme";
 import { genOrderId } from "./utils/helpers";
 import { useProductStore } from "@/store/productStore";
 import type { SharedProduct } from "@/store/productStore";
@@ -15,6 +14,7 @@ import CheckoutModal from "./components/CheckoutModal";
 import OrdersView    from "./components/OrdersView";
 import AuthModal     from "./components/AuthModal";
 import Footer        from "./components/Footer";
+import { useThemeStore } from "@/store/themeStore";
 
 type ActiveTab = "shop" | "orders";
 
@@ -24,7 +24,8 @@ interface ShopStorefrontProps {
 
 export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProps) {
   // ── Theme ──────────────────────────────────────────────────────────────────
-  const [theme] = useState<Theme>({ ...DEFAULT_THEME, ...initialTheme });
+  const storeTheme = useThemeStore((s) => s.theme);
+  const theme = { ...storeTheme, ...initialTheme } as Theme;
 
   // ── Shared product store — reads only published + in-stock products ────────
   // FIX: select the raw `products` array (stable reference from Zustand) instead
