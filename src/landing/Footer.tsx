@@ -1,3 +1,4 @@
+import { ThumbsUp, Camera, Bird, Briefcase, Flag } from "lucide-react";
 import { C } from "./Constants";
 
 function Footer() {
@@ -36,15 +37,15 @@ function Footer() {
               Kenya's complete e-commerce platform for small and medium businesses. Launch your shop today.
             </p>
             <div style={{ display: "flex", gap: 10 }}>
-              {["📘", "📷", "🐦", "💼"].map((icon, i) => (
+              {[ThumbsUp, Camera, Bird, Briefcase].map((Icon, i) => (
                 <a key={i} href="#" style={{
                   width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,.08)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 16, textDecoration: "none", transition: "background .15s",
+                  color: "#fff", textDecoration: "none", transition: "background .15s",
                 }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.15)"; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.08)"; }}>
-                  {icon}
+                  <Icon style={{ width: 16, height: 16 }} />
                 </a>
               ))}
             </div>
@@ -68,7 +69,7 @@ function Footer() {
         </div>
 
         <div style={{ borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 28, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,.3)" }}>© {new Date().getFullYear()} MyProduct. Built in Kenya 🇰🇪</span>
+          <span style={{ fontSize: 13, color: "rgba(255,255,255,.3)", display: "inline-flex", alignItems: "center", gap: 4 }}>© {new Date().getFullYear()} MyProduct. Built in Kenya <Flag style={{ width: 13, height: 13 }} /></span>
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.action, animation: "pulse 2s infinite" }} />
             <span style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>All systems operational</span>

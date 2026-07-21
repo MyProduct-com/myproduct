@@ -1,4 +1,6 @@
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { AlertTriangle, Search, XCircle, ArrowDownToLine, ArrowUpFromLine, HeartCrack, Settings2, ArrowRight } from "lucide-react";
 import type { AdminProduct, StockMovement, Theme } from "../../types/index";
 import { SectionHeader, Btn, Modal, Table, Input, Select } from "../layout/UI";
 import { fmt, fmtDateTime, genId } from "../../utils/helpers";
@@ -64,7 +66,7 @@ export default function InventoryView({
 
     onProducts(products.map(p => p.id === selectedProduct.id ? { ...p, stock: newStock, updatedAt: new Date().toISOString() } : p));
     onMovements([mov, ...movements]);
-    onToast(`Stock updated: ${selectedProduct.name} → ${newStock} units`, "success");
+    onToast(`Stock updated: ${selectedProduct.name} -> ${newStock} units`, "success");
     setShowAdjust(false);
   };
 
@@ -134,7 +136,7 @@ export default function InventoryView({
           background: "#fef9c3", border: "1px solid #fcd34d", borderRadius: theme.radius,
           padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10,
         }}>
-          <span style={{ fontSize: 20 }}>⚠️</span>
+          <AlertTriangle size={20} color="#92400e" />
           <div>
             <span style={{ fontWeight: 700, color: "#92400e" }}>Stock Alert: </span>
             <span style={{ color: "#78350f", fontSize: 13 }}>
@@ -155,7 +157,7 @@ export default function InventoryView({
             onChange={e => setSearch(e.target.value)}
             style={{ width: "100%", padding: "9px 12px 9px 36px", borderRadius: theme.radius, border: `1.5px solid ${theme.border}`, fontSize: 13, boxSizing: "border-box", background: theme.surface, outline: "none" }}
           />
-          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5 }}>🔍</span>
+          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5, display: "flex" }}><Search size={14} /></span>
         </div>
         {["All","Low","Out"].map(f => (
           <button key={f} onClick={() => setFilter(f)} style={{
@@ -163,8 +165,9 @@ export default function InventoryView({
             background: filter===f ? theme.primaryLight : theme.surface,
             color: filter===f ? theme.primary : theme.textMuted,
             fontWeight: 700, fontSize: 12, cursor: "pointer",
+            display: "inline-flex", alignItems: "center", gap: 6,
           }}>
-            {f === "All" ? "All Stock" : f === "Low" ? `⚠️ Low (${lowCount})` : `❌ Out (${outCount})`}
+            {f === "All" ? "All Stock" : f === "Low" ? <><AlertTriangle size={14} /> Low ({lowCount})</> : <><XCircle size={14} /> Out ({outCount})</>}
           </button>
         ))}
       </div>
@@ -179,9 +182,11 @@ export default function InventoryView({
             <div style={{ textAlign: "center", padding: 32, color: theme.textMuted }}>No movements recorded.</div>
           ) : movements.slice(0, 20).map(m => {
             const typeColors: Record<string, string> = { in: "#16a34a", out: "#f59e0b", adjustment: "#6366f1", loss: "#ef4444" };
+            const movementIcons: Record<string, LucideIcon> = { in: ArrowDownToLine, out: ArrowUpFromLine, loss: HeartCrack, adjustment: Settings2 };
+            const MovementIcon = movementIcons[m.type] ?? Settings2;
             return (
               <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: `1px solid ${theme.border}` }}>
-                <span style={{ fontSize: 18 }}>{m.type==="in"?"📥":m.type==="out"?"📤":m.type==="loss"?"💔":"⚙️"}</span>
+                <MovementIcon size={18} color={typeColors[m.type]} />
                 <div style={{ flex: 1 }}>
                   <span style={{ fontWeight: 700, color: theme.black }}>{m.productName}</span>
                   <span style={{ fontSize: 12, color: theme.textMuted, marginLeft: 8 }}>{m.reason}</span>
@@ -190,7 +195,7 @@ export default function InventoryView({
                   <div style={{ fontWeight: 700, color: typeColors[m.type] }}>
                     {m.type==="in" || m.type==="adjustment" ? "+" : "-"}{m.qty}
                   </div>
-                  <div style={{ fontSize: 11, color: theme.textMuted }}>{m.previousStock} → {m.newStock}</div>
+                  <div style={{ fontSize: 11, color: theme.textMuted, display: "flex", alignItems: "center", gap: 4, justifyContent: "flex-end" }}>{m.previousStock} <ArrowRight size={11} /> {m.newStock}</div>
                 </div>
                 <div style={{ textAlign: "right", minWidth: 120 }}>
                   <div style={{ fontSize: 11, color: theme.textMuted }}>{m.userName}</div>

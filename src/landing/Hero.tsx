@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import {DEMO_SHOPS, C,STATS}  from "./Constants";
 import HeroShopCard from "./HeroShopCard";
 
@@ -71,7 +72,7 @@ function Hero() {
             }}
               onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "0 8px 28px rgba(37,165,90,.6)"; }}
               onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform = ""; el.style.boxShadow = "0 4px 20px rgba(37,165,90,.5)"; }}>
-              Start free — no credit card ↗
+              Start free — no credit card <ArrowUpRight style={{ width: 16, height: 16, verticalAlign: "middle" }} />
             </Link>
             <a href="#features" style={{
               textDecoration: "none", padding: "14px 24px", borderRadius: 12,

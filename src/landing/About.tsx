@@ -1,3 +1,4 @@
+import { Flag, Lock, Phone, Lightbulb } from "lucide-react";
 import { C } from "./Constants";
 
 function About() {
@@ -16,9 +17,9 @@ function About() {
           We built a complete, affordable platform so any Kenyan business owner — whether in Nairobi's CBD or Kisumu's market — can run a professional online shop with no technical skills required.
         </p>
         <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-          {[{ icon: "🇰🇪", label: "Kenya-first" }, { icon: "🔒", label: "Secure & reliable" }, { icon: "📞", label: "Local support" }, { icon: "💡", label: "Always improving" }].map(b => (
+          {[{ icon: Flag, label: "Kenya-first" }, { icon: Lock, label: "Secure & reliable" }, { icon: Phone, label: "Local support" }, { icon: Lightbulb, label: "Always improving" }].map(b => (
             <div key={b.label} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 28, marginBottom: 6 }}>{b.icon}</div>
+              <div style={{ marginBottom: 6, display: "flex", justifyContent: "center" }}><b.icon style={{ width: 28, height: 28, color: "#fff" }} /></div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,.8)" }}>{b.label}</div>
             </div>
           ))}

@@ -1,3 +1,4 @@
+import { DollarSign, Package, TrendingUp, AlertTriangle } from "lucide-react";
 import type { AdminOrder, AdminProduct, DailyStat, TopProduct, Theme } from "../../types/index";
 import { StatCard, Card } from "../layout/UI";
 import { fmt, fmtDateTime } from "../../utils/helpers";
@@ -93,10 +94,10 @@ export default function Dashboard({ theme, orders, products, dailyStats, topProd
 
       {/* KPI Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
-        <StatCard label="7-Day Revenue" value={fmt(totalRevenue)} sub={`Today: ${Number(revenueGrowth) >= 0 ? "+" : ""}${revenueGrowth}%`} icon="💰" color="#16a34a" theme={theme} />
-        <StatCard label="Total Orders (7d)" value={totalOrders} sub={`${pendingOrders} pending`} icon="📦" color="#6366f1" theme={theme} />
-        <StatCard label="Avg Order Value" value={fmt(Math.round(totalRevenue / totalOrders))} sub="This week" icon="📈" color="#f59e0b" theme={theme} />
-        <StatCard label="Low Stock Alerts" value={lowStock} sub={lowStock > 0 ? "Needs attention" : "All good"} icon="⚠️" color={lowStock > 0 ? "#ef4444" : "#16a34a"} theme={theme} />
+        <StatCard label="7-Day Revenue" value={fmt(totalRevenue)} sub={`Today: ${Number(revenueGrowth) >= 0 ? "+" : ""}${revenueGrowth}%`} icon={DollarSign} color="#16a34a" theme={theme} />
+        <StatCard label="Total Orders (7d)" value={totalOrders} sub={`${pendingOrders} pending`} icon={Package} color="#6366f1" theme={theme} />
+        <StatCard label="Avg Order Value" value={fmt(Math.round(totalRevenue / totalOrders))} sub="This week" icon={TrendingUp} color="#f59e0b" theme={theme} />
+        <StatCard label="Low Stock Alerts" value={lowStock} sub={lowStock > 0 ? "Needs attention" : "All good"} icon={AlertTriangle} color={lowStock > 0 ? "#ef4444" : "#16a34a"} theme={theme} />
       </div>
 
       {/* Charts Row */}

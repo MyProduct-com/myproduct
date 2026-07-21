@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Search, MapPin, Truck, CheckCircle2, ArrowRight, X } from "lucide-react";
 import type { AdminOrder, OrderStatus, Theme } from "../../types/index";
 import { SectionHeader, Badge, Btn, Modal, Table } from "../layout/UI";
 import { fmt, fmtDateTime, payMethodLabel } from "../../utils/helpers";
@@ -50,7 +51,7 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
       ...(next === "Dispatched" ? { dispatchedAt: new Date().toISOString() } : {}),
       ...(next === "Delivered" ? { deliveredAt: new Date().toISOString() } : {}),
     });
-    onToast(`${order.id} status → ${next}`, "success");
+    onToast(`${order.id} status -> ${next}`, "success");
     setSelected(prev => prev ? { ...prev, status: next } : null);
   };
 
@@ -131,7 +132,7 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
               background: theme.surface, outline: "none",
             }}
           />
-          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5 }}>🔍</span>
+          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5, display: "flex" }}><Search size={14} /></span>
         </div>
         <select value={payFilter} onChange={e => setPayFilter(e.target.value)}
           style={{ padding: "9px 12px", borderRadius: theme.radius, border: `1.5px solid ${theme.border}`, fontSize: 13, background: theme.surface }}>
@@ -162,7 +163,7 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
             <div style={{ fontWeight: 700, marginBottom: 6, color: theme.black }}>Customer</div>
             <div style={{ fontSize: 13, color: theme.text }}>{selected.customerName}</div>
             <div style={{ fontSize: 12, color: theme.textMuted }}>{selected.customerPhone} · {selected.customerEmail}</div>
-            <div style={{ fontSize: 12, color: theme.textMuted, marginTop: 4 }}>📍 {selected.address}</div>
+            <div style={{ fontSize: 12, color: theme.textMuted, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}><MapPin size={12} /> {selected.address}</div>
           </div>
 
           {/* Items */}
@@ -194,7 +195,7 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
           {/* Tracking */}
           {selected.trackingCode && (
             <div style={{ background: theme.primaryLight, borderRadius: theme.radius, padding: 12, marginBottom: 16, border: `1px solid ${theme.primary}40` }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: theme.primary }}>🚚 Tracking Code: {selected.trackingCode}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: theme.primary, display: "flex", alignItems: "center", gap: 4 }}><Truck size={14} /> Tracking Code: {selected.trackingCode}</div>
               {selected.dispatchedAt && <div style={{ fontSize: 11, color: theme.textMuted, marginTop: 4 }}>Dispatched: {fmtDateTime(selected.dispatchedAt)}</div>}
             </div>
           )}
@@ -214,22 +215,22 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
           {/* Action buttons */}
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {selected.paymentStatus === "Pending" && (
-              <Btn theme={theme} onClick={() => confirmPayment(selected)}>✅ Confirm Payment</Btn>
+              <Btn theme={theme} onClick={() => confirmPayment(selected)}><CheckCircle2 size={14} /> Confirm Payment</Btn>
             )}
             {selected.status === "Under Processing" && (
-              <Btn theme={theme} onClick={() => dispatch(selected)}>🚚 Dispatch Order</Btn>
+              <Btn theme={theme} onClick={() => dispatch(selected)}><Truck size={14} /> Dispatch Order</Btn>
             )}
             {["Pending","Under Processing","Dispatched","In Transit"].includes(selected.status) &&
              selected.status !== "Under Processing" && (
               <Btn theme={theme} variant="ghost" onClick={() => advanceStatus(selected)}>
-                → Advance to {STATUSES[STATUSES.indexOf(selected.status) + 1]}
+                <ArrowRight size={14} /> Advance to {STATUSES[STATUSES.indexOf(selected.status) + 1]}
               </Btn>
             )}
             {selected.status === "Pending" && (
-              <Btn theme={theme} variant="ghost" onClick={() => advanceStatus(selected)}>→ Start Processing</Btn>
+              <Btn theme={theme} variant="ghost" onClick={() => advanceStatus(selected)}><ArrowRight size={14} /> Start Processing</Btn>
             )}
             {!["Cancelled","Delivered","Returned"].includes(selected.status) && (
-              <Btn theme={theme} variant="danger" onClick={() => cancelOrder(selected)}>✕ Cancel</Btn>
+              <Btn theme={theme} variant="danger" onClick={() => cancelOrder(selected)}><X size={14} /> Cancel</Btn>
             )}
           </div>
         </Modal>

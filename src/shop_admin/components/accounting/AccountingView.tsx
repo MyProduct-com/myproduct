@@ -1,4 +1,6 @@
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { DollarSign, CreditCard, ShoppingCart, Undo2, User, TrendingUp, TrendingDown, Search } from "lucide-react";
 import type { AccountingEntry, TransactionType, Theme } from "../../types/index";
 import { SectionHeader, Btn, Modal, Input, Select, StatCard, Table } from "../layout/UI";
 import { fmt, fmtDate, genId } from "../../utils/helpers";
@@ -27,8 +29,8 @@ const CATEGORIES: Record<TransactionType, string[]> = {
   salary:   ["Payroll"],
 };
 
-const TYPE_ICONS: Record<TransactionType, string> = {
-  sale:"💰", expense:"💸", purchase:"🛒", refund:"↩️", salary:"👤",
+const TYPE_ICONS: Record<TransactionType, LucideIcon> = {
+  sale: DollarSign, expense: CreditCard, purchase: ShoppingCart, refund: Undo2, salary: User,
 };
 
 export default function AccountingView({ theme, entries, currentUserId, onEntries, onToast }: AccountingViewProps) {
@@ -71,9 +73,12 @@ export default function AccountingView({ theme, entries, currentUserId, onEntrie
     { header: "Date", key: "date", render: (e: AccountingEntry) => <span style={{ fontSize: 12 }}>{fmtDate(e.date)}</span>, width: "90px" },
     {
       header: "Type", key: "type",
-      render: (e: AccountingEntry) => (
-        <span style={{ fontSize: 18 }} title={e.type}>{TYPE_ICONS[e.type]}</span>
-      ),
+      render: (e: AccountingEntry) => {
+        const TypeIcon = TYPE_ICONS[e.type];
+        return (
+          <span title={e.type}><TypeIcon size={18} /></span>
+        );
+      },
       width: "48px",
     },
     {
@@ -114,13 +119,13 @@ export default function AccountingView({ theme, entries, currentUserId, onEntrie
 
       {/* KPI */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
-        <StatCard label="Total Revenue" value={fmt(totals.income)} icon="💰" color="#16a34a" theme={theme} />
-        <StatCard label="Total Expenses" value={fmt(totals.expense)} icon="💸" color="#ef4444" theme={theme} />
-        <StatCard label="Refunds" value={fmt(totals.refunds)} icon="↩️" color="#f59e0b" theme={theme} />
+        <StatCard label="Total Revenue" value={fmt(totals.income)} icon={DollarSign} color="#16a34a" theme={theme} />
+        <StatCard label="Total Expenses" value={fmt(totals.expense)} icon={CreditCard} color="#ef4444" theme={theme} />
+        <StatCard label="Refunds" value={fmt(totals.refunds)} icon={Undo2} color="#f59e0b" theme={theme} />
         <StatCard
           label="Net Profit"
           value={fmt(profit)}
-          icon={profit >= 0 ? "📈" : "📉"}
+          icon={profit >= 0 ? TrendingUp : TrendingDown}
           color={profit >= 0 ? "#16a34a" : "#ef4444"}
           sub={profit >= 0 ? "Profitable" : "Loss"}
           theme={theme}
@@ -132,18 +137,23 @@ export default function AccountingView({ theme, entries, currentUserId, onEntrie
         <div style={{ position: "relative", flex: 1 }}>
           <input placeholder="Search entries…" value={search} onChange={e => setSearch(e.target.value)}
             style={{ width:"100%", padding:"9px 12px 9px 36px", borderRadius:theme.radius, border:`1.5px solid ${theme.border}`, fontSize:13, boxSizing:"border-box", background:theme.surface, outline:"none" }} />
-          <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", opacity:0.5 }}>🔍</span>
+          <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", opacity:0.5, display:"flex" }}><Search size={14} /></span>
         </div>
-        {(["All","sale","expense","purchase","refund","salary"] as const).map(t => (
-          <button key={t} onClick={() => setTypeFilter(t)} style={{
-            padding:"7px 14px", borderRadius:theme.radius, border:`1.5px solid ${typeFilter===t ? theme.primary : theme.border}`,
-            background: typeFilter===t ? theme.primaryLight : theme.surface,
-            color: typeFilter===t ? theme.primary : theme.textMuted,
-            fontWeight:700, fontSize:12, cursor:"pointer",
-          }}>
-            {t === "All" ? "All" : `${TYPE_ICONS[t as TransactionType]} ${t.charAt(0).toUpperCase()+t.slice(1)}`}
-          </button>
-        ))}
+        {(["All","sale","expense","purchase","refund","salary"] as const).map(t => {
+          const FilterIcon = t === "All" ? null : TYPE_ICONS[t as TransactionType];
+          return (
+            <button key={t} onClick={() => setTypeFilter(t)} style={{
+              padding:"7px 14px", borderRadius:theme.radius, border:`1.5px solid ${typeFilter===t ? theme.primary : theme.border}`,
+              background: typeFilter===t ? theme.primaryLight : theme.surface,
+              color: typeFilter===t ? theme.primary : theme.textMuted,
+              fontWeight:700, fontSize:12, cursor:"pointer",
+              display:"inline-flex", alignItems:"center", gap:6,
+            }}>
+              {FilterIcon && <FilterIcon size={14} />}
+              {t === "All" ? "All" : t.charAt(0).toUpperCase()+t.slice(1)}
+            </button>
+          );
+        })}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 16 }}>

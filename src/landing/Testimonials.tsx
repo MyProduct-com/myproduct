@@ -1,4 +1,5 @@
-import { C, TESTIMONIALS } from "./Constants";  
+import { TrendingUp } from "lucide-react";
+import { C, TESTIMONIALS } from "./Constants";
 
 function Testimonials() {
   return (
@@ -17,8 +18,9 @@ function Testimonials() {
               <div style={{ fontSize: 28, color: C.action, marginBottom: 14, lineHeight: 1 }}>"</div>
               <p style={{ margin: "0 0 20px", fontSize: 15, color: C.charcoal, lineHeight: 1.75, fontStyle: "italic" }}>{t.quote}</p>
 
-              <div style={{ background: C.mint, borderRadius: 8, padding: "8px 14px", display: "inline-block", marginBottom: 18 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: C.forest }}>📈 {t.revenue}</span>
+              <div style={{ background: C.mint, borderRadius: 8, padding: "8px 14px", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 18 }}>
+                <TrendingUp style={{ width: 14, height: 14, color: C.forest }} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: C.forest }}>{t.revenue}</span>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>

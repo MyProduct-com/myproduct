@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import type { Theme } from "../../types/index";
 import { statusColor } from "../../utils/helpers";
 
@@ -27,11 +28,11 @@ interface StatCardProps {
   label: string;
   value: string | number;
   sub?: string;
-  icon: string;
+  icon: LucideIcon;
   color: string;
   theme: Theme;
 }
-export function StatCard({ label, value, sub, icon, color, theme }: StatCardProps) {
+export function StatCard({ label, value, sub, icon: Icon, color, theme }: StatCardProps) {
   return (
     <div style={{
       background: theme.surface, border: `1px solid ${theme.border}`,
@@ -40,9 +41,10 @@ export function StatCard({ label, value, sub, icon, color, theme }: StatCardProp
     }}>
       <div style={{
         width: 48, height: 48, borderRadius: 12, background: color + "18",
-        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+        color,
       }}>
-        {icon}
+        <Icon size={22} />
       </div>
       <div>
         <div style={{ fontSize: 22, fontWeight: 900, color: theme.black, lineHeight: 1 }}>{value}</div>

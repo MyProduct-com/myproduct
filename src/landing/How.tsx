@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { C , HOW_IT_WORKS} from "./Constants";
 
 function HowItWorks() {
@@ -19,7 +20,7 @@ function HowItWorks() {
                 <div style={{ position: "absolute", top: 52, right: 0, width: "50%", height: 2, background: `linear-gradient(90deg, ${C.mint}, transparent)`, display: "none" }} className="connector" />
               )}
               <div style={{ fontSize: 11, fontWeight: 900, color: C.action, letterSpacing: "0.1em", marginBottom: 14 }}>{step.step}</div>
-              <div style={{ fontSize: 32, marginBottom: 14 }}>{step.icon}</div>
+              <div style={{ marginBottom: 14 }}><step.icon style={{ width: 32, height: 32, color: C.action }} /></div>
               <h3 style={{ margin: "0 0 10px", fontSize: 17, fontWeight: 700, color: C.ink }}>{step.title}</h3>
               <p style={{ margin: 0, fontSize: 14, color: C.slate, lineHeight: 1.7 }}>{step.desc}</p>
             </div>
@@ -35,7 +36,7 @@ function HowItWorks() {
           }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; }}>
-            Open my shop today →
+            Open my shop today <ArrowRight className="inline" style={{ width: 16, height: 16, verticalAlign: "middle" }} />
           </Link>
         </div>
       </div>

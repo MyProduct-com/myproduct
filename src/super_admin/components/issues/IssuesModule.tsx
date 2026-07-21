@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Headphones, Undo2, Check, Info } from "lucide-react";
 import { SA_THEME as T } from "../../data/theme";
 import type { SupportTicket, TicketMessage } from "../../types/index";
 import { Card, Btn, Input, SectionHeader, Badge, SearchBar, Tabs } from "../layout/UI";
@@ -73,7 +74,8 @@ export function IssuesModule({ tickets, onUpdateTicket, adminName, adminId, addT
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <SectionHeader
-        title="🎧 Support Issues"
+        icon={Headphones}
+        title="Support Issues"
         subtitle="Receive, respond to, and resolve user support requests."
         actions={<Badge label={`${unreadCount} unread`} bg={unreadCount > 0 ? "#fee2e2" : "#f1f5f9"} color={unreadCount > 0 ? "#991b1b" : "#475569"} />}
       />
@@ -185,12 +187,12 @@ export function IssuesModule({ tickets, onUpdateTicket, adminName, adminId, addT
                     resize: "none", fontFamily: T.fontFamily, boxSizing: "border-box", outline: "none",
                   }} />
                 <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center" }}>
-                  <Btn variant="primary" onClick={sendReply} disabled={!replyText.trim()} style={{ flex: 1 }}>↩ Send Reply</Btn>
-                  <Btn variant="success" size="sm" onClick={() => updateStatus("resolved")}>✓ Resolve</Btn>
+                  <Btn variant="primary" onClick={sendReply} disabled={!replyText.trim()} style={{ flex: 1 }}><Undo2 size={14} /> Send Reply</Btn>
+                  <Btn variant="success" size="sm" onClick={() => updateStatus("resolved")}><Check size={14} /> Resolve</Btn>
                   <Btn variant="ghost" size="sm" onClick={() => updateStatus("closed")}>Close</Btn>
                 </div>
-                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6 }}>
-                  ℹ️ Your reply will be visible to the shop owner and CC'd to the shop admin — like an email CC.
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, display: "flex", alignItems: "center", gap: 5 }}>
+                  <Info size={12} style={{ flexShrink: 0 }} /> Your reply will be visible to the shop owner and CC'd to the shop admin — like an email CC.
                 </div>
               </div>
             )}

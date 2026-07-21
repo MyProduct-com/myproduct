@@ -1,5 +1,7 @@
+import { Bell, Circle } from "lucide-react";
 import type { AdminUser, Shop, Theme } from "../../types/index";
 import { HEADER_HEIGHT } from "../../data/theme";
+import { getLogoIcon } from "@/lib/logoIcons";
 
 interface AdminHeaderProps {
   admin: AdminUser;
@@ -10,6 +12,7 @@ interface AdminHeaderProps {
 
 export default function AdminHeader({ admin, shop, theme, onSignOut }: AdminHeaderProps) {
   const initials = admin.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  const LogoIcon = getLogoIcon(shop.logoIcon);
 
   return (
     <header style={{
@@ -20,7 +23,7 @@ export default function AdminHeader({ admin, shop, theme, onSignOut }: AdminHead
     }}>
       {/* Left: Logo + Shop Info */}
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{ fontSize: 28 }}>{shop.logoEmoji}</div>
+        <LogoIcon size={28} />
         <div>
           <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: "-0.4px", lineHeight: 1 }}>
             {shop.name}
@@ -33,8 +36,10 @@ export default function AdminHeader({ admin, shop, theme, onSignOut }: AdminHead
           marginLeft: 12, padding: "3px 10px", borderRadius: 20,
           background: "rgba(255,255,255,0.18)", fontSize: 11, fontWeight: 700,
           border: "1px solid rgba(255,255,255,0.3)",
+          display: "flex", alignItems: "center", gap: 5,
         }}>
-          🟢 Live
+          <Circle size={8} fill="#22c55e" color="#22c55e" />
+          Live
         </div>
       </div>
 
@@ -46,7 +51,7 @@ export default function AdminHeader({ admin, shop, theme, onSignOut }: AdminHead
           width: 38, height: 38, cursor: "pointer", color: "#fff", fontSize: 16,
           display: "flex", alignItems: "center", justifyContent: "center", position: "relative",
         }}>
-          🔔
+          <Bell size={16} />
           <span style={{
             position: "absolute", top: 6, right: 6, width: 8, height: 8,
             background: "#ef4444", borderRadius: "50%", border: "2px solid " + theme.primary,

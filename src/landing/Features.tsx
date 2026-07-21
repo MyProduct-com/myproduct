@@ -22,7 +22,7 @@ function Features() {
             }}
               onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform = "translateY(-3px)"; el.style.boxShadow = "0 12px 32px rgba(0,0,0,.08)"; el.style.borderColor = C.mint; }}
               onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform = ""; el.style.boxShadow = ""; el.style.borderColor = C.border; }}>
-              <div style={{ fontSize: 28, marginBottom: 12 }}>{f.icon}</div>
+              <div style={{ marginBottom: 12 }}><f.icon style={{ width: 28, height: 28, color: C.action }} /></div>
               <h3 style={{ margin: "0 0 8px", fontSize: 15, fontWeight: 700, color: C.ink }}>{f.title}</h3>
               <p style={{ margin: 0, fontSize: 14, color: C.slate, lineHeight: 1.6 }}>{f.desc}</p>
             </div>

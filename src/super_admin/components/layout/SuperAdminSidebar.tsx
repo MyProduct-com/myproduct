@@ -1,18 +1,23 @@
 import React from "react";
+import {
+  LayoutDashboard, Store, FlaskConical, Rocket, Package,
+  Monitor, Headphones, Megaphone, Globe, Shield, Lock,
+  type LucideIcon,
+} from "lucide-react";
 import { SA_THEME as T, SA_SIDEBAR_WIDTH, SA_HEADER_HEIGHT } from "../../data/theme";
 import type { SuperAdminView, SuperAdmin } from "../../types/index";
 
-const NAV_ITEMS: { id: SuperAdminView; label: string; icon: string; requireFull?: boolean; badge?: number }[] = [
-  { id: "dashboard",   label: "Dashboard",       icon: "📊" },
-  { id: "shops",       label: "Shops & Users",   icon: "🏪" },
-  { id: "isolation",   label: "Isolation Lab",   icon: "🔬" },
-  { id: "onboarding",  label: "Onboard User",    icon: "🚀" },
-  { id: "packages",    label: "Packages",        icon: "📦" },
-  { id: "dbterminal",  label: "DB Terminal",     icon: "🖥️", requireFull: true },
-  { id: "issues",      label: "Support Issues",  icon: "🎧" },
-  { id: "reminders",   label: "Reminders",       icon: "📣" },
-  { id: "marketplace", label: "Marketplace",     icon: "🌐" },
-  { id: "admins",      label: "System Admins",   icon: "🛡️", requireFull: true },
+const NAV_ITEMS: { id: SuperAdminView; label: string; icon: LucideIcon; requireFull?: boolean; badge?: number }[] = [
+  { id: "dashboard",   label: "Dashboard",       icon: LayoutDashboard },
+  { id: "shops",       label: "Shops & Users",   icon: Store },
+  { id: "isolation",   label: "Isolation Lab",   icon: FlaskConical },
+  { id: "onboarding",  label: "Onboard User",    icon: Rocket },
+  { id: "packages",    label: "Packages",        icon: Package },
+  { id: "dbterminal",  label: "DB Terminal",     icon: Monitor, requireFull: true },
+  { id: "issues",      label: "Support Issues",  icon: Headphones },
+  { id: "reminders",   label: "Reminders",       icon: Megaphone },
+  { id: "marketplace", label: "Marketplace",     icon: Globe },
+  { id: "admins",      label: "System Admins",   icon: Shield, requireFull: true },
 ];
 
 interface Props {
@@ -80,10 +85,10 @@ export function SuperAdminSidebar({ admin, active, onNavigate, open, unreadTicke
               onMouseEnter={e => { if (accessible && !isActive) e.currentTarget.style.background = "rgba(255,255,255,.06)"; }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
             >
-              <span style={{ fontSize: 17, flexShrink: 0 }}>{item.icon}</span>
+              <item.icon size={17} style={{ flexShrink: 0 }} />
               <span style={{ flex: 1 }}>{item.label}</span>
               {item.requireFull && admin.privilegeLevel !== "full" && (
-                <span style={{ fontSize: 10, color: "rgba(255,255,255,.25)" }}>🔒</span>
+                <Lock size={10} color="rgba(255,255,255,.25)" />
               )}
               {badge !== undefined && badge > 0 && (
                 <span style={{ background: T.danger, color: "#fff", fontSize: 10, fontWeight: 900, padding: "1px 6px", borderRadius: 999 }}>{badge}</span>

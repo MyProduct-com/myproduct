@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import { DEMO_SHOPS, C } from "./Constants";
 
 function HeroShopCard({ shop, visible }: { shop: typeof DEMO_SHOPS[0]; visible: boolean }) {
@@ -12,7 +13,7 @@ function HeroShopCard({ shop, visible }: { shop: typeof DEMO_SHOPS[0]; visible: 
       {/* Shop header */}
       <div style={{ background: `linear-gradient(135deg, ${shop.color}dd, ${shop.color})`, padding: "22px 22px 18px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(255,255,255,.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>{shop.emoji}</div>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(255,255,255,.25)", display: "flex", alignItems: "center", justifyContent: "center" }}><shop.icon style={{ width: 26, height: 26, color: "#fff" }} /></div>
           <div>
             <div style={{ fontWeight: 800, fontSize: 17, color: "#fff", lineHeight: 1.2 }}>{shop.name}</div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,.75)", marginTop: 2 }}>{shop.tagline}</div>
@@ -35,15 +36,19 @@ function HeroShopCard({ shop, visible }: { shop: typeof DEMO_SHOPS[0]; visible: 
         <div style={{ fontSize: 11, fontWeight: 700, color: C.slate, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Products</div>
         {shop.products.map((p, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 0", borderBottom: i < shop.products.length - 1 ? `1px solid ${C.border}` : "none" }}>
-            <span style={{ fontSize: 13, color: C.charcoal }}>{p.split(" — ")[0]}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.forest }}>{p.split(" — ")[1]}</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: C.charcoal }}>
+              <p.icon style={{ width: 14, height: 14, color: C.slate }} />
+              {p.name}
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.forest }}>{p.price}</span>
           </div>
         ))}
         <button style={{
           marginTop: 14, width: "100%", padding: "10px", borderRadius: 10, border: "none",
           background: `${shop.color}14`, color: shop.color, fontWeight: 700, fontSize: 13,
           cursor: "pointer", fontFamily: "inherit",
-        }}>Visit shop ↗</button>
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+        }}>Visit shop <ArrowUpRight style={{ width: 14, height: 14 }} /></button>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import { Menu, Bell } from "lucide-react";
 import { SA_THEME as T, SA_HEADER_HEIGHT, SA_SIDEBAR_WIDTH } from "../../data/theme";
 import type { SuperAdmin } from "../../types/index";
 import { Badge } from "./UI";
@@ -23,7 +24,7 @@ export function SuperAdminHeader({ admin, activeTickets, sidebarOpen, onToggleSi
       gap: 14, transition: "left .25s", boxShadow: "0 1px 4px rgba(0,0,0,.06)",
     }}>
       {/* Hamburger */}
-      <button onClick={onToggleSidebar} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: T.textMuted, lineHeight: 1, padding: 4 }}>☰</button>
+      <button onClick={onToggleSidebar} style={{ background: "none", border: "none", cursor: "pointer", color: T.textMuted, lineHeight: 1, padding: 4, display: "flex" }}><Menu size={20} /></button>
 
       {/* System logo + name */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginRight: "auto" }}>
@@ -40,7 +41,7 @@ export function SuperAdminHeader({ admin, activeTickets, sidebarOpen, onToggleSi
       {/* Active tickets bell */}
       {activeTickets > 0 && (
         <div style={{ position: "relative", cursor: "pointer" }}>
-          <span style={{ fontSize: 20 }}>🔔</span>
+          <Bell size={20} />
           <span style={{
             position: "absolute", top: -4, right: -6,
             background: T.danger, color: "#fff", fontSize: 10, fontWeight: 900,

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Smartphone, Banknote, CreditCard, Monitor, ShoppingCart, Circle } from "lucide-react";
 import type { AdminProduct, POSSession, POSCartItem, POSTransaction, Theme } from "../../types/index";
 import { fmt, genId } from "../../utils/helpers";
 import { Btn, Modal, SectionHeader } from "../layout/UI";
@@ -16,10 +18,10 @@ interface POSViewProps {
   onToast: (msg: string, type?: "success"|"error"|"info") => void;
 }
 
-const PAYMENT_OPTS = [
-  { id: "mpesa", label: "M-Pesa", icon: "📱" },
-  { id: "cash",  label: "Cash",   icon: "💵" },
-  { id: "card",  label: "Card",   icon: "💳" },
+const PAYMENT_OPTS: { id: string; label: string; icon: LucideIcon }[] = [
+  { id: "mpesa", label: "M-Pesa", icon: Smartphone },
+  { id: "cash",  label: "Cash",   icon: Banknote },
+  { id: "card",  label: "Card",   icon: CreditCard },
 ];
 
 function POSTerminal({
@@ -72,9 +74,9 @@ function POSTerminal({
       {/* Product panel */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", background: theme.bg }}>
         <div style={{ padding: 12, borderBottom: `1px solid ${theme.border}`, background: theme.surface }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: theme.black, marginBottom: 8 }}>
-            🖥️ {session.sessionName}
-            <span style={{ marginLeft: 8, fontSize: 11, color: theme.primary }}>● Active</span>
+          <div style={{ fontWeight: 700, fontSize: 14, color: theme.black, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+            <Monitor size={16} /> {session.sessionName}
+            <span style={{ marginLeft: 8, fontSize: 11, color: theme.primary, display: "inline-flex", alignItems: "center", gap: 4 }}><Circle size={8} fill="currentColor" /> Active</span>
           </div>
           <input
             placeholder="Search products…"
@@ -109,14 +111,14 @@ function POSTerminal({
 
       {/* Cart panel */}
       <div style={{ width: 300, display: "flex", flexDirection: "column", borderLeft: `1px solid ${theme.border}`, background: theme.surface }}>
-        <div style={{ padding: "12px 16px", borderBottom: `1px solid ${theme.border}`, fontWeight: 800, fontSize: 15, color: theme.black }}>
-          🛒 Cart {cart.length > 0 && <span style={{ background: theme.primary, color: "#fff", borderRadius: 20, padding: "1px 8px", fontSize: 11 }}>{cart.reduce((s,i) => s+i.qty,0)}</span>}
+        <div style={{ padding: "12px 16px", borderBottom: `1px solid ${theme.border}`, fontWeight: 800, fontSize: 15, color: theme.black, display: "flex", alignItems: "center", gap: 6 }}>
+          <ShoppingCart size={16} /> Cart {cart.length > 0 && <span style={{ background: theme.primary, color: "#fff", borderRadius: 20, padding: "1px 8px", fontSize: 11 }}>{cart.reduce((s,i) => s+i.qty,0)}</span>}
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
           {cart.length === 0 ? (
             <div style={{ textAlign: "center", padding: "32px 16px", color: theme.textMuted }}>
-              <div style={{ fontSize: 36 }}>🛒</div>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}><ShoppingCart size={36} /></div>
               <p style={{ fontSize: 13 }}>Tap a product to add it</p>
             </div>
           ) : cart.map(item => (
@@ -169,9 +171,10 @@ function POSTerminal({
                   flex: 1, padding: "7px 4px", border: `2px solid ${payMethod === o.id ? theme.primary : theme.border}`,
                   borderRadius: theme.radius, background: payMethod === o.id ? theme.primaryLight : theme.bg,
                   cursor: "pointer", fontSize: 11, fontWeight: 700, color: payMethod === o.id ? theme.primary : theme.text,
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
                 }}
               >
-                {o.icon} {o.label}
+                <o.icon size={14} /> {o.label}
               </button>
             ))}
           </div>
@@ -284,7 +287,7 @@ export default function POSView({ theme, products, sessions, transactions, curre
                 <div style={{ fontWeight: 700, color: theme.black }}>{s.sessionName}</div>
                 <div style={{ fontSize: 12, color: theme.textMuted }}>Cashier: {s.cashierName}</div>
               </div>
-              <span style={{ fontSize: 11, background: theme.primaryLight, color: theme.primary, padding: "3px 10px", borderRadius: 20, fontWeight: 700 }}>● Active</span>
+              <span style={{ fontSize: 11, background: theme.primaryLight, color: theme.primary, padding: "3px 10px", borderRadius: 20, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}><Circle size={7} fill="currentColor" /> Active</span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
               <div style={{ background: theme.bg, borderRadius: 8, padding: "10px 14px" }}>
@@ -302,7 +305,7 @@ export default function POSView({ theme, products, sessions, transactions, curre
 
         {activeSessions.length === 0 && (
           <div style={{ flex: 1, textAlign: "center", padding: "48px 20px", color: theme.textMuted, border: `2px dashed ${theme.border}`, borderRadius: theme.radiusCard }}>
-            <div style={{ fontSize: 48 }}>🖥️</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}><Monitor size={48} /></div>
             <p>No active POS sessions. Open a session to start selling.</p>
             <Btn theme={theme} onClick={() => setShowNewSession(true)}>+ Open Session</Btn>
           </div>

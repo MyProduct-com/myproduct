@@ -3,7 +3,7 @@ import type { Theme } from "../types/index";
 export const ADMIN_THEME: Theme = {
   shopName: "FreshMart",
   shopTagline: "Farm to doorstep, every day.",
-  logoEmoji: "🛒",
+  logoIcon: "ShoppingCart",
   primary: "#16a34a",
   primaryDark: "#15803d",
   primaryLight: "#dcfce7",

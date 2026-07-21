@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 
 export interface Product {
   id: number;
@@ -22,7 +23,7 @@ export interface CartItemResolved extends CartItem {
 export interface PaymentMethod {
   id: string;
   label: string;
-  icon: string;
+  icon: LucideIcon;
   desc: string;
 }
 
@@ -62,7 +63,7 @@ export interface Theme {
   fontFamily: string;
   shopName: string;
   shopTagline: string;
-  logoEmoji: string;
+  logoIcon: string;
   radius: string;
   radiusCard: string;
 }

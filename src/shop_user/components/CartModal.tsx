@@ -1,3 +1,4 @@
+import { ShoppingCart, ArrowRight } from "lucide-react";
 import type { CartItem, Product, Theme } from "../types/index";
 import { fmt } from "../utils/helpers";
 
@@ -51,7 +52,9 @@ export default function CartModal({
         {/* Header */}
         <div style={{ padding: "20px 20px 16px", borderBottom: `1px solid ${theme.border}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ margin: 0, fontWeight: 800, fontSize: 20, color: theme.black }}>🛒 Your Cart</h3>
+            <h3 style={{ margin: 0, fontWeight: 800, fontSize: 20, color: theme.black, display: "flex", alignItems: "center", gap: 8 }}>
+              <ShoppingCart size={20} /> Your Cart
+            </h3>
             <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: theme.textMuted }}>×</button>
           </div>
         </div>
@@ -60,7 +63,7 @@ export default function CartModal({
         <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
           {items.length === 0 ? (
             <div style={{ textAlign: "center", padding: "40px 20px", color: theme.textMuted }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🛒</div>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><ShoppingCart size={48} /></div>
               <p>Your cart is empty. Browse products and add something!</p>
             </div>
           ) : items.map(item => (
@@ -96,9 +99,9 @@ export default function CartModal({
               </button>
               <button
                 onClick={onCheckout}
-                style={{ flex: 2, padding: "12px", background: theme.primary, border: "none", borderRadius: theme.radius, fontWeight: 800, color: "#fff", cursor: "pointer", fontSize: 15 }}
+                style={{ flex: 2, padding: "12px", background: theme.primary, border: "none", borderRadius: theme.radius, fontWeight: 800, color: "#fff", cursor: "pointer", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
               >
-                Checkout →
+                Checkout <ArrowRight size={16} />
               </button>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Package, Pencil, Save, Check } from "lucide-react";
 import { SA_THEME as T } from "../../data/theme";
 import type { SystemPackage, PackageFeature } from "../../types/index";
 import { Card, Btn, Input, SectionHeader, Modal, Badge, Toggle, Checkbox } from "../layout/UI";
@@ -62,7 +63,8 @@ export function PackagesModule({ packages, onSave, onToggleActive, addToast }: P
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <SectionHeader
-        title="📦 Packages"
+        icon={Package}
+        title="Packages"
         subtitle="Define subscription plans, set pricing, and control what each package includes."
         actions={<Btn variant="primary" onClick={openNew}>+ Create Package</Btn>}
       />
@@ -103,7 +105,7 @@ export function PackagesModule({ packages, onSave, onToggleActive, addToast }: P
             </div>
 
             <div style={{ display: "flex", gap: 8 }}>
-              <Btn size="sm" variant="primary" onClick={() => openEdit(pkg)} style={{ flex: 1 }}>✏️ Edit</Btn>
+              <Btn size="sm" variant="primary" onClick={() => openEdit(pkg)} style={{ flex: 1 }}><Pencil size={14} /> Edit</Btn>
               <Btn size="sm" variant={pkg.active ? "warning" : "success"} onClick={() => { onToggleActive(pkg.id); addToast(`Package ${pkg.active ? "deactivated" : "activated"}.`, pkg.active ? "warning" : "success"); }}>
                 {pkg.active ? "Deactivate" : "Activate"}
               </Btn>
@@ -165,7 +167,7 @@ export function PackagesModule({ packages, onSave, onToggleActive, addToast }: P
                   cursor: "pointer", transition: "all .15s",
                 }}>
                   <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${editing.features.includes(f.id) ? T.primary : T.border}`, background: editing.features.includes(f.id) ? T.primary : T.surface, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {editing.features.includes(f.id) && <span style={{ color: "#fff", fontSize: 11, fontWeight: 900 }}>✓</span>}
+                    {editing.features.includes(f.id) && <Check size={11} color="#fff" strokeWidth={3} />}
                   </div>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{f.label}</div>
@@ -180,7 +182,7 @@ export function PackagesModule({ packages, onSave, onToggleActive, addToast }: P
             <Toggle checked={editing.popular ?? false} onChange={v => setEditing(e => e ? { ...e, popular: v } : e)} label="Mark as Popular" />
             <div style={{ display: "flex", gap: 10 }}>
               <Btn variant="ghost" onClick={() => setEditing(null)}>Cancel</Btn>
-              <Btn variant="primary" onClick={handleSave}>💾 {isNew ? "Create Package" : "Save Changes"}</Btn>
+              <Btn variant="primary" onClick={handleSave}><Save size={14} /> {isNew ? "Create Package" : "Save Changes"}</Btn>
             </div>
           </div>
         </Modal>

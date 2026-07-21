@@ -101,7 +101,7 @@ export const MOCK_SHOPS: ManagedShop[] = [
   {
     id: "shop_001",
     name: "FreshMart",
-    logoEmoji: "🛒",
+    logoIcon: "ShoppingCart",
     tagline: "Farm to doorstep, every day.",
     ownerName: "James Kamau",
     ownerEmail: "james@freshmart.co.ke",
@@ -127,7 +127,7 @@ export const MOCK_SHOPS: ManagedShop[] = [
   {
     id: "shop_002",
     name: "TechZone",
-    logoEmoji: "💻",
+    logoIcon: "Laptop",
     tagline: "Gadgets at your fingertips.",
     ownerName: "Patricia Achieng",
     ownerEmail: "pat@techzone.co.ke",
@@ -152,7 +152,7 @@ export const MOCK_SHOPS: ManagedShop[] = [
   {
     id: "shop_003",
     name: "Mama Mboga",
-    logoEmoji: "🥬",
+    logoIcon: "Carrot",
     tagline: "Fresh veggies, always.",
     ownerName: "Agnes Wekesa",
     ownerEmail: "agnes@mamamboga.co.ke",
@@ -177,7 +177,7 @@ export const MOCK_SHOPS: ManagedShop[] = [
   {
     id: "shop_004",
     name: "StyleHub",
-    logoEmoji: "👗",
+    logoIcon: "Shirt",
     tagline: "Fashion for everyone.",
     ownerName: "Kevin Mutua",
     ownerEmail: "kevin@stylehub.co.ke",
@@ -202,7 +202,7 @@ export const MOCK_SHOPS: ManagedShop[] = [
   {
     id: "shop_005",
     name: "AutoParts KE",
-    logoEmoji: "🔧",
+    logoIcon: "Wrench",
     tagline: "Your vehicle, our priority.",
     ownerName: "Samuel Kiprotich",
     ownerEmail: "sam@autoparts.co.ke",
@@ -227,7 +227,7 @@ export const MOCK_SHOPS: ManagedShop[] = [
   {
     id: "shop_006",
     name: "BookNest",
-    logoEmoji: "📚",
+    logoIcon: "BookOpen",
     tagline: "Every page, a new world.",
     ownerName: "Diana Njoroge",
     ownerEmail: "diana@booknest.co.ke",
@@ -405,11 +405,11 @@ export const MOCK_METRICS: SystemMetrics = {
     { date: "Jun 18", visits: 6865, uniqueVisitors: 4920 },
   ],
   shopVisits: [
-    { shopId: "shop_002", shopName: "TechZone 💻", visits: 22451, today: 2340 },
-    { shopId: "shop_006", shopName: "BookNest 📚", visits: 18700, today: 1890 },
-    { shopId: "shop_001", shopName: "FreshMart 🛒", visits: 8934, today: 987 },
-    { shopId: "shop_004", shopName: "StyleHub 👗", visits: 5621, today: 0 },
-    { shopId: "shop_005", shopName: "AutoParts KE 🔧", visits: 2100, today: 0 },
-    { shopId: "shop_003", shopName: "Mama Mboga 🥬", visits: 312, today: 67 },
+    { shopId: "shop_002", shopName: "TechZone", visits: 22451, today: 2340 },
+    { shopId: "shop_006", shopName: "BookNest", visits: 18700, today: 1890 },
+    { shopId: "shop_001", shopName: "FreshMart", visits: 8934, today: 987 },
+    { shopId: "shop_004", shopName: "StyleHub", visits: 5621, today: 0 },
+    { shopId: "shop_005", shopName: "AutoParts KE", visits: 2100, today: 0 },
+    { shopId: "shop_003", shopName: "Mama Mboga", visits: 312, today: 67 },
   ],
 };

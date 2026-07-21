@@ -25,7 +25,7 @@ export interface Shop {
   id: string;
   name: string;
   tagline: string;
-  logoEmoji: string;
+  logoIcon: string;
   address: string;
   phone: string;
   email: string;
@@ -237,7 +237,7 @@ export interface TopProduct {
 export interface Theme {
   shopName: string;
   shopTagline: string;
-  logoEmoji: string;
+  logoIcon: string;
   primary: string;
   primaryDark: string;
   primaryLight: string;

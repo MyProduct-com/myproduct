@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Monitor, AlertTriangle, Loader2, Play, XCircle, CheckCircle2 } from "lucide-react";
 import { SA_THEME as T } from "../../data/theme";
 import type { DBQuery, DBResult } from "../../types/index";
 import { Card, Btn, SectionHeader, Badge } from "../layout/UI";
@@ -91,7 +92,7 @@ export function DBTerminalModule({ addToast }: Props) {
       setHistory(h => [...h, q]);
       setRunning(false);
       if (error) addToast("Query error — check the terminal.", "error");
-      else addToast(`✓ ${q.rowCount} row(s) returned in ${q.duration}ms`, "success");
+      else addToast(`${q.rowCount} row(s) returned in ${q.duration}ms`, "success");
       setActiveTab("terminal");
     }, 600);
   };
@@ -101,14 +102,15 @@ export function DBTerminalModule({ addToast }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <SectionHeader
-        title="🖥️ DB Terminal"
+        icon={Monitor}
+        title="DB Terminal"
         subtitle="Direct SQL access — read-only. Full privilege required."
         actions={<Badge label="Full Privilege Only" bg="#ede9fe" color="#5b21b6" />}
       />
 
       {/* Warning banner */}
       <div style={{ background: "#fef9c3", border: "1px solid #f59e0b", borderRadius: T.radiusCard, padding: "10px 16px", fontSize: 13, color: "#854d0e", display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ fontSize: 18 }}>⚠️</span>
+        <AlertTriangle size={18} />
         <span><strong>Read-only terminal.</strong> Only SELECT, SHOW, DESCRIBE, and EXPLAIN are permitted. All queries are logged with your admin credentials. This tool is audited.</span>
       </div>
 
@@ -149,7 +151,7 @@ export function DBTerminalModule({ addToast }: Props) {
             />
             <div style={{ padding: "10px 14px", borderTop: `1px solid ${T.border}`, display: "flex", gap: 10, alignItems: "center" }}>
               <Btn variant="accent" onClick={run} disabled={running || !sql.trim()}>
-                {running ? "⏳ Running…" : "▶ Run Query"}
+                {running ? <><Loader2 size={14} /> Running…</> : <><Play size={14} /> Run Query</>}
               </Btn>
               <Btn variant="ghost" size="sm" onClick={() => setSql("")}>Clear</Btn>
               <span style={{ marginLeft: "auto", fontSize: 12, color: T.textMuted }}>{history.length} quer{history.length === 1 ? "y" : "ies"} this session</span>
@@ -217,7 +219,7 @@ export function DBTerminalModule({ addToast }: Props) {
                   }}
                     onMouseEnter={e => e.currentTarget.style.background = T.border}
                     onMouseLeave={e => e.currentTarget.style.background = T.bg}>
-                    <span style={{ fontSize: 14 }}>{q.error ? "❌" : "✅"}</span>
+                    {q.error ? <XCircle size={14} color={T.danger} /> : <CheckCircle2 size={14} color={T.success} />}
                     <span style={{ flex: 1, fontSize: 11, fontFamily: "monospace", color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{q.sql}</span>
                     <span style={{ fontSize: 10, color: T.textMuted, flexShrink: 0 }}>{q.rowCount ?? "err"} rows · {q.duration}ms</span>
                   </div>

@@ -1,24 +1,29 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard, ShoppingBag, Package, Monitor,
+  ClipboardList, Wallet, Users, Settings, Ticket,
+} from "lucide-react";
 import type { AdminView, AdminPrivilege, Theme } from "../../types/index";
 import { SIDEBAR_WIDTH, HEADER_HEIGHT } from "../../data/theme";
 
 interface NavItem {
   view: AdminView;
   label: string;
-  icon: string;
+  icon: LucideIcon;
   privilege: AdminPrivilege | null;
   badge?: number;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { view: "dashboard",    label: "Dashboard",    icon: "📊", privilege: null },
-  { view: "products",     label: "Products",     icon: "🛍️", privilege: "products" },
-  { view: "orders",       label: "Orders",       icon: "📦", privilege: "orders" },
-  { view: "pos",          label: "Point of Sale",icon: "🖥️", privilege: "pos" },
-  { view: "inventory",    label: "Inventory",    icon: "📋", privilege: "inventory" },
-  { view: "accounting",   label: "Accounting",   icon: "💰", privilege: "accounting" },
-  { view: "staff",        label: "Staff",        icon: "👥", privilege: "staff" },
-  { view: "settings",     label: "Settings",     icon: "⚙️", privilege: "settings" },
-  { view: "subscription", label: "Subscription", icon: "🎫", privilege: "subscription" },
+  { view: "dashboard",    label: "Dashboard",    icon: LayoutDashboard, privilege: null },
+  { view: "products",     label: "Products",     icon: ShoppingBag, privilege: "products" },
+  { view: "orders",       label: "Orders",       icon: Package, privilege: "orders" },
+  { view: "pos",          label: "Point of Sale",icon: Monitor, privilege: "pos" },
+  { view: "inventory",    label: "Inventory",    icon: ClipboardList, privilege: "inventory" },
+  { view: "accounting",   label: "Accounting",   icon: Wallet, privilege: "accounting" },
+  { view: "staff",        label: "Staff",        icon: Users, privilege: "staff" },
+  { view: "settings",     label: "Settings",     icon: Settings, privilege: "settings" },
+  { view: "subscription", label: "Subscription", icon: Ticket, privilege: "subscription" },
 ];
 
 interface SidebarProps {
@@ -78,7 +83,9 @@ export default function Sidebar({
                 if (!isActive) e.currentTarget.style.background = "transparent";
               }}
             >
-              <span style={{ fontSize: 18, width: 22, textAlign: "center" }}>{item.icon}</span>
+              <span style={{ width: 22, display: "flex", justifyContent: "center" }}>
+                <item.icon size={18} />
+              </span>
               <span style={{ flex: 1 }}>{item.label}</span>
               {badge !== undefined && (
                 <span style={{

@@ -1,9 +1,11 @@
+import { Palette } from "lucide-react";
 import type { Theme } from "../types/index.js";
+import { LOGO_ICON_OPTIONS } from "@/lib/logoIcons";
 
 interface ThemeField {
   key: keyof Theme;
   label: string;
-  type: "text" | "color";
+  type: "text" | "color" | "icon";
 }
 
 interface ThemeEditorProps {
@@ -15,7 +17,7 @@ interface ThemeEditorProps {
 const FIELDS: ThemeField[] = [
   { key: "shopName",     label: "Shop Name",      type: "text" },
   { key: "shopTagline",  label: "Tagline",         type: "text" },
-  { key: "logoEmoji",    label: "Logo Emoji",      type: "text" },
+  { key: "logoIcon",     label: "Logo Icon",       type: "icon" },
   { key: "primary",      label: "Primary (Green)", type: "color" },
   { key: "primaryDark",  label: "Primary Dark",    type: "color" },
   { key: "primaryLight", label: "Primary Light",   type: "color" },
@@ -33,7 +35,10 @@ export default function ThemeEditor({ theme, onChange, onClose }: ThemeEditorPro
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 9999, display: "flex", alignItems: "flex-end", justifyContent: "flex-end" }}>
       <div style={{ background: "#fff", width: 300, height: "100%", overflowY: "auto", padding: 24, boxShadow: "-4px 0 24px rgba(0,0,0,0.18)", fontFamily: theme.fontFamily }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: theme.accent }}>🎨 Customise Theme</h3>
+          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: theme.accent, display: "flex", alignItems: "center", gap: 8 }}>
+            <Palette size={18} />
+            Customise Theme
+          </h3>
           <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: theme.textMuted }}>×</button>
         </div>
 
@@ -51,6 +56,34 @@ export default function ThemeEditor({ theme, onChange, onClose }: ThemeEditorPro
                   style={{ width: 36, height: 36, border: "none", borderRadius: 8, cursor: "pointer", padding: 2 }}
                 />
                 <span style={{ fontSize: 13, color: theme.text, fontFamily: "monospace" }}>{theme[f.key] as string}</span>
+              </div>
+            ) : f.type === "icon" ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
+                {LOGO_ICON_OPTIONS.map(({ name, icon: OptionIcon }) => {
+                  const selected = (theme[f.key] as string) === name;
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      title={name}
+                      onClick={() => onChange(f.key, name)}
+                      style={{
+                        width: "100%",
+                        aspectRatio: "1",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 8,
+                        border: selected ? `2px solid ${theme.primary}` : `1.5px solid ${theme.border}`,
+                        background: selected ? theme.surface : "#fff",
+                        color: selected ? theme.primary : theme.textMuted,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <OptionIcon size={16} />
+                    </button>
+                  );
+                })}
               </div>
             ) : (
               <input

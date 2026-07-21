@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { Lock } from "lucide-react";
 import { SA_THEME as T, SA_SIDEBAR_WIDTH, SA_HEADER_HEIGHT } from "./data/theme";
 import type {
   SuperAdminView, SuperAdmin, ManagedShop, SystemPackage,
@@ -162,7 +163,7 @@ export default function SuperAdminPanel() {
         if (currentAdmin.privilegeLevel !== "full") {
           return (
             <div style={{ textAlign: "center", padding: "80px 24px", color: T.textMuted }}>
-              <div style={{ fontSize: 52, marginBottom: 16 }}>🔒</div>
+              <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Lock size={52} /></div>
               <h2 style={{ color: T.text, marginBottom: 8 }}>Full Privilege Required</h2>
               <p>The DB Terminal is only available to admins with Full Privilege status.</p>
             </div>
@@ -204,7 +205,7 @@ export default function SuperAdminPanel() {
         if (currentAdmin.privilegeLevel !== "full") {
           return (
             <div style={{ textAlign: "center", padding: "80px 24px", color: T.textMuted }}>
-              <div style={{ fontSize: 52, marginBottom: 16 }}>🔒</div>
+              <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Lock size={52} /></div>
               <h2 style={{ color: T.text, marginBottom: 8 }}>Full Privilege Required</h2>
               <p>Managing system admins requires Full Privilege status.</p>
             </div>

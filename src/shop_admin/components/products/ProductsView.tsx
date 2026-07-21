@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Package, XCircle, AlertTriangle, Pencil, Trash2, Lightbulb, Search, Info } from "lucide-react";
 import type { Theme } from "../../types/index";
 import { SectionHeader, Btn, Badge, Modal, Input, Select, Table } from "../layout/UI";
 import { fmt } from "../../utils/helpers";
@@ -116,7 +117,7 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
     onToast(
       p.published
         ? `"${p.name}" unpublished — hidden from shop.`
-        : `"${p.name}" published — now visible in shop! 🎉`,
+        : `"${p.name}" published — now visible in shop!`,
       p.published ? "info" : "success"
     );
   };
@@ -150,8 +151,8 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
             <img src={p.image} alt={p.name}
               style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
           ) : (
-            <div style={{ width: 40, height: 40, borderRadius: 8, background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
-              📦
+            <div style={{ width: 40, height: 40, borderRadius: 8, background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <Package size={20} color="#94a3b8" />
             </div>
           )}
           <div>
@@ -177,8 +178,8 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
           color: p.stock === 0 ? "#ef4444" : p.stock <= p.lowStockThreshold ? "#f59e0b" : theme.primary,
         }}>
           {p.stock} {p.unit}
-          {p.stock === 0 && <span style={{ marginLeft: 6, fontSize: 10 }}>❌ Out of stock</span>}
-          {p.stock > 0 && p.stock <= p.lowStockThreshold && <span style={{ marginLeft: 6, fontSize: 10 }}>⚠️ Low</span>}
+          {p.stock === 0 && <span style={{ marginLeft: 6, fontSize: 10, display: "inline-flex", alignItems: "center", gap: 3 }}><XCircle size={10} /> Out of stock</span>}
+          {p.stock > 0 && p.stock <= p.lowStockThreshold && <span style={{ marginLeft: 6, fontSize: 10, display: "inline-flex", alignItems: "center", gap: 3 }}><AlertTriangle size={10} /> Low</span>}
         </span>
       ),
     },
@@ -197,11 +198,11 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
       header: "Actions", key: "actions",
       render: (p: SharedProduct) => (
         <div style={{ display: "flex", gap: 6 }} onClick={(e) => e.stopPropagation()}>
-          <Btn theme={theme} variant="ghost" small onClick={() => openEdit(p)}>✏️ Edit</Btn>
+          <Btn theme={theme} variant="ghost" small onClick={() => openEdit(p)}><Pencil size={12} /> Edit</Btn>
           <Btn theme={theme} variant={p.published ? "secondary" : "primary"} small onClick={() => handleTogglePublish(p)}>
             {p.published ? "Unpublish" : "Publish"}
           </Btn>
-          <Btn theme={theme} variant="danger" small onClick={() => setDeleteConfirm(p)}>🗑</Btn>
+          <Btn theme={theme} variant="danger" small onClick={() => setDeleteConfirm(p)}><Trash2 size={12} /></Btn>
         </div>
       ),
     },
@@ -216,7 +217,7 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
         theme={theme}
         action={
           <div style={{ display: "flex", gap: 10 }}>
-            <Btn theme={theme} variant="secondary" onClick={() => setShowDbSearch(true)}>🔍 Browse DB</Btn>
+            <Btn theme={theme} variant="secondary" onClick={() => setShowDbSearch(true)}><Search size={14} /> Browse DB</Btn>
             <Btn theme={theme} onClick={openAdd}>+ Add Product</Btn>
           </div>
         }
@@ -229,11 +230,11 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
         display: "flex", alignItems: "center", gap: 10,
         fontSize: 13, color: "#15803d",
       }}>
-        <span>💡</span>
+        <Lightbulb size={16} />
         <span>
-          <strong>How it works:</strong> Add a product → saved as <strong>Draft</strong>.
-          Click <strong>Publish</strong> → appears in shop immediately.
-          Click <strong>Unpublish</strong> → hidden from customers instantly.
+          <strong>How it works:</strong> Add a product -&gt; saved as <strong>Draft</strong>.
+          Click <strong>Publish</strong> -&gt; appears in shop immediately.
+          Click <strong>Unpublish</strong> -&gt; hidden from customers instantly.
         </span>
       </div>
 
@@ -250,7 +251,7 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
               fontSize: 13, boxSizing: "border-box", background: theme.surface, outline: "none",
             }}
           />
-          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5 }}>🔍</span>
+          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5, display: "flex" }}><Search size={14} /></span>
         </div>
         <select
           value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
@@ -314,8 +315,8 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
           )}
 
           {!editProduct && (
-            <div style={{ marginTop: 12, padding: "8px 12px", background: "#fefce8", border: "1px solid #fde68a", borderRadius: 8, fontSize: 12, color: "#92400e" }}>
-              ℹ️ Saved as <strong>Draft</strong> — won&apos;t appear in shop until you click <strong>Publish</strong>.
+            <div style={{ marginTop: 12, padding: "8px 12px", background: "#fefce8", border: "1px solid #fde68a", borderRadius: 8, fontSize: 12, color: "#92400e", display: "flex", alignItems: "center", gap: 6 }}>
+              <Info size={14} /> Saved as <strong>Draft</strong> — won&apos;t appear in shop until you click <strong>Publish</strong>.
             </div>
           )}
 
@@ -330,7 +331,7 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
       {deleteConfirm && (
         <Modal title="Delete Product?" onClose={() => setDeleteConfirm(null)} theme={theme} width={400}>
           <div style={{ textAlign: "center", padding: "12px 0" }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🗑️</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 12, color: theme.danger }}><Trash2 size={48} /></div>
             <p style={{ fontWeight: 700, fontSize: 16, color: theme.black, marginBottom: 6 }}>
               Delete &ldquo;{deleteConfirm.name}&rdquo;?
             </p>
@@ -366,7 +367,7 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
               </div>
               {dbResults.length === 0 ? (
                 <div style={{ textAlign: "center", padding: 32, color: theme.textMuted }}>
-                  <div style={{ fontSize: 36 }}>🔍</div>
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}><Search size={36} /></div>
                   <p>No products match &ldquo;{dbQuery}&rdquo;</p>
                 </div>
               ) : dbResults.map((p) => (
@@ -390,7 +391,7 @@ export default function ProductsView({ theme, onToast }: ProductsViewProps) {
             </div>
           ) : (
             <div style={{ textAlign: "center", padding: 32, color: theme.textMuted }}>
-              <div style={{ fontSize: 40 }}>📦</div>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}><Package size={40} /></div>
               <p>Type at least 2 characters to search.</p>
             </div>
           )}

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { X, Search, Check, type LucideIcon } from "lucide-react";
 import { SA_THEME as T } from "../../data/theme";
 
 // ─── Badge ────────────────────────────────────────────────────────────────────
@@ -23,12 +24,12 @@ export function Card({ children, style }: { children: React.ReactNode; style?: R
 }
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-export function StatCard({ icon, label, value, sub, color }: {
-  icon: string; label: string; value: string | number; sub?: string; color?: string;
+export function StatCard({ icon: Icon, label, value, sub, color }: {
+  icon: LucideIcon; label: string; value: string | number; sub?: string; color?: string;
 }) {
   return (
     <Card style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 140 }}>
-      <div style={{ fontSize: 22 }}>{icon}</div>
+      <Icon size={22} color={color ?? T.textMuted} />
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
       <div style={{ fontSize: 24, fontWeight: 800, color: color ?? T.text }}>{value}</div>
       {sub && <div style={{ fontSize: 12, color: T.textMuted }}>{sub}</div>}
@@ -171,7 +172,7 @@ export function Modal({ title, onClose, children, width = 560 }: {
       <div style={{ background: T.surface, borderRadius: T.radiusCard, width: "100%", maxWidth: width, maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.25)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 22px", borderBottom: `1px solid ${T.border}` }}>
           <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: T.text }}>{title}</h3>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: T.textMuted, lineHeight: 1 }}>✕</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: T.textMuted, lineHeight: 1, display: "flex" }}><X size={20} /></button>
         </div>
         <div style={{ padding: 22 }}>{children}</div>
       </div>
@@ -209,7 +210,7 @@ export function Tabs({ tabs, active, onSelect }: {
 export function SearchBar({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div style={{ position: "relative", flex: 1 }}>
-      <span style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: T.textMuted }}>🔍</span>
+      <Search size={16} color={T.textMuted} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)" }} />
       <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder ?? "Search…"}
         style={{ width: "100%", padding: "8px 12px 8px 36px", borderRadius: T.radius, border: `1.5px solid ${T.border}`, fontSize: 13, color: T.text, background: T.surface, outline: "none", boxSizing: "border-box" }} />
     </div>
@@ -217,11 +218,14 @@ export function SearchBar({ value, onChange, placeholder }: { value: string; onC
 }
 
 // ─── Section Header ───────────────────────────────────────────────────────────
-export function SectionHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: React.ReactNode }) {
+export function SectionHeader({ title, subtitle, actions, icon: Icon }: { title: string; subtitle?: string; actions?: React.ReactNode; icon?: LucideIcon }) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
       <div>
-        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: T.text }}>{title}</h2>
+        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: T.text, display: "flex", alignItems: "center", gap: 8 }}>
+          {Icon && <Icon size={20} />}
+          {title}
+        </h2>
         {subtitle && <p style={{ margin: "4px 0 0", fontSize: 13, color: T.textMuted }}>{subtitle}</p>}
       </div>
       {actions && <div style={{ display: "flex", gap: 8 }}>{actions}</div>}
@@ -244,7 +248,7 @@ export function ToastContainer({ toasts, onDismiss }: { toasts: { id: string; me
         return (
           <div key={t.id} style={{ background: c.bg, color: c.color, padding: "12px 18px", borderRadius: T.radiusCard, fontSize: 13, fontWeight: 600, boxShadow: "0 4px 20px rgba(0,0,0,.18)", display: "flex", alignItems: "center", gap: 12, minWidth: 260, maxWidth: 380 }}>
             <span style={{ flex: 1 }}>{t.message}</span>
-            <button onClick={() => onDismiss(t.id)} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: 16, opacity: .7 }}>✕</button>
+            <button onClick={() => onDismiss(t.id)} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", opacity: .7, display: "flex" }}><X size={16} /></button>
           </div>
         );
       })}
@@ -310,7 +314,7 @@ export function Checkbox({ checked, onChange, label }: { checked: boolean; onCha
         background: checked ? T.primary : T.surface, display: "flex", alignItems: "center", justifyContent: "center",
         transition: "all .15s", flexShrink: 0,
       }}>
-        {checked && <span style={{ color: "#fff", fontSize: 12, fontWeight: 900, lineHeight: 1 }}>✓</span>}
+        {checked && <Check size={12} color="#fff" strokeWidth={3} />}
       </div>
       {label}
     </label>

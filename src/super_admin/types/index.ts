@@ -41,7 +41,7 @@ export type ShopStatus = "active" | "suspended" | "pulled_down" | "trial" | "exp
 export interface ManagedShop {
   id: string;
   name: string;
-  logoEmoji: string;
+  logoIcon: string;
   tagline: string;
   ownerName: string;
   ownerEmail: string;
@@ -208,7 +208,7 @@ export interface OnboardingForm {
   // Shop info
   shopName: string;
   shopTagline: string;
-  shopLogoEmoji: string;
+  shopLogoIcon: string;
   shopAddress: string;
   // Package
   packageId: string;

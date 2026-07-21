@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import {
+  FlaskConical, Rocket, ArrowUpRight, Save, CheckCircle2,
+  PauseCircle, Ban, type LucideIcon,
+} from "lucide-react";
+import { getLogoIcon } from "@/lib/logoIcons";
 import { SA_THEME as T } from "../../data/theme";
 import type { ManagedShop, PaymentConfig } from "../../types/index";
 import {
@@ -74,15 +79,20 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
   const columns = [
     {
       key: "shop", header: "Shop", width: "220px",
-      render: (s: ManagedShop) => (
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 8, background: T.primaryLight, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{s.logoEmoji}</div>
-          <div>
-            <div style={{ fontWeight: 700, color: T.text, fontSize: 13 }}>{s.name}</div>
-            <div style={{ fontSize: 11, color: T.textMuted }}>{s.ownerName}</div>
+      render: (s: ManagedShop) => {
+        const LogoIcon = getLogoIcon(s.logoIcon);
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: T.primaryLight, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <LogoIcon size={18} color={T.primary} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, color: T.text, fontSize: 13 }}>{s.name}</div>
+              <div style={{ fontSize: 11, color: T.textMuted }}>{s.ownerName}</div>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     { key: "status", header: "Status", width: "110px", render: (s: ManagedShop) => { const c = statusColor(s.status); return <Badge label={s.status} bg={c.bg} color={c.text} />; } },
     { key: "package", header: "Package", render: (s: ManagedShop) => <span style={{ fontSize: 12, color: T.text }}>{s.packageName} <span style={{ color: T.textMuted }}>({s.shopsCreated}/{s.packageShopLimit})</span></span> },
@@ -93,7 +103,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
       key: "actions", header: "Actions",
       render: (s: ManagedShop) => (
         <div style={{ display: "flex", gap: 6 }} onClick={e => e.stopPropagation()}>
-          <Btn size="sm" variant="ghost" onClick={() => onNavigateIsolation(s)}>🔬</Btn>
+          <Btn size="sm" variant="ghost" onClick={() => onNavigateIsolation(s)}><FlaskConical size={14} /></Btn>
           {s.status === "active" && <Btn size="sm" variant="warning" onClick={() => handleAction("suspend", s)}>Suspend</Btn>}
           {(s.status === "suspended" || s.status === "pulled_down") && <Btn size="sm" variant="success" onClick={() => handleAction("activate", s)}>Activate</Btn>}
           {s.status === "active" && <Btn size="sm" variant="danger" onClick={() => handleAction("pulldown", s)}>Pull Down</Btn>}
@@ -107,7 +117,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
       <SectionHeader
         title="Shops & Users"
         subtitle={`${shops.length} registered businesses`}
-        actions={<Btn onClick={onNavigateOnboarding} variant="primary">🚀 Onboard New User</Btn>}
+        actions={<Btn onClick={onNavigateOnboarding} variant="primary"><Rocket size={14} /> Onboard New User</Btn>}
       />
 
       {/* Filters */}
@@ -148,7 +158,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
 
       {/* ── Shop Detail Modal ── */}
       {selectedShop && (
-        <Modal title={`${selectedShop.logoEmoji} ${selectedShop.name}`} onClose={() => setSelectedShop(null)} width={680}>
+        <Modal title={selectedShop.name} onClose={() => setSelectedShop(null)} width={680}>
           <Tabs
             tabs={[
               { id: "overview", label: "Overview" },
@@ -185,8 +195,8 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
                 ))}
               </div>
               <div style={{ display: "flex", gap: 10 }}>
-                <Btn size="sm" variant="primary" onClick={() => onNavigateIsolation(selectedShop)}>🔬 Open in Isolation Lab</Btn>
-                <Btn size="sm" variant="ghost" onClick={() => window.open(selectedShop.shopUrl, "_blank")}>↗ Visit Shop</Btn>
+                <Btn size="sm" variant="primary" onClick={() => onNavigateIsolation(selectedShop)}><FlaskConical size={14} /> Open in Isolation Lab</Btn>
+                <Btn size="sm" variant="ghost" onClick={() => window.open(selectedShop.shopUrl, "_blank")}><ArrowUpRight size={14} /> Visit Shop</Btn>
               </div>
             </div>
           )}
@@ -199,7 +209,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
               <Input label="Bank Name" value={paymentForm.bankName ?? ""} onChange={v => setPaymentForm(f => ({ ...f, bankName: v }))} placeholder="e.g. Equity Bank" />
               <Input label="Bank Account Number" value={paymentForm.bankAccount ?? ""} onChange={v => setPaymentForm(f => ({ ...f, bankAccount: v }))} placeholder="0123456789" />
               <Input label="Bank Branch" value={paymentForm.bankBranch ?? ""} onChange={v => setPaymentForm(f => ({ ...f, bankBranch: v }))} placeholder="e.g. Westlands Branch" />
-              <Btn onClick={() => handleAction("payment", selectedShop)} variant="primary">💾 Save Payment Details</Btn>
+              <Btn onClick={() => handleAction("payment", selectedShop)} variant="primary"><Save size={14} /> Save Payment Details</Btn>
             </div>
           )}
 
@@ -207,15 +217,15 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <p style={{ margin: 0, fontSize: 13, color: T.textMuted }}>Admin-level actions for <strong>{selectedShop.name}</strong>. Use with care — these directly affect the shop.</p>
               {selectedShop.status !== "active" && (
-                <ActionCard icon="✅" title="Activate Shop" desc="Re-open the shop for business. All customer-facing pages will go live." btnLabel="Activate" variant="success" onClick={() => handleAction("activate", selectedShop)} />
+                <ActionCard icon={CheckCircle2} title="Activate Shop" desc="Re-open the shop for business. All customer-facing pages will go live." btnLabel="Activate" variant="success" onClick={() => handleAction("activate", selectedShop)} />
               )}
               {selectedShop.status === "active" && (
-                <ActionCard icon="⏸️" title="Suspend Shop" desc="Temporarily disable the shop. The owner can still log in but customers cannot browse." btnLabel="Suspend" variant="warning" onClick={() => handleAction("suspend", selectedShop)} />
+                <ActionCard icon={PauseCircle} title="Suspend Shop" desc="Temporarily disable the shop. The owner can still log in but customers cannot browse." btnLabel="Suspend" variant="warning" onClick={() => handleAction("suspend", selectedShop)} />
               )}
               {selectedShop.status !== "pulled_down" && (
-                <ActionCard icon="🔴" title="Pull Down Shop" desc="Immediately take the shop offline and notify the owner with a warning notice. Used for policy violations or suspected fraud." btnLabel="Pull Down" variant="danger" onClick={() => handleAction("pulldown", selectedShop)} />
+                <ActionCard icon={Ban} title="Pull Down Shop" desc="Immediately take the shop offline and notify the owner with a warning notice. Used for policy violations or suspected fraud." btnLabel="Pull Down" variant="danger" onClick={() => handleAction("pulldown", selectedShop)} />
               )}
-              <ActionCard icon="🔬" title="Open in Isolation Lab" desc="Load the shop in a sandboxed environment to troubleshoot issues without affecting live operations." btnLabel="Open Lab" variant="primary" onClick={() => { setSelectedShop(null); onNavigateIsolation(selectedShop); }} />
+              <ActionCard icon={FlaskConical} title="Open in Isolation Lab" desc="Load the shop in a sandboxed environment to troubleshoot issues without affecting live operations." btnLabel="Open Lab" variant="primary" onClick={() => { setSelectedShop(null); onNavigateIsolation(selectedShop); }} />
             </div>
           )}
         </Modal>
@@ -223,7 +233,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
 
       {/* ── Pull-down Confirm ── */}
       {confirmAction?.type === "pulldown" && (
-        <Modal title="⚠️ Pull Down Shop" onClose={() => setConfirmAction(null)} width={520}>
+        <Modal title="Pull Down Shop" onClose={() => setConfirmAction(null)} width={520}>
           <p style={{ margin: "0 0 14px", fontSize: 13, color: T.text }}>This will immediately take <strong>{confirmAction.shop.name}</strong> offline and send the following notice to the owner:</p>
           <Input label="Notice to Owner" value={pulldownNotice} onChange={setPulldownNotice} textarea rows={4} />
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 6 }}>
@@ -266,14 +276,14 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-function ActionCard({ icon, title, desc, btnLabel, variant, onClick }: {
-  icon: string; title: string; desc: string; btnLabel: string;
+function ActionCard({ icon: Icon, title, desc, btnLabel, variant, onClick }: {
+  icon: LucideIcon; title: string; desc: string; btnLabel: string;
   variant: "primary" | "danger" | "ghost" | "accent" | "success" | "warning";
   onClick: () => void;
 }) {
   return (
     <div style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: T.radiusCard, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14 }}>
-      <div style={{ fontSize: 22, flexShrink: 0 }}>{icon}</div>
+      <Icon size={22} style={{ flexShrink: 0 }} />
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 2 }}>{title}</div>
         <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.5 }}>{desc}</div>

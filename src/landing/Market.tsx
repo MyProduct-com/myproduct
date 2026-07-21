@@ -1,15 +1,16 @@
 import Link from "next/link";
+import { Leaf, Headphones, BookOpen, Footprints, Coffee, Plug, Check, ArrowRight } from "lucide-react";
 import { C } from "./Constants";
 
 
 function MarketplacePreview() {
   const ITEMS = [
-    { emoji: "🥦", name: "Sukuma Wiki", shop: "FreshMart", price: "KSh 30", tag: "Groceries" },
-    { emoji: "🎧", name: "Wireless Earbuds Pro", shop: "TechZone", price: "KSh 3,500", tag: "Electronics" },
-    { emoji: "📗", name: "Business Strategy 2025", shop: "BookNest", price: "KSh 1,200", tag: "Books" },
-    { emoji: "👟", name: "Air Max Sneakers", shop: "StyleHub", price: "KSh 4,200", tag: "Fashion" },
-    { emoji: "☕", name: "Kenyan AA Coffee 250g", shop: "FreshMart", price: "KSh 480", tag: "Groceries" },
-    { emoji: "🔌", name: "USB-C Hub 7-in-1", shop: "TechZone", price: "KSh 2,800", tag: "Electronics" },
+    { icon: Leaf, name: "Sukuma Wiki", shop: "FreshMart", price: "KSh 30", tag: "Groceries" },
+    { icon: Headphones, name: "Wireless Earbuds Pro", shop: "TechZone", price: "KSh 3,500", tag: "Electronics" },
+    { icon: BookOpen, name: "Business Strategy 2025", shop: "BookNest", price: "KSh 1,200", tag: "Books" },
+    { icon: Footprints, name: "Air Max Sneakers", shop: "StyleHub", price: "KSh 4,200", tag: "Fashion" },
+    { icon: Coffee, name: "Kenyan AA Coffee 250g", shop: "FreshMart", price: "KSh 480", tag: "Groceries" },
+    { icon: Plug, name: "USB-C Hub 7-in-1", shop: "TechZone", price: "KSh 2,800", tag: "Electronics" },
   ];
   return (
     <section id="marketplace" style={{ padding: "96px 24px", background: `linear-gradient(180deg, ${C.canvas} 0%, ${C.mint}55 100%)` }}>
@@ -26,13 +27,13 @@ function MarketplacePreview() {
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>
               {["Products from all shops in one searchable feed", "Customers can buy from multiple shops in one checkout", "Your shop brand stays front and centre on every listing", "Flagged and moderated by our team for quality"].map(b => (
                 <div key={b} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span style={{ color: C.action, flexShrink: 0, fontWeight: 900, marginTop: 1 }}>✓</span>
+                  <Check style={{ color: C.action, flexShrink: 0, width: 14, height: 14, marginTop: 1 }} />
                   <span style={{ fontSize: 14, color: C.charcoal }}>{b}</span>
                 </div>
               ))}
             </div>
             <Link href="/auth/signup?role=seller" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", borderRadius: 12, background: C.forest, color: "#fff", fontWeight: 700, fontSize: 15 }}>
-              Join the marketplace →
+              Join the marketplace <ArrowRight style={{ width: 16, height: 16, verticalAlign: "middle" }} />
             </Link>
           </div>
 
@@ -45,7 +46,7 @@ function MarketplacePreview() {
               }}
                 onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform = "translateY(-3px)"; el.style.boxShadow = "0 8px 24px rgba(0,0,0,.08)"; }}
                 onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform = ""; el.style.boxShadow = ""; }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{item.emoji}</div>
+                <div style={{ marginBottom: 8 }}><item.icon style={{ width: 28, height: 28, color: C.forest }} /></div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: C.ink, marginBottom: 4, lineHeight: 1.3 }}>{item.name}</div>
                 <div style={{ fontSize: 11, color: C.slate, marginBottom: 8 }}>by {item.shop}</div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

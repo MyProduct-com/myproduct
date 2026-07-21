@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Globe, ShoppingBag, PartyPopper, Check, Undo2, Flag, Info } from "lucide-react";
 import { SA_THEME as T } from "../../data/theme";
 import type { MarketplaceItem, TicketMessage } from "../../types/index";
 import { Card, Btn, SectionHeader, Badge, SearchBar, Table, Modal, Input, Tabs } from "../layout/UI";
@@ -102,7 +103,7 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
     {
       key: "product", header: "Product", render: (it: MarketplaceItem) => (
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 6, background: T.bg, overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🛍️</div>
+          <div style={{ width: 36, height: 36, borderRadius: 6, background: T.bg, overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}><ShoppingBag size={20} color={T.textMuted} /></div>
           <div>
             <div style={{ fontWeight: 600, fontSize: 13, color: T.text }}>{it.productName}</div>
             <div style={{ fontSize: 11, color: T.textMuted }}>{it.shopName}</div>
@@ -138,7 +139,8 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <SectionHeader
-        title="🌐 Marketplace Management"
+        icon={Globe}
+        title="Marketplace Management"
         subtitle="Moderate shared marketplace listings, manage visibility, and handle buyer inquiries."
         actions={
           <div style={{ display: "flex", gap: 8 }}>
@@ -200,7 +202,7 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
       {tab === "flagged" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {items.filter(i => i.flagged).length === 0
-            ? <Card style={{ textAlign: "center", padding: "40px 24px", color: T.textMuted }}>No flagged items. Great! 🎉</Card>
+            ? <Card style={{ textAlign: "center", padding: "40px 24px", color: T.textMuted, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>No flagged items. Great! <PartyPopper size={16} /></Card>
             : items.filter(i => i.flagged).map(it => (
               <Card key={it.id} style={{ borderLeft: `4px solid ${T.danger}` }}>
                 <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
@@ -210,7 +212,7 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
                     <div style={{ fontSize: 12, color: T.danger }}><strong>Flag reason:</strong> {it.flagReason ?? "No reason provided"}</div>
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <Btn size="sm" variant="ghost" onClick={() => handleUnflag(it)}>✓ Clear Flag</Btn>
+                    <Btn size="sm" variant="ghost" onClick={() => handleUnflag(it)}><Check size={14} /> Clear Flag</Btn>
                     <Btn size="sm" variant="danger" onClick={() => handleTogglePublish(it)}>Unpublish</Btn>
                   </div>
                 </div>
@@ -264,14 +266,14 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
                 <textarea value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="Reply to buyer (CC'd to shop admin)…"
                   rows={3} style={{ width: "100%", padding: "8px 10px", borderRadius: T.radius, border: `1.5px solid ${T.border}`, fontSize: 13, fontFamily: T.fontFamily, resize: "none", boxSizing: "border-box", outline: "none" }} />
                 <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                  <Btn variant="primary" onClick={sendInquiryReply} disabled={!replyText.trim()} style={{ flex: 1 }}>↩ Send Reply</Btn>
+                  <Btn variant="primary" onClick={sendInquiryReply} disabled={!replyText.trim()} style={{ flex: 1 }}><Undo2 size={14} /> Send Reply</Btn>
                   <Btn variant="success" size="sm" onClick={() => {
                     setInquiries(prev => prev.map(i => i.id === selectedInquiry.id ? { ...i, resolved: true } : i));
                     setSelectedInquiry(i => i ? { ...i, resolved: true } : i);
                     addToast("Inquiry resolved.", "success");
-                  }}>✓ Resolve</Btn>
+                  }}><Check size={14} /> Resolve</Btn>
                 </div>
-                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6 }}>ℹ️ Reply visible to buyer and CC'd to {selectedInquiry.shopName} admin.</div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, display: "flex", alignItems: "center", gap: 5 }}><Info size={12} style={{ flexShrink: 0 }} /> Reply visible to buyer and CC'd to {selectedInquiry.shopName} admin.</div>
               </div>
             </Card>
           )}
@@ -287,7 +289,7 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
           <Input label="Flag Reason *" value={flagReason} onChange={setFlagReason} placeholder="e.g. Suspected counterfeit product" />
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
             <Btn variant="ghost" onClick={() => { setShowFlagModal(false); setFlagReason(""); }}>Cancel</Btn>
-            <Btn variant="danger" onClick={handleFlag} disabled={!flagReason.trim()}>🚩 Flag Product</Btn>
+            <Btn variant="danger" onClick={handleFlag} disabled={!flagReason.trim()}><Flag size={14} /> Flag Product</Btn>
           </div>
         </Modal>
       )}
@@ -314,8 +316,8 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
               ))}
             </div>
             {selected.flagged && (
-              <div style={{ background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: T.radius, padding: "10px 14px", fontSize: 13, color: T.danger }}>
-                🚩 <strong>Flagged:</strong> {selected.flagReason}
+              <div style={{ background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: T.radius, padding: "10px 14px", fontSize: 13, color: T.danger, display: "flex", alignItems: "center", gap: 8 }}>
+                <Flag size={14} style={{ flexShrink: 0 }} /> <strong>Flagged:</strong> {selected.flagReason}
               </div>
             )}
             <div style={{ display: "flex", gap: 8 }}>
@@ -324,7 +326,7 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
               </Btn>
               {selected.flagged
                 ? <Btn variant="ghost" onClick={() => handleUnflag(selected)}>Remove Flag</Btn>
-                : <Btn variant="danger" onClick={() => setShowFlagModal(true)}>🚩 Flag</Btn>
+                : <Btn variant="danger" onClick={() => setShowFlagModal(true)}><Flag size={14} /> Flag</Btn>
               }
             </div>
           </div>

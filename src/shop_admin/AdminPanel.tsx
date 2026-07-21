@@ -34,7 +34,7 @@ const INITIAL_SHOP: Shop = {
   id: "shop_001",
   name: "FreshMart",
   tagline: "Farm to doorstep, every day.",
-  logoEmoji: "🛒",
+  logoIcon: "ShoppingCart",
   address: "Westlands, Nairobi, Kenya",
   phone: "+254 700 123 456",
   email: "hello@freshmart.co.ke",
@@ -204,7 +204,7 @@ export default function AdminPanel() {
       {/* Fixed Header */}
       <AdminHeader
         admin={MOCK_ADMIN}
-        shop={{ ...INITIAL_SHOP, name: shop.name, logoEmoji: shop.logoEmoji }}
+        shop={{ ...INITIAL_SHOP, name: shop.name, logoIcon: shop.logoIcon }}
         theme={theme}
         onSignOut={handleSignOut}
       />

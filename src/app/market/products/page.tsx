@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { IconSearch, IconFilter, IconX, IconAdjustmentsHorizontal } from "@tabler/icons-react";
+import { SearchX } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { mockProducts } from "@/lib/mock-data";
 import type { ProductCategory } from "@/types/product";
@@ -234,7 +235,7 @@ function ProductsContent() {
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-4xl mb-3">🔍</p>
+              <SearchX className="w-10 h-10 mx-auto mb-3 text-gray-400" />
               <p className="text-lg font-semibold text-gray-900 mb-1">No products found</p>
               <p className="text-sm text-gray-500">Try adjusting your search or filters.</p>
               <button

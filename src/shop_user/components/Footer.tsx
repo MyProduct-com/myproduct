@@ -1,4 +1,6 @@
+import { Camera, MessageCircle } from "lucide-react";
 import type { Theme } from "../types/index.js";
+import { getLogoIcon } from "@/lib/logoIcons";
 
 interface FooterProps {
   theme: Theme;
@@ -37,12 +39,14 @@ const LINK_GROUPS = [
 ];
 
 const SOCIALS = [
-  { label: "Twitter / X", emoji: "𝕏" },
-  { label: "Instagram", emoji: "📸" },
-  { label: "WhatsApp", emoji: "💬" },
+  { label: "Twitter / X", char: "𝕏" },
+  { label: "Instagram", icon: Camera },
+  { label: "WhatsApp", icon: MessageCircle },
 ];
 
 export default function Footer({ theme, onLoginClick, onSignupClick, onCartOpen }: FooterProps) {
+  const LogoIcon = getLogoIcon(theme.logoIcon);
+
   const handleAction = (action?: string): void => {
     if (action === "login") onLoginClick();
     else if (action === "signup") onSignupClick();
@@ -65,7 +69,7 @@ export default function Footer({ theme, onLoginClick, onSignupClick, onCartOpen 
         {/* Brand column */}
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-            <span style={{ fontSize: 30 }}>{theme.logoEmoji}</span>
+            <LogoIcon size={30} />
             <span style={{ fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px" }}>{theme.shopName}</span>
           </div>
           <p style={{ fontSize: 13, lineHeight: 1.7, opacity: 0.8, margin: "0 0 20px", maxWidth: 200 }}>
@@ -91,7 +95,7 @@ export default function Footer({ theme, onLoginClick, onSignupClick, onCartOpen 
                 onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.28)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
               >
-                {s.emoji}
+                {s.icon ? <s.icon size={16} /> : s.char}
               </button>
             ))}
           </div>

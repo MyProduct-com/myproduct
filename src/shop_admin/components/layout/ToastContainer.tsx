@@ -1,3 +1,5 @@
+import { CheckCircle2, XCircle, Info } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { Toast } from "../../types/index";
 
 interface ToastContainerProps {
@@ -13,8 +15,8 @@ export default function ToastContainer({ toasts, onDismiss }: ToastContainerProp
     error: "#ef4444",
     info: "#3b82f6",
   };
-  const iconMap: Record<string, string> = {
-    success: "✓", error: "✕", info: "ℹ",
+  const iconMap: Record<string, LucideIcon> = {
+    success: CheckCircle2, error: XCircle, info: Info,
   };
 
   return (
@@ -22,7 +24,9 @@ export default function ToastContainer({ toasts, onDismiss }: ToastContainerProp
       position: "fixed", bottom: 24, right: 24, zIndex: 9999,
       display: "flex", flexDirection: "column", gap: 10,
     }}>
-      {toasts.map(t => (
+      {toasts.map(t => {
+        const ToastIcon = iconMap[t.type];
+        return (
         <div key={t.id} style={{
           background: bgMap[t.type] ?? "#334155",
           color: "#fff", padding: "12px 16px", borderRadius: 10,
@@ -34,9 +38,9 @@ export default function ToastContainer({ toasts, onDismiss }: ToastContainerProp
             width: 22, height: 22, borderRadius: "50%",
             background: "rgba(255,255,255,0.25)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 12, fontWeight: 900, flexShrink: 0,
+            flexShrink: 0,
           }}>
-            {iconMap[t.type]}
+            <ToastIcon size={14} />
           </span>
           <span style={{ flex: 1 }}>{t.message}</span>
           <button
@@ -51,7 +55,8 @@ export default function ToastContainer({ toasts, onDismiss }: ToastContainerProp
             ×
           </button>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

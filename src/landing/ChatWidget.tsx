@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Hand } from "lucide-react";
 import { C } from "./Constants";
-type ChatMessage = { id: string; from: "visitor" | "admin"; text: string; time: string };
+type ChatMessage = { id: string; from: "visitor" | "admin"; text: string; time: string; icon?: LucideIcon };
 
 function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -36,7 +38,8 @@ function ChatWidget() {
       {
         id: "welcome",
         from: "admin",
-        text: `Hi ${name.split(" ")[0]}! 👋 Thanks for reaching out — how can we help you today?`,
+        icon: Hand,
+        text: `Hi ${name.split(" ")[0]}! Thanks for reaching out — how can we help you today?`,
         time: now(),
       },
     ]);
@@ -146,7 +149,9 @@ function ChatWidget() {
                       fontSize: 13.5, lineHeight: 1.45,
                       border: m.from === "visitor" ? "none" : `1px solid ${C.border}`,
                       boxShadow: "0 1px 2px rgba(17,24,39,0.04)", wordBreak: "break-word",
+                      display: "flex", alignItems: "center", gap: 6,
                     }}>
+                      {m.icon && <m.icon style={{ width: 14, height: 14, flexShrink: 0 }} />}
                       {m.text}
                     </div>
                     <span style={{ fontSize: 10.5, color: C.slate, marginTop: 3, padding: "0 2px" }}>
