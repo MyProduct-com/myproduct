@@ -211,6 +211,7 @@ export default function POSView({ theme, products, sessions, transactions, curre
   const [openingFloat, setOpeningFloat] = useState("5000");
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [activeSession2Id, setActiveSession2Id] = useState<string | null>(null);
+  const [receiptTxn, setReceiptTxn] = useState<POSTransaction | null>(null);
 
   const activeSessions = sessions.filter(s => s.active);
   const session1 = activeSessions[0] ?? null;

@@ -19,8 +19,9 @@ interface CartStore {
   removeItem: (id: string) => void;
   updateQty: (id: string, qty: number) => void;
   clearCart: () => void;
+  distinctCount: () => number;
+  totalQty: () => number;
   total: () => number;
-  count: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -53,8 +54,9 @@ export const useCartStore = create<CartStore>()(
         })),
 
       clearCart: () => set({ items: [] }),
+      distinctCount: () => get().items.length,
+      totalQty: () => get().items.reduce((s, i) => s + i.quantity, 0),
       total: () => get().items.reduce((s, i) => s + i.price * i.quantity, 0),
-      count: () => get().items.reduce((s, i) => s + i.quantity, 0),
     }),
     { name: "mp-cart" }
   )

@@ -18,10 +18,11 @@ const DELIVERY_FEE = 150;
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, removeItem, updateQty, clearCart, total, count } = useCartStore();
+  const { items, removeItem, updateQty, clearCart, total, distinctCount, totalQty } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const subtotal = total();
-  const cartCount = count();
+  const cartCount = distinctCount();
+  const totalQtyCount = totalQty();
   const deliveryFee = subtotal >= DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
   const orderTotal = subtotal + deliveryFee;
 
@@ -69,7 +70,7 @@ export default function CartPage() {
           <IconArrowLeft size={20} />
         </Link>
         <h1 className="text-xl font-bold text-gray-900">
-          Shopping Cart <span className="text-gray-400 font-normal">({cartCount} items)</span>
+          Shopping Cart <span className="text-gray-400 font-normal">({cartCount} {cartCount === 1 ? 'product' : 'products'}, {totalQtyCount} items)</span>
         </h1>
       </div>
 
@@ -141,7 +142,7 @@ export default function CartPage() {
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between text-gray-600">
-                <span>Subtotal ({cartCount} items)</span>
+                <span>Subtotal ({totalQtyCount} items)</span>
                 <span className="font-medium text-gray-900">KES {subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-gray-600">
