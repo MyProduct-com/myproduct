@@ -120,7 +120,7 @@ export async function getSellerDashboardData(sellerId: string): Promise<SellerDa
   try {
     return await fetchSellerDashboardData(sellerId);
   } catch (err) {
-    console.error("[seller dashboard] DB unreachable, showing demo data:", err);
+    console.warn("[seller dashboard] DB unreachable, showing demo data:", err);
     return demoSellerDashboardData();
   }
 }

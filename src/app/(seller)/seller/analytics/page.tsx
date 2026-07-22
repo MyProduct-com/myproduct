@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth";
 import { Wallet, Eye, ShoppingCart, Star } from "lucide-react";
-import { authOptions } from "@/lib/auth";
+import { getSafeServerSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StatCard from "@/components/dashboard/StatCard";
 import ChartCard from "@/components/dashboard/ChartCard";
@@ -21,7 +20,7 @@ const STATUS_BAR_TONE: Record<string, string> = {
 };
 
 export default async function SellerAnalyticsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getSafeServerSession();
 
   let sellerId = session?.user?.id;
   if (!sellerId) {

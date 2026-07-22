@@ -89,7 +89,7 @@ export async function getSuperAdminDashboardData(): Promise<SuperAdminDashboardD
   try {
     return await fetchDashboardData();
   } catch (err) {
-    console.error("[super_admin dashboard] DB unreachable, showing demo data:", err);
+    console.warn("[super_admin dashboard] DB unreachable, showing demo data:", err);
     return demoDashboardData();
   }
 }
