@@ -17,13 +17,13 @@ function FinalCTA() {
           <Link href="/auth/signup" style={{
             textDecoration: "none", padding: "16px 36px", borderRadius: 14,
             background: C.action, color: "#fff", fontWeight: 800, fontSize: 17,
-            boxShadow: "0 6px 24px rgba(37,165,90,.45)", transition: "transform .15s",
+            transition: "transform .15s",
           }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; }}>
             Start free — 14 days, no card required
           </Link>
-          <Link href="/shop" style={{
+          <Link href="/market" style={{
             textDecoration: "none", padding: "16px 28px", borderRadius: 14,
             background: "rgba(255,255,255,.12)", color: "#fff", fontWeight: 600, fontSize: 17,
             border: "1.5px solid rgba(255,255,255,.25)", transition: "background .15s",

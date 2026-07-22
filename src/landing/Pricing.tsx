@@ -68,7 +68,6 @@ function Pricing() {
                   padding: "12px", borderRadius: 12, fontWeight: 700, fontSize: 14,
                   background: pkg.popular ? C.action : C.forest,
                   color: "#fff",
-                  boxShadow: pkg.popular ? "0 4px 16px rgba(37,165,90,.4)" : "none",
                   transition: "opacity .15s",
                 }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = "0.87"; }}

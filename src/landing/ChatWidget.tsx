@@ -88,7 +88,7 @@ function ChatWidget() {
           position: "fixed", bottom: 24, right: 24, zIndex: 1000,
           width: 56, height: 56, borderRadius: "50%",
           background: C.action, color: "#fff", border: "none",
-          boxShadow: "0 8px 24px rgba(37,165,90,0.4)",
+          boxShadow: "0 4px 14px rgba(0,0,0,0.18)",
           display: "flex", alignItems: "center", justifyContent: "center",
           cursor: "pointer", transition: "transform 0.2s ease",
         }}

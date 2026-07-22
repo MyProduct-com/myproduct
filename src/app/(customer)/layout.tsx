@@ -4,18 +4,19 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import CustomerSidebar from "@/components/layout/CustomerSidebar";
 import Navbar from "@/components/layout/Navbar";
+import { AUTH_DISABLED } from "@/lib/authFlags";
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!AUTH_DISABLED && !isAuthenticated) {
       router.push("/auth/login?redirect=/dashboard");
     }
   }, [isAuthenticated, router]);
 
-  if (!isAuthenticated || !user) return null;
+  if (!AUTH_DISABLED && (!isAuthenticated || !user)) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

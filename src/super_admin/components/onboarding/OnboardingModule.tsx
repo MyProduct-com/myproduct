@@ -22,6 +22,24 @@ const BLANK_FORM: OnboardingForm = {
   packageId: "", paymentMethod: "mpesa", sendCredentials: true,
 };
 
+// Strip characters that can never be valid in a phone number as the user
+// types, rather than only flagging it after the fact on submit.
+function sanitizePhoneInput(raw: string): string {
+  let v = raw.replace(/[^\d+\-()\s]/g, "");
+  const leadingPlus = v.startsWith("+") ? "+" : "";
+  v = leadingPlus + v.slice(leadingPlus.length).replace(/\+/g, "");
+  return v;
+}
+
+// Strip whitespace and characters that can never appear in an email address,
+// and only allow a single "@".
+function sanitizeEmailInput(raw: string): string {
+  const v = raw.replace(/\s/g, "").replace(/[^a-zA-Z0-9.@_+-]/g, "");
+  const at = v.indexOf("@");
+  if (at === -1) return v;
+  return v.slice(0, at + 1) + v.slice(at + 1).replace(/@/g, "");
+}
+
 const DEMO_PRODUCTS = [
   { name: "Sample Product 1", price: 500, category: "General", stock: 10 },
   { name: "Sample Product 2", price: 1200, category: "General", stock: 5 },
@@ -144,11 +162,27 @@ export function OnboardingModule({ packages, addToast }: Props) {
                 {errors.ownerName && <ErrMsg msg={errors.ownerName} />}
               </div>
               <div>
-                <Input label="Email Address *" value={form.ownerEmail} onChange={v => set("ownerEmail", v)} placeholder="james@example.com" type="email" />
+                <Input
+                  label="Email Address *"
+                  value={form.ownerEmail}
+                  onChange={v => set("ownerEmail", sanitizeEmailInput(v))}
+                  placeholder="james@example.com"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                />
                 {errors.ownerEmail && <ErrMsg msg={errors.ownerEmail} />}
               </div>
               <div>
-                <Input label="Phone Number *" value={form.ownerPhone} onChange={v => set("ownerPhone", v)} placeholder="0712 345 678" />
+                <Input
+                  label="Phone Number *"
+                  value={form.ownerPhone}
+                  onChange={v => set("ownerPhone", sanitizePhoneInput(v))}
+                  placeholder="0712 345 678"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                />
                 {errors.ownerPhone && <ErrMsg msg={errors.ownerPhone} />}
               </div>
               <div>

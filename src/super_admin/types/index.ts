@@ -10,7 +10,8 @@ export type SuperAdminView =
   | "issues"
   | "reminders"
   | "marketplace"
-  | "admins";
+  | "admins"
+  | "settings";
 
 export type SuperAdminPrivilege =
   | "dashboard"

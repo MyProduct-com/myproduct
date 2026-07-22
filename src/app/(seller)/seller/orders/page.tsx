@@ -1,17 +1,21 @@
 "use client";
 import { useState } from "react";
-import { IconSearch, IconTruck, IconCheck } from "@tabler/icons-react";
+import { Search, Truck, Check } from "lucide-react";
 import { mockOrders } from "@/lib/mock-data";
 import type { OrderStatus } from "@/types/order";
+import type { OrderItem as MockOrderItem } from "@/types/order";
+import StatusPill from "@/components/dashboard/StatusPill";
 
-const STATUS_CONFIG: Record<OrderStatus, { label: string; cls: string }> = {
-  pending: { label: "Pending", cls: "bg-yellow-50 text-yellow-700 border-yellow-200" },
-  confirmed: { label: "Confirmed", cls: "bg-blue-50 text-blue-700 border-blue-200" },
-  processing: { label: "Processing", cls: "bg-purple-50 text-purple-700 border-purple-200" },
-  shipped: { label: "Shipped", cls: "bg-indigo-50 text-indigo-700 border-indigo-200" },
-  delivered: { label: "Delivered", cls: "bg-green-50 text-green-700 border-green-200" },
-  cancelled: { label: "Cancelled", cls: "bg-red-50 text-red-700 border-red-200" },
-  refunded: { label: "Refunded", cls: "bg-gray-50 text-gray-600 border-gray-200" },
+const DEMO_SELLER_ID = "seller-2";
+
+const STATUS_LABEL: Record<OrderStatus, string> = {
+  pending: "Pending",
+  confirmed: "Confirmed",
+  processing: "Processing",
+  shipped: "Shipped",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+  refunded: "Refunded",
 };
 
 const PAYMENT_LABEL: Record<string, string> = {
@@ -24,7 +28,9 @@ export default function SellerOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
 
-  const filtered = mockOrders.filter((o) => {
+  const sellerOrders = mockOrders.filter((o) => o.items.some((i: MockOrderItem) => i.sellerId === DEMO_SELLER_ID));
+
+  const filtered = sellerOrders.filter((o) => {
     const matchesSearch =
       !search ||
       o.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -35,18 +41,18 @@ export default function SellerOrdersPage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-bold text-gray-900">Orders</h1>
+      <h1 className="text-org-lg font-org-bold text-org-text-primary">Orders</h1>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <IconSearch size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-org-text-muted" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by order ID or customer..."
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 transition-all"
+            className="w-full pl-9 pr-4 py-2.5 border border-org-border rounded-org-sm text-org-sm outline-none focus:border-org-primary transition-all bg-org-surface text-org-text-primary"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -54,13 +60,13 @@ export default function SellerOrdersPage() {
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors capitalize whitespace-nowrap ${
+              className={`px-3 py-2 rounded-org-sm text-org-sm font-org-medium transition-colors capitalize whitespace-nowrap ${
                 statusFilter === s
-                  ? "bg-green-600 text-white"
-                  : "bg-white text-gray-600 border border-gray-200 hover:border-green-400"
+                  ? "bg-org-primary text-white"
+                  : "bg-org-surface text-org-text-secondary border border-org-border hover:border-org-primary"
               }`}
             >
-              {s === "all" ? "All" : STATUS_CONFIG[s as OrderStatus]?.label ?? s}
+              {s === "all" ? "All" : STATUS_LABEL[s as OrderStatus] ?? s}
             </button>
           ))}
         </div>
@@ -68,69 +74,67 @@ export default function SellerOrdersPage() {
 
       {/* Orders */}
       <div className="space-y-3">
-        {filtered.map((order) => {
-          const sc = STATUS_CONFIG[order.status];
-          return (
-            <div key={order.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
-                <div className="flex items-center gap-4 text-sm flex-wrap">
-                  <span className="font-bold text-gray-900">{order.id}</span>
-                  <span className="text-gray-500">{order.createdAt}</span>
-                  <span className="text-gray-400">{order.customerName}</span>
-                  <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-                    {PAYMENT_LABEL[order.paymentMethod]}
-                  </span>
-                </div>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${sc.cls}`}>
-                  {sc.label}
+        {filtered.map((order) => (
+          <div key={order.id} className="bg-org-surface rounded-org-card shadow-org-card overflow-hidden">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 sm:px-5 py-3 bg-org-surface-alt border-b border-org-border">
+              <div className="flex items-center gap-3 text-org-sm flex-wrap">
+                <span className="font-org-bold text-org-text-primary">{order.id}</span>
+                <span className="text-org-text-secondary">{order.createdAt}</span>
+                <span className="text-org-text-muted">{order.customerName}</span>
+                <span className="text-org-xs text-org-text-muted bg-org-surface px-2 py-0.5 rounded-org-sm">
+                  {PAYMENT_LABEL[order.paymentMethod]}
                 </span>
               </div>
+              <StatusPill status={order.status} />
+            </div>
 
-              {/* Items */}
-              <div className="px-5 py-3">
-                {order.items.map((item) => (
-                  <div key={item.productId} className="flex items-center gap-3 py-1.5">
-                    <img
-                      src={item.productImage}
-                      alt={item.productName}
-                      className="w-10 h-10 rounded-lg object-cover bg-gray-50 flex-shrink-0"
-                    />
-                    <p className="text-sm text-gray-800 flex-1 truncate">
-                      {item.productName} <span className="text-gray-400">x{item.quantity}</span>
-                    </p>
-                    <p className="text-sm font-semibold text-gray-900">
-                      KES {item.subtotal.toLocaleString()}
-                    </p>
-                  </div>
-                ))}
+            {/* Items */}
+            <div className="px-4 sm:px-5 py-3">
+              {order.items.map((item) => (
+                <div key={item.productId} className="flex items-center gap-3 py-1.5">
+                  <img
+                    src={item.productImage}
+                    alt={item.productName}
+                    className="w-10 h-10 rounded-lg object-cover bg-org-surface-alt shrink-0"
+                  />
+                  <p className="text-org-sm text-org-text-primary flex-1 truncate">
+                    {item.productName} <span className="text-org-text-muted">x{item.quantity}</span>
+                  </p>
+                  <p className="text-org-sm font-org-semibold text-org-text-primary">
+                    KES {item.subtotal.toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 sm:px-5 py-3 border-t border-org-border">
+              <div className="text-org-sm">
+                <span className="text-org-text-secondary">Total: </span>
+                <span className="font-org-bold text-org-text-primary">KES {order.total.toLocaleString()}</span>
+                <span className="ml-2 text-org-xs text-org-text-muted">
+                  Delivery: {order.deliveryFee === 0 ? "Free" : `KES ${order.deliveryFee}`}
+                </span>
               </div>
-
-              {/* Footer */}
-              <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
-                <div className="text-sm">
-                  <span className="text-gray-500">Total: </span>
-                  <span className="font-bold text-gray-900">KES {order.total.toLocaleString()}</span>
-                  <span className="ml-2 text-xs text-gray-400">
-                    Delivery: {order.deliveryFee === 0 ? "Free" : `KES ${order.deliveryFee}`}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  {order.status === "pending" && (
-                    <button className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
-                      <IconCheck size={13} /> Confirm Order
-                    </button>
-                  )}
-                  {order.status === "confirmed" && (
-                    <button className="flex items-center gap-1.5 text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors">
-                      <IconTruck size={13} /> Mark Shipped
-                    </button>
-                  )}
-                </div>
+              <div className="flex gap-2">
+                {order.status === "pending" && (
+                  <button className="flex items-center gap-1.5 text-org-xs font-org-semibold text-org-accent bg-org-accent/15 hover:bg-org-accent/25 px-3 py-1.5 rounded-org-sm transition-colors">
+                    <Check size={13} /> Confirm Order
+                  </button>
+                )}
+                {order.status === "confirmed" && (
+                  <button className="flex items-center gap-1.5 text-org-xs font-org-semibold text-org-success bg-org-success-bg hover:opacity-80 px-3 py-1.5 rounded-org-sm transition-colors">
+                    <Truck size={13} /> Mark Shipped
+                  </button>
+                )}
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <p className="text-org-sm text-org-text-secondary text-center py-8">No orders match your filters.</p>
+        )}
       </div>
     </div>
   );

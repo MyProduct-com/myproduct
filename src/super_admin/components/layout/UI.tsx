@@ -90,8 +90,10 @@ interface InputProps {
   style?: React.CSSProperties;
   textarea?: boolean;
   rows?: number;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  autoComplete?: string;
 }
-export function Input({ label, value, onChange, placeholder, type = "text", disabled, style, textarea, rows = 3 }: InputProps) {
+export function Input({ label, value, onChange, placeholder, type = "text", disabled, style, textarea, rows = 3, inputMode, autoComplete }: InputProps) {
   const base: React.CSSProperties = {
     width: "100%", padding: "9px 12px", borderRadius: T.radius,
     border: `1.5px solid ${T.border}`, fontSize: 14, color: T.text,
@@ -103,7 +105,7 @@ export function Input({ label, value, onChange, placeholder, type = "text", disa
       {label && <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: T.textMuted, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>}
       {textarea
         ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled} rows={rows} style={{ ...base, resize: "vertical" }} />
-        : <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} type={type} disabled={disabled} style={base} />
+        : <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} type={type} disabled={disabled} style={base} inputMode={inputMode} autoComplete={autoComplete} />
       }
     </div>
   );
@@ -220,7 +222,7 @@ export function SearchBar({ value, onChange, placeholder }: { value: string; onC
 // ─── Section Header ───────────────────────────────────────────────────────────
 export function SectionHeader({ title, subtitle, actions, icon: Icon }: { title: string; subtitle?: string; actions?: React.ReactNode; icon?: LucideIcon }) {
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
+    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3" style={{ marginBottom: 20 }}>
       <div>
         <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: T.text, display: "flex", alignItems: "center", gap: 8 }}>
           {Icon && <Icon size={20} />}
@@ -228,7 +230,7 @@ export function SectionHeader({ title, subtitle, actions, icon: Icon }: { title:
         </h2>
         {subtitle && <p style={{ margin: "4px 0 0", fontSize: 13, color: T.textMuted }}>{subtitle}</p>}
       </div>
-      {actions && <div style={{ display: "flex", gap: 8 }}>{actions}</div>}
+      {actions && <div className="flex gap-2 flex-wrap">{actions}</div>}
     </div>
   );
 }

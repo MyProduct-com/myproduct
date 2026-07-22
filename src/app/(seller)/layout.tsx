@@ -1,31 +1,19 @@
-"use client";
-import { useAuthStore } from "@/store/authStore";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import SellerSidebar from "@/components/layout/SellerSidebar";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { AUTH_DISABLED } from "@/lib/authFlags";
+import SellerDashboardShell from "@/components/layout/SellerDashboardShell";
 
-export default function SellerLayout({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated } = useAuthStore();
-  const router = useRouter();
+export default async function SellerLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(authOptions);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/login?redirect=/seller");
-    } else if (user?.role !== "seller") {
-      router.push("/");
-    }
-  }, [isAuthenticated, user, router]);
+  if (!AUTH_DISABLED && (!session?.user || session.user.role !== "SELLER")) {
+    redirect("/auth/login?redirect=/seller");
+  }
 
-  if (!isAuthenticated || user?.role !== "seller") return null;
+  const user = session?.user
+    ? { name: session.user.name ?? "Seller", email: session.user.email ?? "", avatarUrl: session.user.image ?? null }
+    : { name: "Sarah Njoroge", email: "techhub@myproducts.co.ke", avatarUrl: null };
 
-  return (
-    <div className="min-h-screen flex bg-gray-50">
-      <div className="hidden md:block sticky top-0 h-screen">
-        <SellerSidebar />
-      </div>
-      <main className="flex-1 min-w-0 overflow-y-auto">
-        <div className="max-w-6xl mx-auto px-5 py-6">{children}</div>
-      </main>
-    </div>
-  );
+  return <SellerDashboardShell user={user}>{children}</SellerDashboardShell>;
 }

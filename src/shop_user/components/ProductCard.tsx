@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { Product, CartItem, Theme } from "../types/index";
 import { fmt, shortDesc } from "../utils/helpers";
 
@@ -12,146 +11,117 @@ interface ProductCardProps {
   onClick: () => void;
 }
 
-const CONTENT_HEIGHT = 172;
-
 export default function ProductCard({
   product, theme, cartItem, onAdd, onIncrease, onDecrease, onClick,
 }: ProductCardProps) {
-  const [hovered, setHovered] = useState(false);
-
   return (
     <div
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="group relative aspect-3/4 overflow-hidden cursor-pointer transition-shadow duration-300 active:scale-[0.98]"
+      className="group relative block aspect-3/4 overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.06)] transition-shadow duration-300 hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.28)]"
       style={{
         background: theme.bg,
-        border: `1.5px solid ${hovered ? theme.primaryLight : theme.border}`,
+        border: `1px solid ${theme.border}`,
         borderRadius: theme.radiusCard,
-        boxShadow: hovered ? "0 20px 45px -12px rgba(0,0,0,0.28)" : "0 1px 2px rgba(0,0,0,0.06)",
         fontFamily: theme.fontFamily,
-      }}
+        // Bridge the shop's dynamic theme colors into CSS variables so the
+        // group-hover: utilities below can reference them without JS state —
+        // same mechanism the marketplace ProductCard uses.
+        ["--card-black" as string]: theme.black,
+        ["--card-muted" as string]: theme.textMuted,
+        ["--card-primary" as string]: theme.primary,
+        ["--card-accent" as string]: theme.accent,
+        ["--card-surface" as string]: theme.surface,
+        ["--card-border" as string]: theme.border,
+        ["--card-on-primary" as string]: theme.textOnPrimary,
+      } as React.CSSProperties}
     >
-      {/* Image — insets and shrinks up on hover, revealing the card background behind it */}
+      {/* Image — insets on all sides and shrinks up on hover, revealing the card background behind it */}
       <div
-        className="absolute overflow-hidden transition-all duration-500 ease-out"
-        style={{
-          top: hovered ? 8 : 0,
-          left: hovered ? 8 : 0,
-          right: hovered ? 8 : 0,
-          bottom: hovered ? CONTENT_HEIGHT : 0,
-          borderRadius: theme.radiusCard,
-        }}
+        className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden transition-all duration-500 ease-out group-hover:top-2 group-hover:left-2 group-hover:right-2 group-hover:bottom-43"
+        style={{ borderRadius: theme.radiusCard }}
       >
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500"
-          style={{ transform: hovered ? "scale(1.04)" : "scale(1)" }}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
 
         {/* Scrim for the rest-state text, fades away on hover */}
-        <div
-          className="absolute inset-0 transition-opacity duration-300"
-          style={{
-            background: "linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.2) 55%, transparent)",
-            opacity: hovered ? 0 : 1,
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent transition-opacity duration-300 group-hover:opacity-0" />
 
+        {/* Badges */}
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
+          {product.stock <= 5 && product.stock > 0 && (
+            <span className="bg-orange-500 text-white text-[11px] font-[500] px-[10px] py-[3px] rounded-full">
+              Only {product.stock} left
+            </span>
+          )}
+        </div>
+
+        {/* Unit badge (this shop's equivalent of a wishlist/heart slot) */}
         <span
-          className="absolute top-2 right-2 text-[11px] font-bold px-2.5 py-0.5 rounded-full text-white"
+          className="absolute top-3 right-3 z-10 text-[11px] font-[500] px-[10px] py-[3px] rounded-full text-white"
           style={{ background: theme.primary }}
         >
           {product.unit}
         </span>
-        {product.stock <= 5 && product.stock > 0 && (
-          <span className="absolute top-2 left-2 text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-500 text-white">
-            Only {product.stock} left
-          </span>
-        )}
+
+        {/* Out of stock */}
         {product.stock === 0 && (
-          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-            <span className="text-xs font-semibold text-gray-500 bg-white px-3 py-1 rounded-full border">
-              Out of stock
+          <div className="absolute inset-0 bg-white/75 flex items-center justify-center z-10">
+            <span className="text-[11px] font-[500] text-gray-500 bg-white px-[10px] py-[3px] rounded-full border border-gray-200">
+              Out of Stock
             </span>
           </div>
         )}
       </div>
 
       {/* Content — pinned to the bottom slice the image reveals on hover; color-inverts */}
-      <div
-        className="absolute inset-x-0 bottom-0 flex flex-col justify-center px-3.5 py-3"
-        style={{ height: CONTENT_HEIGHT }}
-      >
-        <p
-          className="font-semibold text-[13px] sm:text-sm leading-snug line-clamp-2 mb-1 transition-colors duration-300"
-          style={{ color: hovered ? theme.black : "#ffffff" }}
-        >
+      <div className="absolute inset-x-0 bottom-0 z-10 flex h-43 flex-col justify-center gap-1 px-4 py-3">
+        <p className="text-[13px] font-[500] text-white line-clamp-2 leading-[1.4] transition-colors duration-300 group-hover:text-[color:var(--card-black)]">
           {product.name}
         </p>
-        <p
-          className="text-[11px] sm:text-xs leading-relaxed line-clamp-2 mb-2.5 transition-colors duration-300"
-          style={{ color: hovered ? theme.textMuted : "rgba(255,255,255,0.8)" }}
-        >
+        <p className="text-[11px] text-white/80 leading-relaxed line-clamp-2 transition-colors duration-300 group-hover:text-[color:var(--card-muted)]">
           {shortDesc(product.description)}
           <span
             onClick={(e) => { e.stopPropagation(); onClick(); }}
-            className="ml-1 font-semibold cursor-pointer hover:underline"
-            style={{ color: hovered ? theme.primary : "#ffffff" }}
+            className="ml-1 font-[500] cursor-pointer hover:underline text-white transition-colors duration-300 group-hover:text-[color:var(--card-primary)]"
           >
             more
           </span>
         </p>
 
         {/* Price + cart control */}
-        <div className="flex items-center justify-between gap-2 mt-auto">
-          <span
-            className="font-bold text-sm sm:text-base transition-colors duration-300"
-            style={{ color: hovered ? theme.accent : "#ffffff" }}
-          >
+        <div className="flex items-center justify-between gap-2 mt-1">
+          <span className="font-mono text-[13px] font-[600] text-white transition-colors duration-300 group-hover:text-[color:var(--card-accent)]">
             {fmt(product.price)}
           </span>
 
           {product.stock === 0 ? null : !cartItem ? (
             <button
               onClick={(e) => { e.stopPropagation(); onAdd(); }}
-              className="px-3.5 py-1.5 rounded-full text-[12px] sm:text-[13px] font-bold transition-all active:scale-95 shrink-0"
-              style={{
-                background: hovered ? theme.black : "rgba(255,255,255,0.92)",
-                color: hovered ? theme.textOnPrimary : theme.black,
-              }}
+              className="px-3.5 py-1.5 rounded-full text-[13px] font-[500] transition-all active:scale-95 shrink-0 bg-white/90 text-[#111827] group-hover:bg-[color:var(--card-black)] group-hover:text-[color:var(--card-on-primary)]"
             >
               + Add
             </button>
           ) : (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 rounded-full shrink-0 transition-colors duration-300"
-              style={{
-                background: hovered ? theme.surface : "rgba(255,255,255,0.18)",
-                border: `1.5px solid ${hovered ? theme.border : "rgba(255,255,255,0.45)"}`,
-                padding: "3px 6px",
-              }}
+              className="flex items-center gap-1 rounded-full shrink-0 transition-colors duration-300 bg-white/18 border border-white/45 group-hover:bg-[color:var(--card-surface)] group-hover:border-[color:var(--card-border)]"
+              style={{ padding: "3px 6px" }}
             >
               <button
                 onClick={onDecrease}
-                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none transition-colors"
-                style={{ color: hovered ? theme.primary : "#ffffff", background: "none", border: "none", cursor: "pointer" }}
+                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none bg-transparent border-0 cursor-pointer text-white transition-colors group-hover:text-[color:var(--card-primary)]"
               >
-                −
+                &minus;
               </button>
-              <span
-                className="w-5 text-center font-bold text-sm transition-colors duration-300"
-                style={{ color: hovered ? theme.black : "#ffffff" }}
-              >
+              <span className="w-5 text-center font-bold text-sm text-white transition-colors duration-300 group-hover:text-[color:var(--card-black)]">
                 {cartItem.qty}
               </span>
               <button
                 onClick={onIncrease}
-                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none transition-colors"
-                style={{ color: hovered ? theme.primary : "#ffffff", background: "none", border: "none", cursor: "pointer" }}
+                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none bg-transparent border-0 cursor-pointer text-white transition-colors group-hover:text-[color:var(--card-primary)]"
               >
                 +
               </button>

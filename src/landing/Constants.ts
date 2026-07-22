@@ -7,16 +7,19 @@ import {
   Package, Monitor, BarChart3, Globe, Users,
 } from "lucide-react";
 
+// Matches the org-* design tokens used across the dashboards (src/app/globals.css)
+// so the public site and the logged-in product share one brand identity.
 export const C = {
-  forest:      "#1A6B3C",
-  action:      "#25A55A",
-  mint:        "#D4F0E2",
-  canvas:      "#F2F9F5",
-  ink:         "#111827",
-  charcoal:    "#374151",
-  slate:       "#6B7280",
-  surface:     "#FFFFFF",
-  border:      "#E5E7EB",
+  forest:      "#1B3A2B", // org-primary
+  action:      "#1B3A2B", // org-primary (unified — was a separate brighter green)
+  actionHover: "#142B20", // org-primary-hover
+  mint:        "#E8EFE9", // org-primary-light
+  canvas:      "#F4F6F2", // org-bg
+  ink:         "#1A1D1B", // org-text-primary
+  charcoal:    "#1A1D1B", // org-text-primary
+  slate:       "#6B716C", // org-text-secondary
+  surface:     "#FFFFFF", // org-surface
+  border:      "#E4E8E2", // org-border
   ember:       "#E8500A",
   emberSurf:   "#FFF0E8",
   gold:        "#D97706",

@@ -13,9 +13,9 @@ import {
   IconArrowLeft,
   IconBuilding,
   IconCheck,
+  IconBrandGoogleFilled,
 } from "@tabler/icons-react";
-import { useAuthStore } from "@/store/authStore";
-import type { Customer, Seller } from "@/types/user";
+import { signIn } from "next-auth/react";
 
 type Role = "customer" | "seller";
 
@@ -23,7 +23,6 @@ function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRole = (searchParams.get("role") as Role) ?? "customer";
-  const { login } = useAuthStore();
 
   const [role, setRole] = useState<Role>(defaultRole);
   const [form, setForm] = useState({
@@ -39,6 +38,7 @@ function SignupContent() {
   const [showPw, setShowPw] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const set = (field: string, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -59,46 +59,43 @@ function SignupContent() {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    setErrors((prev) => ({ ...prev, form: "" }));
 
-    if (role === "customer") {
-      const newCustomer: Customer = {
-        id: `cust-${Date.now()}`,
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name,
         email: form.email,
         phone: form.phone,
-        name: form.name,
-        role: "customer",
-        createdAt: new Date().toISOString(),
-        addresses: [],
-        loyaltyPoints: 0,
-      };
-      login(newCustomer);
-      router.push("/dashboard");
-    } else {
-      const newSeller: Seller = {
-        id: `seller-${Date.now()}`,
-        email: form.email,
-        phone: form.phone,
-        name: form.name,
-        role: "seller",
-        createdAt: new Date().toISOString(),
+        password: form.password,
+        role,
         storeName: form.storeName,
-        storeSlug: form.storeName.toLowerCase().replace(/\s+/g, "-"),
-        storeDescription: "",
-        storeRating: 0,
-        totalSales: 0,
-        totalRevenue: 0,
-        productCount: 0,
-        isVerified: false,
-        plan: "starter",
-        categories: form.storeCategory ? [form.storeCategory] : [],
+        storeCategory: form.storeCategory,
         location: form.location,
-        joinedAt: new Date().toISOString(),
-      };
-      login(newSeller);
-      router.push("/seller");
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setErrors((prev) => ({ ...prev, form: body.error ?? "Something went wrong. Please try again." }));
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    const signInResult = await signIn("credentials", {
+      email: form.email,
+      password: form.password,
+      redirect: false,
+    });
+
+    if (signInResult?.error) {
+      setErrors((prev) => ({ ...prev, form: "Account created — please sign in." }));
+      router.push("/auth/login");
+      return;
+    }
+
+    router.push(role === "seller" ? "/seller" : "/dashboard");
   };
 
   const inputCls =
@@ -163,6 +160,28 @@ function SignupContent() {
                 Sign in
               </Link>
             </p>
+
+            {errors.form && (
+              <div className="bg-[#fef2f2] border border-[#fecaca] text-[#dc2626] text-[13px] px-4 py-3 rounded-[8px] mb-5">
+                {errors.form}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => { setGoogleLoading(true); signIn("google", { callbackUrl: role === "seller" ? "/seller" : "/dashboard" }); }}
+              disabled={googleLoading}
+              className="w-full flex items-center justify-center gap-2.5 border border-[#E5E7EB] hover:bg-[#F9FAFB] disabled:opacity-60 text-[#111827] font-[500] py-[9px] rounded-[8px] text-[13px] transition-colors mb-5"
+            >
+              <IconBrandGoogleFilled size={15} className="text-[#EA4335]" />
+              {googleLoading ? "Redirecting..." : "Continue with Google"}
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex-1 h-px bg-[#F3F4F6]" />
+              <span className="text-[11px] text-[#9CA3AF] uppercase tracking-[0.05em]">or</span>
+              <div className="flex-1 h-px bg-[#F3F4F6]" />
+            </div>
 
             {/* Role toggle */}
             <div className="flex gap-1.5 mb-6 p-1 bg-[#F3F4F6] rounded-[8px]">

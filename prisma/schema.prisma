@@ -1,0 +1,361 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────
+
+enum UserRole {
+  CUSTOMER
+  SELLER
+  ADMIN
+  SHOP_ADMIN
+  SUPER_ADMIN
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  COMPLETED
+  PENDING
+  CANCELLED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum OrderPaymentMethod {
+  MPESA
+  CARD
+  CASH_ON_DELIVERY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum ProductStatus {
+  LIVE
+  DRAFT
+  OUT_OF_STOCK
+}
+
+// ─────────────────────────────────────────────────────────────
+// Auth (NextAuth.js v4 Prisma adapter — required shape)
+// ─────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String? // null for OAuth-only accounts
+  phone         String?
+  role          UserRole  @default(CUSTOMER)
+  loyaltyPoints Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  accounts Account[]
+  sessions Session[]
+
+  addresses        Address[]
+  ordersAsCustomer Order[]        @relation("CustomerOrders")
+  products         Product[]
+  sellerProfile    SellerProfile?
+
+  transactions      Transaction[]
+  savingsGoals      SavingsGoal[]
+  recipients        Recipient[]        @relation("OwnerRecipients")
+  scheduledPayments ScheduledPayment[]
+  cards             Card[]
+
+  ownedShops Shop[] @relation("ShopOwner")
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Marketplace domain (customer / seller / admin dashboards)
+// ─────────────────────────────────────────────────────────────
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  label     String
+  street    String
+  city      String
+  county    String
+  isDefault Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model SellerProfile {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  storeName        String
+  storeSlug        String   @unique
+  storeDescription String?
+  storeLogo        String?
+  storeBanner      String?
+  storeRating      Float    @default(0)
+  isVerified       Boolean  @default(false)
+  plan             String   @default("starter")
+  location         String?
+  joinedAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("seller_profiles")
+}
+
+model Product {
+  id            String        @id @default(cuid())
+  name          String
+  category      String
+  price         Int
+  originalPrice Int?
+  stock         Int           @default(0)
+  maxStock      Int           @default(0)
+  status        ProductStatus @default(LIVE)
+  sales         Int           @default(0)
+  views         Int           @default(0)
+  sku           String        @unique
+  image         String
+  images        String[]      @default([])
+  description   String
+  brand         String
+  rating        Float         @default(0)
+  reviewCount   Int           @default(0)
+  isFeatured    Boolean       @default(false)
+  isFlashDeal   Boolean       @default(false)
+  isNew         Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+
+  sellerId String
+  seller   User   @relation(fields: [sellerId], references: [id])
+
+  orderItems OrderItem[]
+
+  @@index([sellerId])
+  @@map("products")
+}
+
+model Order {
+  id              String             @id @default(cuid())
+  customerId      String
+  customer        User               @relation("CustomerOrders", fields: [customerId], references: [id])
+  subtotal        Int
+  deliveryFee     Int                @default(0)
+  total           Int
+  status          OrderStatus        @default(PENDING)
+  paymentMethod   OrderPaymentMethod
+  paymentStatus   PaymentStatus      @default(PENDING)
+  deliveryAddress String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  items OrderItem[]
+
+  @@index([customerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  sellerId  String
+  quantity  Int
+  price     Int
+  subtotal  Int
+
+  @@index([sellerId])
+  @@map("order_items")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Finance-overlay tables — power the Finova-style widgets
+// (stat cards, cashflow chart, radial goal, recipients, upcoming
+// payments, card widget) on every dashboard, for every role.
+// ─────────────────────────────────────────────────────────────
+
+model Transaction {
+  id           String            @id @default(cuid())
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopId       String?
+  shop         Shop?             @relation(fields: [shopId], references: [id])
+  type         TransactionType
+  category     String
+  amount       Int
+  counterparty String
+  account      String
+  status       TransactionStatus @default(COMPLETED)
+  occurredAt   DateTime          @default(now())
+
+  @@index([userId, occurredAt])
+  @@index([shopId, occurredAt])
+  @@map("transactions")
+}
+
+model SavingsGoal {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label          String
+  targetAmount   Int
+  achievedAmount Int      @default(0)
+  periodStart    DateTime
+  periodEnd      DateTime
+
+  @@index([userId, periodEnd])
+  @@map("savings_goals")
+}
+
+model Recipient {
+  id         String    @id @default(cuid())
+  ownerId    String
+  owner      User      @relation("OwnerRecipients", fields: [ownerId], references: [id], onDelete: Cascade)
+  name       String
+  avatarUrl  String?
+  lastPaidAt DateTime?
+
+  @@index([ownerId])
+  @@map("recipients")
+}
+
+model ScheduledPayment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  merchant  String
+  brandIcon String?
+  amount    Int
+  dueDate   DateTime
+  status    String   @default("upcoming")
+
+  @@index([userId, dueDate])
+  @@map("scheduled_payments")
+}
+
+model Card {
+  id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  network     String
+  last4       String
+  holderName  String
+  expiryMonth Int
+  expiryYear  Int
+  balance     Int
+  creditLimit Int
+
+  @@index([userId])
+  @@map("cards")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Shop-SaaS domain (shop_admin / shop_user / super_admin)
+// ─────────────────────────────────────────────────────────────
+
+model Shop {
+  id               String    @id @default(cuid())
+  ownerId          String
+  owner            User      @relation("ShopOwner", fields: [ownerId], references: [id])
+  name             String
+  slug             String    @unique
+  tagline          String?
+  logoIcon         String    @default("Store")
+  status           String    @default("active")
+  packageName      String    @default("Starter")
+  shopsCreated     Int       @default(1)
+  packageShopLimit Int       @default(1)
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  // Per-shop storefront branding — each shop customizes these via its own
+  // ThemeEditor; defaults match the app's default green theme.
+  themePrimary       String @default("#16a34a")
+  themePrimaryDark   String @default("#15803d")
+  themePrimaryLight  String @default("#bbf7d0")
+  themeAccent        String @default("#166534")
+  themeBg            String @default("#ffffff")
+  themeSurface       String @default("#f0fdf4")
+  themeBorder        String @default("#d1fae5")
+  themeText          String @default("#111827")
+  themeTextMuted     String @default("#6b7280")
+  themeTextOnPrimary String @default("#ffffff")
+  themeBlack         String @default("#111827")
+  themeFontFamily    String @default("'Segoe UI', system-ui, sans-serif")
+  themeRadius        String @default("12px")
+  themeRadiusCard    String @default("16px")
+
+  transactions Transaction[]
+
+  @@map("shops")
+}
