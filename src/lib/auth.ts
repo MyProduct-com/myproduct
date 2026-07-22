@@ -1,4 +1,5 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, Session } from "next-auth";
+import { getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -63,3 +64,18 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+/**
+ * getServerSession() can throw (misconfigured NEXTAUTH_SECRET, adapter/DB
+ * issues, malformed cookie) — treating that as "no session" lets callers
+ * fall back to their existing AUTH_DISABLED/demo-user logic instead of the
+ * whole page crashing.
+ */
+export async function getSafeServerSession(): Promise<Session | null> {
+  try {
+    return await getServerSession(authOptions);
+  } catch (err) {
+    console.error("[auth] getServerSession failed — treating as unauthenticated:", err);
+    return null;
+  }
+}

@@ -47,12 +47,12 @@ export default function ProductCard({
         />
 
         {/* Scrim for the rest-state text, fades away on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent transition-opacity duration-300 group-hover:opacity-0" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/25 to-transparent transition-opacity duration-300 group-hover:opacity-0" />
 
         {/* Badges */}
         <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
           {product.stock <= 5 && product.stock > 0 && (
-            <span className="bg-orange-500 text-white text-[11px] font-[500] px-[10px] py-[3px] rounded-full">
+            <span className="bg-orange-500 text-white text-[11px] font-medium px-2.5 py-0.75 rounded-full">
               Only {product.stock} left
             </span>
           )}
@@ -60,7 +60,7 @@ export default function ProductCard({
 
         {/* Unit badge (this shop's equivalent of a wishlist/heart slot) */}
         <span
-          className="absolute top-3 right-3 z-10 text-[11px] font-[500] px-[10px] py-[3px] rounded-full text-white"
+          className="absolute top-3 right-3 z-10 text-[11px] font-medium px-2.5 py-0.75 rounded-full text-white"
           style={{ background: theme.primary }}
         >
           {product.unit}
@@ -69,7 +69,7 @@ export default function ProductCard({
         {/* Out of stock */}
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-white/75 flex items-center justify-center z-10">
-            <span className="text-[11px] font-[500] text-gray-500 bg-white px-[10px] py-[3px] rounded-full border border-gray-200">
+            <span className="text-[11px] font-medium text-gray-500 bg-white px-2.5 py-0.75 rounded-full border border-gray-200">
               Out of Stock
             </span>
           </div>
@@ -78,14 +78,14 @@ export default function ProductCard({
 
       {/* Content — pinned to the bottom slice the image reveals on hover; color-inverts */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex h-43 flex-col justify-center gap-1 px-4 py-3">
-        <p className="text-[13px] font-[500] text-white line-clamp-2 leading-[1.4] transition-colors duration-300 group-hover:text-[color:var(--card-black)]">
+        <p className="text-org-sm font-medium text-white line-clamp-2 leading-[1.4] transition-colors duration-300 group-hover:text-(--card-black)">
           {product.name}
         </p>
-        <p className="text-[11px] text-white/80 leading-relaxed line-clamp-2 transition-colors duration-300 group-hover:text-[color:var(--card-muted)]">
+        <p className="text-[11px] text-white/80 leading-relaxed line-clamp-2 transition-colors duration-300 group-hover:text-(--card-muted)">
           {shortDesc(product.description)}
           <span
             onClick={(e) => { e.stopPropagation(); onClick(); }}
-            className="ml-1 font-[500] cursor-pointer hover:underline text-white transition-colors duration-300 group-hover:text-[color:var(--card-primary)]"
+            className="ml-1 font-medium cursor-pointer hover:underline text-white transition-colors duration-300 group-hover:text-(--card-primary)"
           >
             more
           </span>
@@ -93,35 +93,35 @@ export default function ProductCard({
 
         {/* Price + cart control */}
         <div className="flex items-center justify-between gap-2 mt-1">
-          <span className="font-mono text-[13px] font-[600] text-white transition-colors duration-300 group-hover:text-[color:var(--card-accent)]">
+          <span className="font-mono text-org-sm font-semibold text-white transition-colors duration-300 group-hover:text-(--card-accent)">
             {fmt(product.price)}
           </span>
 
           {product.stock === 0 ? null : !cartItem ? (
             <button
               onClick={(e) => { e.stopPropagation(); onAdd(); }}
-              className="px-3.5 py-1.5 rounded-full text-[13px] font-[500] transition-all active:scale-95 shrink-0 bg-white/90 text-[#111827] group-hover:bg-[color:var(--card-black)] group-hover:text-[color:var(--card-on-primary)]"
+              className="px-3.5 py-1.5 rounded-full text-org-sm font-medium transition-all active:scale-95 shrink-0 bg-white/90 text-gray-900 group-hover:bg-(--card-black) group-hover:text-(--card-on-primary)"
             >
               + Add
             </button>
           ) : (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 rounded-full shrink-0 transition-colors duration-300 bg-white/18 border border-white/45 group-hover:bg-[color:var(--card-surface)] group-hover:border-[color:var(--card-border)]"
+              className="flex items-center gap-1 rounded-full shrink-0 transition-colors duration-300 bg-white/18 border border-white/45 group-hover:bg-(--card-surface) group-hover:border-(--card-border)"
               style={{ padding: "3px 6px" }}
             >
               <button
                 onClick={onDecrease}
-                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none bg-transparent border-0 cursor-pointer text-white transition-colors group-hover:text-[color:var(--card-primary)]"
+                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none bg-transparent border-0 cursor-pointer text-white transition-colors group-hover:text-(--card-primary)"
               >
                 &minus;
               </button>
-              <span className="w-5 text-center font-bold text-sm text-white transition-colors duration-300 group-hover:text-[color:var(--card-black)]">
+              <span className="w-5 text-center font-bold text-sm text-white transition-colors duration-300 group-hover:text-(--card-black)">
                 {cartItem.qty}
               </span>
               <button
                 onClick={onIncrease}
-                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none bg-transparent border-0 cursor-pointer text-white transition-colors group-hover:text-[color:var(--card-primary)]"
+                className="w-6 h-6 flex items-center justify-center rounded-full font-bold text-lg leading-none bg-transparent border-0 cursor-pointer text-white transition-colors group-hover:text-(--card-primary)"
               >
                 +
               </button>

@@ -34,7 +34,7 @@ export function SuperAdminDashboard({ admin, sessionUser, metrics, shops, onNavi
     <div className="space-y-5">
       {/* Welcome banner */}
       <div
-        className="rounded-[10px] p-4 sm:p-6 flex items-center gap-4 text-white"
+        className="rounded-org-sm p-4 sm:p-6 flex items-center gap-4 text-white"
         style={{ background: "linear-gradient(135deg, #1B3A2B 0%, #6B8F71 100%)" }}
       >
         <div className="flex-1 min-w-0">

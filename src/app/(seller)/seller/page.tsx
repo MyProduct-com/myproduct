@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth";
 import { Wallet, ShoppingCart, Package, Star, AlertTriangle, Eye, ArrowRight } from "lucide-react";
-import { authOptions } from "@/lib/auth";
+import { getSafeServerSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StatCard from "@/components/dashboard/StatCard";
 import ChartCard from "@/components/dashboard/ChartCard";
@@ -13,7 +12,7 @@ const DEMO_SELLER_EMAIL = "techhub@myproducts.co.ke";
 const fmt = (n: number) => `KES ${n.toLocaleString()}`;
 
 export default async function SellerDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getSafeServerSession();
 
   let sellerId = session?.user?.id;
   let sellerName = session?.user?.name ?? "Seller";

@@ -137,7 +137,7 @@ export default function AdminDashboard() {
             <div className="space-y-3">
               {PENDING_SELLERS.map((s) => (
                 <div key={s.id} className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl border border-orange-100">
-                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-700 font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0 text-orange-700 font-bold text-sm">
                     {s.name.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">

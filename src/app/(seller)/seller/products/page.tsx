@@ -144,7 +144,7 @@ export default function SellerProductsPage() {
                       <div className="flex items-center gap-3">
                         <img src={p.image} alt={p.name} className="w-10 h-10 rounded-lg object-cover bg-org-surface-alt shrink-0" />
                         <div className="min-w-0">
-                          <p className="font-org-medium text-org-text-primary truncate max-w-[200px]">{p.name}</p>
+                          <p className="font-org-medium text-org-text-primary truncate max-w-50">{p.name}</p>
                           <p className="text-org-xs text-org-text-muted">{p.brand}</p>
                         </div>
                       </div>

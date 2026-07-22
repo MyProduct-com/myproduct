@@ -99,7 +99,7 @@ export default function ProductDetailPage() {
           {product.category}
         </Link>
         <span>/</span>
-        <span className="text-gray-700 truncate max-w-[200px]">{product.name}</span>
+        <span className="text-gray-700 truncate max-w-50">{product.name}</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -254,7 +254,7 @@ export default function ProductDetailPage() {
             href={`/products?seller=${product.sellerId}`}
             className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:border-green-300 transition-colors"
           >
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
               <IconBuildingStore size={18} className="text-green-700" />
             </div>
             <div>

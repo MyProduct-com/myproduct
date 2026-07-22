@@ -24,7 +24,7 @@ export default function Footer() {
               <span className="text-white">Products</span>
             </h3>
             <p className="text-sm leading-relaxed text-gray-400 mb-5">
-              Kenya&apos;s growing marketplace for electronics, fashion, groceries and more. Fast delivery, secure payments, trusted sellers.
+              Kenya&apos;s growing marketplace for electronic, fashion, groceries and more. Fast delivery, secure payments, trusted sellers.
             </p>
             <div className="flex gap-2.5">
               {[IconBrandFacebook, IconBrandTwitter, IconBrandInstagram, IconBrandWhatsapp].map(
@@ -98,17 +98,17 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 mb-5">
               <li className="flex items-start gap-2.5 text-sm text-gray-400">
-                <IconMapPin size={15} className="mt-0.5 text-green-400 flex-shrink-0" />
+                <IconMapPin size={15} className="mt-0.5 text-green-400 shrink-0" />
                 Westlands Square, 4th Floor, Nairobi, Kenya
               </li>
               <li className="flex items-center gap-2.5 text-sm text-gray-400">
-                <IconPhone size={15} className="text-green-400 flex-shrink-0" />
+                <IconPhone size={15} className="text-green-400 shrink-0" />
                 <a href="tel:+254700000000" className="hover:text-green-400 transition-colors">
                   +254 700 000 000
                 </a>
               </li>
               <li className="flex items-center gap-2.5 text-sm text-gray-400">
-                <IconMail size={15} className="text-green-400 flex-shrink-0" />
+                <IconMail size={15} className="text-green-400 shrink-0" />
                 <a
                   href="mailto:support@myproducts.co.ke"
                   className="hover:text-green-400 transition-colors"

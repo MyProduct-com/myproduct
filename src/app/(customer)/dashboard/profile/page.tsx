@@ -30,7 +30,7 @@ export default function ProfilePage() {
       {/* Avatar */}
       <div className="bg-white rounded-xl border border-gray-100 p-6">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-green-100 text-green-700 text-2xl font-bold flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 rounded-full bg-green-100 text-green-700 text-2xl font-bold flex items-center justify-center shrink-0">
             {user?.name.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -101,7 +101,7 @@ export default function ProfilePage() {
           </button>
         </div>
         <div className="p-4 border border-gray-200 rounded-xl flex items-start gap-3">
-          <IconMapPin size={18} className="text-green-600 mt-0.5 flex-shrink-0" />
+          <IconMapPin size={18} className="text-green-600 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm font-semibold text-gray-900">Home</p>
             <p className="text-sm text-gray-500">123 Ngong Road, Nairobi, Kenya</p>

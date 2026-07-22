@@ -99,19 +99,19 @@ function SignupContent() {
   };
 
   const inputCls =
-    "w-full px-4 py-[9px] border border-[#E5E7EB] rounded-[8px] text-[13px] outline-none focus:border-[#25A55A] bg-white text-[#111827] placeholder-[#9CA3AF] transition-colors";
-  const errCls = "text-[11px] text-[#dc2626] mt-1";
+    "w-full px-4 py-2.25 border border-gray-200 rounded-md text-org-sm outline-none focus:border-[#25A55A] bg-white text-gray-900 placeholder-gray-400 transition-colors";
+  const errCls = "text-[11px] text-red-600 mt-1";
 
   return (
-    <div className="min-h-screen bg-[#F2F9F5] flex">
+    <div className="min-h-screen bg-canvas flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#1A6B3C] flex-col justify-between p-12">
-        <Link href="/" className="text-[18px] font-[600] tracking-[-0.01em]">
-          <span className="text-[#D4F0E2]">My</span>
+        <Link href="/" className="text-[18px] font-semibold tracking-[-0.01em]">
+          <span className="text-border-mint">My</span>
           <span className="text-white">Products</span>
         </Link>
         <div>
-          <h2 className="text-[26px] font-[600] text-white leading-tight tracking-[-0.02em] mb-4">
+          <h2 className="text-[26px] font-semibold text-white leading-tight tracking-[-0.02em] mb-4">
             {role === "seller"
               ? "Start Selling on Kenya's Fastest-Growing Marketplace"
               : "Join Thousands of Happy Shoppers"}
@@ -131,14 +131,14 @@ function SignupContent() {
                   "Easy 7-day returns",
                 ]
             ).map((item) => (
-              <li key={item} className="flex items-center gap-2.5 text-[#D4F0E2] text-[14px]">
-                <IconCheck size={15} className="text-[#D4F0E2] shrink-0" />
+              <li key={item} className="flex items-center gap-2.5 text-border-mint text-org-base">
+                <IconCheck size={15} className="text-border-mint shrink-0" />
                 {item}
               </li>
             ))}
           </ul>
         </div>
-        <p className="text-[#D4F0E2] text-[12px]">&copy; {new Date().getFullYear()} MyProducts Kenya</p>
+        <p className="text-border-mint text-org-xs">&copy; {new Date().getFullYear()} MyProducts Kenya</p>
       </div>
 
       {/* Right panel */}
@@ -146,23 +146,23 @@ function SignupContent() {
         <div className="w-full max-w-md py-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-[13px] text-[#6B7280] hover:text-[#1A6B3C] mb-6 transition-colors"
+            className="inline-flex items-center gap-1.5 text-org-sm text-gray-500 hover:text-[#1A6B3C] mb-6 transition-colors"
           >
             <IconArrowLeft size={14} />
             Back to marketplace
           </Link>
 
-          <div className="bg-white rounded-[12px] border border-[0.5px] border-[#E5E7EB] p-8">
-            <h1 className="text-[20px] font-[600] text-[#111827] mb-1">Create your account</h1>
-            <p className="text-[13px] text-[#6B7280] mb-5">
+          <div className="bg-white rounded-lg border-[0.5px] border-gray-200 p-8">
+            <h1 className="text-org-lg font-semibold text-gray-900 mb-1">Create your account</h1>
+            <p className="text-org-sm text-gray-500 mb-5">
               Already have one?{" "}
-              <Link href="/auth/login" className="text-[#25A55A] font-[500] hover:text-[#1A6B3C]">
+              <Link href="/auth/login" className="text-[#25A55A] font-medium hover:text-[#1A6B3C]">
                 Sign in
               </Link>
             </p>
 
             {errors.form && (
-              <div className="bg-[#fef2f2] border border-[#fecaca] text-[#dc2626] text-[13px] px-4 py-3 rounded-[8px] mb-5">
+              <div className="bg-red-50 border border-red-200 text-red-600 text-org-sm px-4 py-3 rounded-md mb-5">
                 {errors.form}
               </div>
             )}
@@ -171,29 +171,29 @@ function SignupContent() {
               type="button"
               onClick={() => { setGoogleLoading(true); signIn("google", { callbackUrl: role === "seller" ? "/seller" : "/dashboard" }); }}
               disabled={googleLoading}
-              className="w-full flex items-center justify-center gap-2.5 border border-[#E5E7EB] hover:bg-[#F9FAFB] disabled:opacity-60 text-[#111827] font-[500] py-[9px] rounded-[8px] text-[13px] transition-colors mb-5"
+              className="w-full flex items-center justify-center gap-2.5 border border-gray-200 hover:bg-gray-50 disabled:opacity-60 text-gray-900 font-medium py-2.25 rounded-md text-org-sm transition-colors mb-5"
             >
               <IconBrandGoogleFilled size={15} className="text-[#EA4335]" />
               {googleLoading ? "Redirecting..." : "Continue with Google"}
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex-1 h-px bg-[#F3F4F6]" />
-              <span className="text-[11px] text-[#9CA3AF] uppercase tracking-[0.05em]">or</span>
-              <div className="flex-1 h-px bg-[#F3F4F6]" />
+              <div className="flex-1 h-px bg-gray-100" />
+              <span className="text-[11px] text-gray-400 uppercase tracking-wider">or</span>
+              <div className="flex-1 h-px bg-gray-100" />
             </div>
 
             {/* Role toggle */}
-            <div className="flex gap-1.5 mb-6 p-1 bg-[#F3F4F6] rounded-[8px]">
+            <div className="flex gap-1.5 mb-6 p-1 bg-gray-100 rounded-md">
               {(["customer", "seller"] as Role[]).map((r) => (
                 <button
                   key={r}
                   type="button"
                   onClick={() => setRole(r)}
-                  className={`flex-1 py-2 rounded-[6px] text-[13px] font-[500] capitalize transition-all ${
+                  className={`flex-1 py-2 rounded-[6px] text-org-sm font-medium capitalize transition-all ${
                     role === r
-                      ? "bg-white text-[#1A6B3C] border border-[#D4F0E2]"
-                      : "text-[#6B7280] hover:text-[#374151]"
+                      ? "bg-white text-[#1A6B3C] border border-border-mint"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
                   {r === "seller" ? "Seller Account" : "Customer Account"}
@@ -204,9 +204,9 @@ function SignupContent() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Full Name</label>
+                <label className="block text-org-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                 <div className="relative">
-                  <IconUser size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                  <IconUser size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
                     value={form.name}
@@ -220,9 +220,9 @@ function SignupContent() {
 
               {/* Email */}
               <div>
-                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Email Address</label>
+                <label className="block text-org-sm font-medium text-gray-700 mb-1.5">Email Address</label>
                 <div className="relative">
-                  <IconMail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                  <IconMail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="email"
                     value={form.email}
@@ -236,9 +236,9 @@ function SignupContent() {
 
               {/* Phone */}
               <div>
-                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Phone Number</label>
+                <label className="block text-org-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
                 <div className="relative">
-                  <IconPhone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                  <IconPhone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="tel"
                     value={form.phone}
@@ -254,9 +254,9 @@ function SignupContent() {
               {role === "seller" && (
                 <>
                   <div>
-                    <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Store Name</label>
+                    <label className="block text-org-sm font-medium text-gray-700 mb-1.5">Store Name</label>
                     <div className="relative">
-                      <IconBuilding size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                      <IconBuilding size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                       <input
                         type="text"
                         value={form.storeName}
@@ -268,7 +268,7 @@ function SignupContent() {
                     {errors.storeName && <p className={errCls}>{errors.storeName}</p>}
                   </div>
                   <div>
-                    <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
+                    <label className="block text-org-sm font-medium text-gray-700 mb-1.5">
                       Main Category
                     </label>
                     <select
@@ -286,7 +286,7 @@ function SignupContent() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
+                    <label className="block text-org-sm font-medium text-gray-700 mb-1.5">
                       Business Location
                     </label>
                     <input
@@ -302,9 +302,9 @@ function SignupContent() {
 
               {/* Password */}
               <div>
-                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">Password</label>
+                <label className="block text-org-sm font-medium text-gray-700 mb-1.5">Password</label>
                 <div className="relative">
-                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type={showPw ? "text" : "password"}
                     value={form.password}
@@ -325,11 +325,11 @@ function SignupContent() {
 
               {/* Confirm password */}
               <div>
-                <label className="block text-[13px] font-[500] text-[#374151] mb-1.5">
+                <label className="block text-org-sm font-medium text-gray-700 mb-1.5">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                  <IconLock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="password"
                     value={form.confirmPassword}
@@ -344,7 +344,7 @@ function SignupContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#25A55A] hover:bg-[#1A6B3C] disabled:bg-[#9CA3AF] text-white font-[500] py-[9px] rounded-[8px] text-[13px] transition-colors mt-2"
+                className="w-full bg-[#25A55A] hover:bg-[#1A6B3C] disabled:bg-gray-400 text-white font-medium py-2.25 rounded-md text-org-sm transition-colors mt-2"
               >
                 {loading
                   ? "Creating account..."
@@ -353,7 +353,7 @@ function SignupContent() {
                   : "Create Account"}
               </button>
 
-              <p className="text-[11px] text-[#9CA3AF] text-center">
+              <p className="text-[11px] text-gray-400 text-center">
                 By creating an account, you agree to our{" "}
                 <Link href="/terms" className="text-[#25A55A] hover:text-[#1A6B3C]">Terms</Link> and{" "}
                 <Link href="/privacy" className="text-[#25A55A] hover:text-[#1A6B3C]">Privacy Policy</Link>.

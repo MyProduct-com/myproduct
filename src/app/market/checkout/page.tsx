@@ -297,7 +297,7 @@ export default function CheckoutPage() {
                     className="sr-only"
                   />
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
                       paymentMethod === method.id
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 text-gray-500"
@@ -317,7 +317,7 @@ export default function CheckoutPage() {
                     <p className="text-xs text-gray-500">{method.sub}</p>
                   </div>
                   <div
-                    className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
+                    className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center ${
                       paymentMethod === method.id ? "border-green-500" : "border-gray-300"
                     }`}
                   >
@@ -342,7 +342,7 @@ export default function CheckoutPage() {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-12 h-12 rounded-lg object-cover bg-gray-50 flex-shrink-0"
+                    className="w-12 h-12 rounded-lg object-cover bg-gray-50 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-gray-800 line-clamp-2 leading-tight">
@@ -350,7 +350,7 @@ export default function CheckoutPage() {
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">x{item.quantity}</p>
                   </div>
-                  <p className="text-sm font-semibold text-gray-900 flex-shrink-0">
+                  <p className="text-sm font-semibold text-gray-900 shrink-0">
                     KES {(item.price * item.quantity).toLocaleString()}
                   </p>
                 </div>

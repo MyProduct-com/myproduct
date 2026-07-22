@@ -25,7 +25,7 @@ export default function CustomerSidebar() {
     exact ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className="w-56 flex-shrink-0 bg-white border-r border-gray-200">
+    <aside className="w-56 shrink-0 bg-white border-r border-gray-200">
       <div className="p-4">
         <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">
           My Account

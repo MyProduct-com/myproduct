@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSafeServerSession } from "@/lib/auth";
 import { AUTH_DISABLED } from "@/lib/authFlags";
 
 export default async function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   if (!AUTH_DISABLED) {
-    const session = await getServerSession(authOptions);
+    const session = await getSafeServerSession();
     if (!session?.user) redirect("/auth/login?redirect=/super_admin");
     if (session.user.role !== "SUPER_ADMIN") redirect("/");
   }

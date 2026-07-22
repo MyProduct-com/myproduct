@@ -29,7 +29,7 @@ export default function AdminSidebar() {
     exact ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className="w-60 flex-shrink-0 bg-gray-900 text-white flex flex-col">
+    <aside className="w-60 shrink-0 bg-gray-900 text-white flex flex-col">
       {/* Header */}
       <div className="p-5 border-b border-gray-800">
         <div className="flex items-center gap-3">
@@ -66,7 +66,7 @@ export default function AdminSidebar() {
                   {item.label}
                 </span>
                 {item.badge && !active && (
-                  <span className="bg-orange-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                  <span className="bg-orange-500 text-white text-[10px] font-bold rounded-full min-w-4.5 h-4.5 flex items-center justify-center px-1">
                     {item.badge}
                   </span>
                 )}

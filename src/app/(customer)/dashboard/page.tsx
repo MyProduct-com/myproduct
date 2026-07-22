@@ -24,7 +24,7 @@ export default function CustomerDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome */}
-      <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-6 text-white">
+      <div className="bg-linear-to-r from-green-600 to-green-500 rounded-2xl p-6 text-white">
         <p className="text-green-100 text-sm mb-1">Welcome back,</p>
         <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-display)" }}>
           {user?.name ?? "Valued Customer"}

@@ -54,7 +54,7 @@ function Hero() {
           </span>
         </h1>
 
-        <p className="text-[16px] sm:text-[18px] leading-[1.7] mb-10 max-w-xl" style={{ color: "rgba(255,255,255,.85)", textShadow: "0 1px 12px rgba(0,0,0,.5)" }}>
+        <p className="text-org-md sm:text-[18px] leading-[1.7] mb-10 max-w-xl" style={{ color: "rgba(255,255,255,.85)", textShadow: "0 1px 12px rgba(0,0,0,.5)" }}>
           MyProduct gives Kenyan businesses everything to sell online — products, orders, POS, M-Pesa payments,
           and a shared marketplace — in one platform, from KSh 999/month.
         </p>
@@ -62,14 +62,14 @@ function Hero() {
         <div className="flex gap-3.5 flex-wrap justify-start mb-14">
           <Link
             href="/auth/signup"
-            className="inline-flex items-center gap-2 no-underline px-7 py-3.5 rounded-xl font-extrabold text-[16px] text-white transition-all hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 no-underline px-7 py-3.5 rounded-xl font-extrabold text-org-md text-white transition-all hover:-translate-y-0.5"
             style={{ background: C.action }}
           >
             Start free — no credit card <ArrowUpRight className="w-4 h-4" />
           </Link>
           <Link
             href="/market"
-            className="inline-flex items-center gap-2 no-underline px-6 py-3.5 rounded-xl font-semibold text-[16px] text-white transition-colors hover:bg-white/[0.18]"
+            className="inline-flex items-center gap-2 no-underline px-6 py-3.5 rounded-xl font-semibold text-org-md text-white transition-colors hover:bg-white/18"
             style={{ background: "rgba(255,255,255,.12)", border: "1.5px solid rgba(255,255,255,.25)" }}
           >
             Discover Shops

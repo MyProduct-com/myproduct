@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSafeServerSession } from "@/lib/auth";
 import { AUTH_DISABLED } from "@/lib/authFlags";
 import SellerDashboardShell from "@/components/layout/SellerDashboardShell";
 
 export default async function SellerLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions);
+  const session = await getSafeServerSession();
 
   if (!AUTH_DISABLED && (!session?.user || session.user.role !== "SELLER")) {
     redirect("/auth/login?redirect=/seller");
