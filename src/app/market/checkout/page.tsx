@@ -24,10 +24,10 @@ type PaymentMethod = "mpesa" | "card" | "cash_on_delivery";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, total, count, clearCart } = useCartStore();
+  const { items, total, totalQty, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const subtotal = total();
-  const cartCount = count();
+  const cartCount = totalQty();
   const deliveryFee = subtotal >= DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
   const orderTotal = subtotal + deliveryFee;
 
