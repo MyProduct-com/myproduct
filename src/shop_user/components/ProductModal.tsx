@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import type { Product, CartItem, Theme } from "../types/index";
 import { fmt } from "../utils/helpers";
 
@@ -46,9 +47,9 @@ export default function ProductModal({
           <img src={product.image} alt={product.name} style={{ width: "100%", height: 260, objectFit: "cover", display: "block" }} />
           <button
             onClick={onClose}
-            style={{ position: "absolute", top: 12, left: 12, background: "rgba(255,255,255,0.92)", border: "none", borderRadius: 8, padding: "6px 14px", fontWeight: 700, cursor: "pointer", fontSize: 13, color: theme.black }}
+            style={{ position: "absolute", top: 12, left: 12, background: "rgba(255,255,255,0.92)", border: "none", borderRadius: 8, padding: "6px 14px", fontWeight: 700, cursor: "pointer", fontSize: 13, color: theme.black, display: "flex", alignItems: "center", gap: 4 }}
           >
-            ← Back
+            <ArrowLeft size={14} /> Back
           </button>
           <span style={{ position: "absolute", top: 12, right: 12, background: theme.primary, color: "#fff", padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700 }}>
             {product.unit}

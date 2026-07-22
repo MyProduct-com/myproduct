@@ -17,7 +17,7 @@ export interface ShopTheme {
   fontFamily:    string;
   shopName:      string;
   shopTagline:   string;
-  logoEmoji:     string;
+  logoIcon:      string;
   radius:        string;
   radiusCard:    string;
 }
@@ -38,7 +38,7 @@ export const DEFAULT_SHOP_THEME: ShopTheme = {
   fontFamily:    "'Segoe UI', system-ui, sans-serif",
   shopName:      "FreshMart",
   shopTagline:   "Fresh picks, fair prices.",
-  logoEmoji:     "🛒",
+  logoIcon:      "ShoppingCart",
   radius:        "12px",
   radiusCard:    "16px",
 };

@@ -1,18 +1,23 @@
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  ShoppingBag, Package, Monitor, ClipboardList, Wallet, Users, Settings,
+  Ticket, BarChart3, KeyRound, Pencil, Trash2, Check,
+} from "lucide-react";
 import type { SubAdmin, AdminPrivilege, Theme } from "../../types/index";
 import { SectionHeader, Btn, Modal, Input, Badge, Table } from "../layout/UI";
 import { fmtDateTime, genId } from "../../utils/helpers";
 
-const ALL_PRIVILEGES: { id: AdminPrivilege; label: string; icon: string }[] = [
-  { id:"products",     label:"Products",      icon:"🛍️" },
-  { id:"orders",       label:"Orders",        icon:"📦" },
-  { id:"pos",          label:"Point of Sale", icon:"🖥️" },
-  { id:"inventory",    label:"Inventory",     icon:"📋" },
-  { id:"accounting",   label:"Accounting",    icon:"💰" },
-  { id:"staff",        label:"Staff Mgmt",    icon:"👥" },
-  { id:"settings",     label:"Settings",      icon:"⚙️" },
-  { id:"subscription", label:"Subscription",  icon:"🎫" },
-  { id:"reports",      label:"Reports",       icon:"📊" },
+const ALL_PRIVILEGES: { id: AdminPrivilege; label: string; icon: LucideIcon }[] = [
+  { id:"products",     label:"Products",      icon: ShoppingBag },
+  { id:"orders",       label:"Orders",        icon: Package },
+  { id:"pos",          label:"Point of Sale", icon: Monitor },
+  { id:"inventory",    label:"Inventory",     icon: ClipboardList },
+  { id:"accounting",   label:"Accounting",    icon: Wallet },
+  { id:"staff",        label:"Staff Mgmt",    icon: Users },
+  { id:"settings",     label:"Settings",      icon: Settings },
+  { id:"subscription", label:"Subscription",  icon: Ticket },
+  { id:"reports",      label:"Reports",       icon: BarChart3 },
 ];
 
 interface StaffViewProps {
@@ -115,11 +120,14 @@ export default function StaffView({ theme, staff, onStaff, onToast }: StaffViewP
       header:"Privileges", key:"privs",
       render:(s:SubAdmin) => (
         <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
-          {s.privileges.slice(0,3).map(p => (
-            <span key={p} style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:theme.primaryLight, color:theme.primary, fontWeight:700 }}>
-              {ALL_PRIVILEGES.find(x=>x.id===p)?.icon} {p}
-            </span>
-          ))}
+          {s.privileges.slice(0,3).map(p => {
+            const PrivIcon = ALL_PRIVILEGES.find(x=>x.id===p)?.icon;
+            return (
+              <span key={p} style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:theme.primaryLight, color:theme.primary, fontWeight:700, display:"inline-flex", alignItems:"center", gap:4 }}>
+                {PrivIcon && <PrivIcon size={10} />} {p}
+              </span>
+            );
+          })}
           {s.privileges.length > 3 && <span style={{ fontSize:10, color:theme.textMuted }}>+{s.privileges.length-3}</span>}
         </div>
       ),
@@ -133,12 +141,12 @@ export default function StaffView({ theme, staff, onStaff, onToast }: StaffViewP
       header:"Actions", key:"actions",
       render:(s:SubAdmin) => (
         <div style={{ display:"flex", gap:6 }} onClick={e => e.stopPropagation()}>
-          <Btn theme={theme} variant="ghost" small onClick={()=>openPrivileges(s)}>🔑 Access</Btn>
-          <Btn theme={theme} variant="secondary" small onClick={()=>openEdit(s)}>✏️</Btn>
+          <Btn theme={theme} variant="ghost" small onClick={()=>openPrivileges(s)}><KeyRound size={12} /> Access</Btn>
+          <Btn theme={theme} variant="secondary" small onClick={()=>openEdit(s)}><Pencil size={12} /></Btn>
           <Btn theme={theme} variant={s.active?"secondary":"primary"} small onClick={()=>toggleActive(s.id)}>
             {s.active ? "Deactivate" : "Activate"}
           </Btn>
-          <Btn theme={theme} variant="danger" small onClick={()=>removeStaff(s.id)}>🗑</Btn>
+          <Btn theme={theme} variant="danger" small onClick={()=>removeStaff(s.id)}><Trash2 size={12} /></Btn>
         </div>
       ),
     },
@@ -185,8 +193,8 @@ export default function StaffView({ theme, staff, onStaff, onToast }: StaffViewP
                       fontSize:12, fontWeight:700, color:checked ? theme.primary : theme.textMuted,
                     }}
                   >
-                    <span>{p.icon}</span> {p.label}
-                    {checked && <span style={{ marginLeft:"auto" }}>✓</span>}
+                    <p.icon size={14} /> {p.label}
+                    {checked && <span style={{ marginLeft:"auto" }}><Check size={14} /></span>}
                   </button>
                 );
               })}
@@ -221,12 +229,12 @@ export default function StaffView({ theme, staff, onStaff, onToast }: StaffViewP
                     transition:"all 0.15s",
                   }}
                 >
-                  <span style={{ fontSize:20 }}>{p.icon}</span>
+                  <p.icon size={20} />
                   <div>
                     <div style={{ fontSize:13, fontWeight:700, color:checked ? theme.primary : theme.text }}>{p.label}</div>
                     <div style={{ fontSize:10, color:theme.textMuted }}>{checked ? "Enabled" : "Disabled"}</div>
                   </div>
-                  {checked && <span style={{ marginLeft:"auto", color:theme.primary, fontWeight:900 }}>✓</span>}
+                  {checked && <span style={{ marginLeft:"auto", color:theme.primary, fontWeight:900 }}><Check size={16} /></span>}
                 </button>
               );
             })}

@@ -36,13 +36,16 @@ export default function LandingPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
         html { scroll-behavior: smooth; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
         }
+        .mobile-nav-toggle { display: none; }
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
+          button.mobile-nav-toggle { display: flex !important; }
+          div.mobile-nav-toggle { display: flex !important; }
         }
       `}</style>
       <div style={{ fontFamily: "'Inter', system-ui, sans-serif", background: C.canvas, color: C.charcoal, overflowX: "hidden" }}>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AlarmClock, RotateCcw, ArrowUp, Check, RefreshCw, Circle } from "lucide-react";
 import type { Subscription, SubscriptionPlan, Theme } from "../../types/index";
 import { SectionHeader, Btn, Card, Modal } from "../layout/UI";
 import { fmt, daysUntil, fmtDate } from "../../utils/helpers";
@@ -52,7 +53,7 @@ export default function SubscriptionView({ theme, subscription, plans, onSubscri
           borderRadius: theme.radius, padding:"12px 16px", marginBottom:20,
           display:"flex", alignItems:"center", gap:10,
         }}>
-          <span style={{ fontSize:20 }}>⏰</span>
+          <AlarmClock size={20} color={days <= 7 ? "#991b1b" : "#92400e"} />
           <div style={{ flex:1 }}>
             <span style={{ fontWeight:700, color: days <= 7 ? "#991b1b" : "#92400e" }}>
               {days <= 0 ? "Subscription expired!" : `Expires in ${days} day${days!==1?"s":""}!`}
@@ -73,8 +74,8 @@ export default function SubscriptionView({ theme, subscription, plans, onSubscri
               <div style={{ fontSize:12, color:theme.textMuted, fontWeight:600, textTransform:"uppercase", letterSpacing:"0.05em" }}>Current Plan</div>
               <div style={{ fontSize:28, fontWeight:900, color:theme.black, marginTop:4 }}>{currentPlan.name}</div>
             </div>
-            <span style={{ padding:"4px 14px", borderRadius:20, background:statusColor+"18", color:statusColor, fontWeight:700, fontSize:12 }}>
-              ● {subscription.status.charAt(0).toUpperCase()+subscription.status.slice(1)}
+            <span style={{ padding:"4px 14px", borderRadius:20, background:statusColor+"18", color:statusColor, fontWeight:700, fontSize:12, display: "inline-flex", alignItems: "center", gap: 5 }}>
+              <Circle size={8} fill="currentColor" /> {subscription.status.charAt(0).toUpperCase()+subscription.status.slice(1)}
             </span>
           </div>
           <div style={{ fontSize:24, fontWeight:900, color:theme.accent, marginBottom:16 }}>
@@ -99,8 +100,8 @@ export default function SubscriptionView({ theme, subscription, plans, onSubscri
             </div>
           </div>
           <div style={{ display:"flex", gap:10 }}>
-            <Btn theme={theme} onClick={() => setShowRenew(true)}>↺ Renew</Btn>
-            <Btn theme={theme} variant="ghost" onClick={() => setShowUpgrade(true)}>⬆ Upgrade</Btn>
+            <Btn theme={theme} onClick={() => setShowRenew(true)}><RotateCcw size={14} /> Renew</Btn>
+            <Btn theme={theme} variant="ghost" onClick={() => setShowUpgrade(true)}><ArrowUp size={14} /> Upgrade</Btn>
           </div>
         </Card>
 
@@ -109,7 +110,7 @@ export default function SubscriptionView({ theme, subscription, plans, onSubscri
           <div style={{ fontWeight:700, fontSize:15, color:theme.black, marginBottom:14 }}>Plan Features</div>
           {currentPlan.features.map((f, i) => (
             <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 0", borderBottom: i < currentPlan.features.length-1 ? `1px solid ${theme.border}` : "none" }}>
-              <span style={{ color:theme.primary, fontWeight:900, fontSize:14 }}>✓</span>
+              <Check size={14} color={theme.primary} strokeWidth={3} />
               <span style={{ fontSize:13, color:theme.text }}>{f}</span>
             </div>
           ))}
@@ -155,8 +156,8 @@ export default function SubscriptionView({ theme, subscription, plans, onSubscri
               </div>
               <ul style={{ listStyle:"none", padding:0, margin:"0 0 16px", display:"flex", flexDirection:"column", gap:6 }}>
                 {plan.features.map((f,i) => (
-                  <li key={i} style={{ fontSize:12, color:theme.text, display:"flex", gap:6 }}>
-                    <span style={{ color:theme.primary }}>✓</span>{f}
+                  <li key={i} style={{ fontSize:12, color:theme.text, display:"flex", gap:6, alignItems:"center" }}>
+                    <Check size={12} color={theme.primary} />{f}
                   </li>
                 ))}
               </ul>
@@ -178,7 +179,7 @@ export default function SubscriptionView({ theme, subscription, plans, onSubscri
       {showUpgrade && selectedPlan && (
         <Modal title="Confirm Plan Change" onClose={() => setShowUpgrade(false)} theme={theme} width={420}>
           <div style={{ textAlign:"center", padding:"20px 0" }}>
-            <div style={{ fontSize:48, marginBottom:12 }}>⬆️</div>
+            <div style={{ display:"flex", justifyContent:"center", marginBottom:12, color:theme.primary }}><ArrowUp size={48} /></div>
             <div style={{ fontWeight:800, fontSize:18, color:theme.black, marginBottom:8 }}>
               Switch to {selectedPlan.name}?
             </div>
@@ -198,7 +199,7 @@ export default function SubscriptionView({ theme, subscription, plans, onSubscri
       {showRenew && (
         <Modal title="Renew Subscription" onClose={() => setShowRenew(false)} theme={theme} width={420}>
           <div style={{ textAlign:"center", padding:"20px 0" }}>
-            <div style={{ fontSize:48, marginBottom:12 }}>🔄</div>
+            <div style={{ display:"flex", justifyContent:"center", marginBottom:12, color:theme.primary }}><RefreshCw size={48} /></div>
             <div style={{ fontWeight:800, fontSize:18, color:theme.black, marginBottom:8 }}>
               Renew {currentPlan.name} Plan?
             </div>

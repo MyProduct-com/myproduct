@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { Package, Store, Search, X, ShoppingCart, ArrowRight, ArrowUp } from "lucide-react";
 import type { User, Theme, CartItem, Order, PlacedOrderPayload } from "./types/index";
 import { genOrderId } from "./utils/helpers";
 import { useProductStore } from "@/store/productStore";
@@ -170,7 +171,10 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
                 cursor:           "pointer",
               }}
             >
-              {tab === "orders" ? "📦 My Orders" : "🏪 Marketplace"}
+              <span className="inline-flex items-center gap-1.5">
+                {tab === "orders" ? <Package className="w-4 h-4" /> : <Store className="w-4 h-4" />}
+                {tab === "orders" ? "My Orders" : "Marketplace"}
+              </span>
               {tab === "orders" && orders.length > 0 && (
                 <span
                   className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white"
@@ -196,7 +200,7 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all"
                 style={{ borderColor: theme.border, background: theme.surface }}
               >
-                <span className="text-lg shrink-0">🔍</span>
+                <Search className="w-4.5 h-4.5 shrink-0" />
                 <input
                   type="text"
                   placeholder="Search products…"
@@ -208,9 +212,9 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
                 {search && (
                   <button
                     onClick={() => setSearch("")}
-                    className="text-lg shrink-0 opacity-50 hover:opacity-100 transition-opacity"
+                    className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
                   >
-                    ✕
+                    <X className="w-4.5 h-4.5" />
                   </button>
                 )}
               </div>
@@ -255,8 +259,8 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
               </div>
             ) : (
               <div className="text-center py-20">
-                <div className="text-5xl mb-4">
-                  {search ? "🔍" : "🛒"}
+                <div className="flex justify-center mb-4">
+                  {search ? <Search className="w-12 h-12" /> : <ShoppingCart className="w-12 h-12" />}
                 </div>
                 <p className="text-base font-semibold mb-1" style={{ color: theme.text }}>
                   {search ? "No products found" : "No products available yet"}
@@ -288,7 +292,7 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
             </div>
           ) : (
             <div className="text-center py-20">
-              <div className="text-5xl mb-4">📦</div>
+              <div className="flex justify-center mb-4"><Package className="w-12 h-12" /></div>
               <p className="text-base font-semibold mb-1" style={{ color: theme.text }}>
                 No orders yet
               </p>
@@ -326,8 +330,8 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
                 {cartCount} item{cartCount > 1 ? "s" : ""} in cart
               </span>
             </div>
-            <span className="text-sm font-semibold">
-              KSh {cartTotal.toLocaleString()} →
+            <span className="text-sm font-semibold flex items-center gap-1">
+              KSh {cartTotal.toLocaleString()} <ArrowRight className="w-4 h-4" />
             </span>
           </button>
         </div>
@@ -337,10 +341,10 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-20 right-4 sm:bottom-6 z-40 w-10 h-10 rounded-full shadow-md flex items-center justify-center text-lg bg-white border"
+          className="fixed bottom-20 right-4 sm:bottom-6 z-40 w-10 h-10 rounded-full shadow-md flex items-center justify-center bg-white border"
           style={{ borderColor: theme.border, color: theme.primary }}
         >
-          ↑
+          <ArrowUp className="w-5 h-5" />
         </button>
       )}
 

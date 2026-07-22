@@ -1,146 +1,162 @@
-"use client";
-import { IconTrendingUp, IconEye, IconShoppingCart, IconStar } from "@tabler/icons-react";
-import { mockProducts, mockOrders } from "@/lib/mock-data";
+import { getServerSession } from "next-auth";
+import { Wallet, Eye, ShoppingCart, Star } from "lucide-react";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import StatCard from "@/components/dashboard/StatCard";
+import ChartCard from "@/components/dashboard/ChartCard";
+import RangeRevenueChart from "@/components/dashboard/RangeRevenueChart";
+import { getSellerDashboardData } from "../data/getSellerDashboardData";
 
-const MONTHLY_DATA = [
-  { month: "Jan", revenue: 42000, orders: 84 },
-  { month: "Feb", revenue: 58000, orders: 112 },
-  { month: "Mar", revenue: 71000, orders: 138 },
-  { month: "Apr", revenue: 55000, orders: 101 },
-  { month: "May", revenue: 89000, orders: 172 },
-  { month: "Jun", revenue: 112000, orders: 218 },
-];
+const DEMO_SELLER_EMAIL = "techhub@myproducts.co.ke";
+const fmt = (n: number) => `KES ${n.toLocaleString()}`;
 
-const maxRevenue = Math.max(...MONTHLY_DATA.map((d) => d.revenue));
-const maxOrders = Math.max(...MONTHLY_DATA.map((d) => d.orders));
+const STATUS_BAR_TONE: Record<string, string> = {
+  DELIVERED: "bg-org-success",
+  CONFIRMED: "bg-org-success",
+  PROCESSING: "bg-org-warning",
+  PENDING: "bg-org-warning",
+  SHIPPED: "bg-org-accent",
+  CANCELLED: "bg-org-danger",
+  REFUNDED: "bg-org-danger",
+};
 
-const ORDER_STATUS_DATA = [
-  { label: "Delivered", count: 87, color: "bg-green-500" },
-  { label: "Processing", count: 34, color: "bg-purple-500" },
-  { label: "Shipped", count: 21, color: "bg-blue-500" },
-  { label: "Pending", count: 15, color: "bg-yellow-500" },
-  { label: "Cancelled", count: 7, color: "bg-red-500" },
-];
-const totalOrders = ORDER_STATUS_DATA.reduce((s, d) => s + d.count, 0);
+export default async function SellerAnalyticsPage() {
+  const session = await getServerSession(authOptions);
 
-export default function SellerAnalyticsPage() {
-  const topProducts = [...mockProducts]
-    .sort((a, b) => b.sales - a.sales)
-    .slice(0, 5);
+  let sellerId = session?.user?.id;
+  if (!sellerId) {
+    try {
+      const demo = await prisma.user.findUnique({ where: { email: DEMO_SELLER_EMAIL } });
+      if (demo) sellerId = demo.id;
+    } catch {
+      // handled by getSellerDashboardData's own resilience fallback below
+    }
+  }
+
+  const data = await getSellerDashboardData(sellerId ?? "unknown");
+  const conversionRate = data.totalViews > 0 ? (data.ordersTotal / data.totalViews) * 100 : 0;
+  const totalStatusOrders = data.orderStatusBreakdown.reduce((s, d) => s + d.count, 0);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Analytics</h1>
-
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: "Total Revenue", value: "KES 427,000", icon: <IconTrendingUp size={20} />, color: "text-green-600 bg-green-50", change: "+12%" },
-          { label: "Total Views", value: "24,840", icon: <IconEye size={20} />, color: "text-blue-600 bg-blue-50", change: "+18%" },
-          { label: "Conversion Rate", value: "4.2%", icon: <IconShoppingCart size={20} />, color: "text-orange-600 bg-orange-50", change: "+0.3%" },
-          { label: "Avg Rating", value: "4.6 / 5.0", icon: <IconStar size={20} />, color: "text-yellow-600 bg-yellow-50", change: "+0.1" },
-        ].map((k) => (
-          <div key={k.label} className="bg-white rounded-xl border border-gray-100 p-5">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${k.color}`}>
-              {k.icon}
-            </div>
-            <p className="text-xl font-bold text-gray-900">{k.value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{k.label}</p>
-            <p className="text-xs font-semibold text-green-600 mt-1.5">{k.change} vs last month</p>
-          </div>
-        ))}
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-org-lg font-org-bold text-org-text-primary">Analytics</h1>
+        <p className="text-org-sm text-org-text-secondary mt-0.5">{data.storeName}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Revenue chart */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 p-5">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="font-bold text-gray-900">Monthly Revenue</h2>
-            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">Jan – Jun 2024</span>
-          </div>
-          <p className="text-xs text-gray-400 mb-5">Revenue trend over the last 6 months</p>
-          <div className="flex items-end gap-3 h-44">
-            {MONTHLY_DATA.map((d) => (
-              <div key={d.month} className="flex-1 flex flex-col items-center gap-1.5">
-                <span className="text-[10px] text-gray-400">{(d.revenue / 1000).toFixed(0)}k</span>
-                <div
-                  className="w-full bg-green-500 hover:bg-green-600 rounded-t-lg transition-colors cursor-pointer"
-                  style={{ height: `${(d.revenue / maxRevenue) * 140}px` }}
-                  title={`KES ${d.revenue.toLocaleString()}`}
-                />
-                <span className="text-[11px] text-gray-500 font-medium">{d.month}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Order status breakdown */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-bold text-gray-900 mb-1">Orders by Status</h2>
-          <p className="text-xs text-gray-400 mb-5">Last 6 months breakdown</p>
-          <div className="space-y-3">
-            {ORDER_STATUS_DATA.map((item) => (
-              <div key={item.label}>
-                <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="text-gray-600 font-medium">{item.label}</span>
-                  <span className="text-gray-900 font-semibold">
-                    {item.count} <span className="text-gray-400 font-normal">({Math.round((item.count / totalOrders) * 100)}%)</span>
-                  </span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
-                  <div
-                    className={`h-1.5 rounded-full ${item.color}`}
-                    style={{ width: `${(item.count / totalOrders) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard
+          label="Revenue (30d)"
+          value={fmt(data.revenueTotal)}
+          icon={<Wallet size={16} />}
+          changePct={data.revenueChangePct}
+          sparkline={data.revenueSparkline}
+        />
+        <StatCard
+          label="Total Views"
+          value={data.totalViews.toLocaleString()}
+          icon={<Eye size={16} />}
+          iconBg="bg-org-accent/15 text-org-accent"
+        />
+        <StatCard
+          label="Orders (30d)"
+          value={String(data.ordersTotal)}
+          icon={<ShoppingCart size={16} />}
+          changePct={data.ordersChangePct}
+        />
+        <StatCard
+          label="Store Rating"
+          value={data.storeRating > 0 ? `${data.storeRating.toFixed(1)} / 5.0` : "No ratings yet"}
+          icon={<Star size={16} />}
+          iconBg="bg-org-warning/15 text-org-warning"
+        />
       </div>
 
-      {/* Top products */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
-        <h2 className="font-bold text-gray-900 mb-4">Best Performing Products</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr className="text-xs text-gray-400 uppercase tracking-wider">
-                <th className="px-4 py-2.5 text-left">Product</th>
-                <th className="px-4 py-2.5 text-right">Views</th>
-                <th className="px-4 py-2.5 text-right">Sales</th>
-                <th className="px-4 py-2.5 text-right">Revenue</th>
-                <th className="px-4 py-2.5 text-right">Rating</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {topProducts.map((p, i) => (
-                <tr key={p.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-bold text-gray-400 w-4">{i + 1}</span>
-                      <img src={p.image} alt={p.name} className="w-9 h-9 rounded-lg object-cover bg-gray-100" />
-                      <div>
-                        <p className="font-medium text-gray-900 max-w-[200px] truncate">{p.name}</p>
-                        <p className="text-xs text-gray-400">{p.category}</p>
-                      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <RangeRevenueChart data={data.dailyRevenue} currency="KES" />
+        </div>
+
+        <ChartCard title="Orders by Status" subtitle="Last 6 months">
+          {data.orderStatusBreakdown.length === 0 ? (
+            <p className="text-org-sm text-org-text-secondary text-center py-8">No orders yet.</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {data.orderStatusBreakdown
+                .sort((a, b) => b.count - a.count)
+                .map((s) => (
+                  <div key={s.status}>
+                    <div className="flex items-center justify-between text-org-sm mb-1">
+                      <span className="text-org-text-secondary font-org-medium capitalize">{s.status.toLowerCase()}</span>
+                      <span className="text-org-text-primary font-org-semibold">
+                        {s.count} <span className="text-org-text-muted font-org-normal">({Math.round((s.count / totalStatusOrders) * 100)}%)</span>
+                      </span>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-right text-gray-600">{p.views.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right text-gray-600">{p.sales}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-gray-900">
-                    KES {(p.sales * p.price).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <span className="text-yellow-600 font-semibold">{p.rating}</span>
-                    <span className="text-gray-400 text-xs"> /5</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    <div className="w-full bg-org-surface-alt rounded-org-pill h-1.5">
+                      <div
+                        className={`h-1.5 rounded-org-pill ${STATUS_BAR_TONE[s.status] ?? "bg-org-text-muted"}`}
+                        style={{ width: `${(s.count / totalStatusOrders) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </ChartCard>
       </div>
+
+      <ChartCard title="Best Performing Products" subtitle={`Conversion rate: ${conversionRate.toFixed(1)}%`}>
+        {data.topProducts.length === 0 ? (
+          <p className="text-org-sm text-org-text-secondary text-center py-8">No products yet.</p>
+        ) : (
+          <>
+            {/* Mobile: stacked cards */}
+            <div className="flex flex-col gap-3 md:hidden">
+              {data.topProducts.map((p, i) => (
+                <div key={p.id} className="flex items-center gap-3 bg-org-surface-alt rounded-org-sm px-3 py-2.5">
+                  <span className="text-org-xs font-org-bold text-org-text-muted w-4 shrink-0">{i + 1}</span>
+                  <img src={p.image} alt={p.name} className="w-11 h-11 rounded-lg object-cover shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-org-sm font-org-medium text-org-text-primary truncate">{p.name}</p>
+                    <p className="text-org-xs text-org-text-secondary">{p.views.toLocaleString()} views &middot; {p.sales} sold</p>
+                  </div>
+                  <span className="text-org-sm font-org-semibold text-org-text-primary shrink-0">{fmt(p.sales * p.price)}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden md:block overflow-x-auto -mx-5">
+              <table className="w-full text-org-sm min-w-125">
+                <thead>
+                  <tr className="text-org-xs text-org-text-muted uppercase tracking-wide border-b border-org-border">
+                    <th className="px-5 pb-2.5 text-left font-org-medium">Product</th>
+                    <th className="px-2 pb-2.5 text-right font-org-medium">Views</th>
+                    <th className="px-2 pb-2.5 text-right font-org-medium">Sales</th>
+                    <th className="px-5 pb-2.5 text-right font-org-medium">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.topProducts.map((p, i) => (
+                    <tr key={p.id} className="border-b border-org-border last:border-0">
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-3">
+                          <span className="text-org-xs font-org-bold text-org-text-muted w-4 shrink-0">{i + 1}</span>
+                          <img src={p.image} alt={p.name} className="w-9 h-9 rounded-lg object-cover shrink-0" />
+                          <span className="font-org-medium text-org-text-primary max-w-[220px] truncate">{p.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-2 py-3 text-right text-org-text-secondary">{p.views.toLocaleString()}</td>
+                      <td className="px-2 py-3 text-right text-org-text-secondary">{p.sales}</td>
+                      <td className="px-5 py-3 text-right font-org-semibold text-org-text-primary">{fmt(p.sales * p.price)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </ChartCard>
     </div>
   );
 }

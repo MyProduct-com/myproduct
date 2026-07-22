@@ -24,10 +24,10 @@ type PaymentMethod = "mpesa" | "card" | "cash_on_delivery";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, total, count, clearCart } = useCartStore();
+  const { items, total, totalQty, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const subtotal = total();
-  const cartCount = count();
+  const cartCount = totalQty();
   const deliveryFee = subtotal >= DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
   const orderTotal = subtotal + deliveryFee;
 
@@ -86,6 +86,13 @@ export default function CheckoutPage() {
   }
 
   if (success) {
+    const receiptItems = items.map((item) => ({
+      name: item.name,
+      qty: item.quantity,
+      unitPrice: item.price,
+      subtotal: item.price * item.quantity,
+    }));
+
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -95,17 +102,59 @@ export default function CheckoutPage() {
         <p className="text-gray-500 mb-1">Order ID: <span className="font-semibold text-gray-800">{orderId}</span></p>
         <p className="text-sm text-gray-500 mb-6">
           Thank you, <strong>{form.name}</strong>! Your order will be delivered to <strong>{form.address}</strong>.
-          {paymentMethod === "mpesa" && ` We'll send an M-Pesa prompt to ${form.phone}.`}
+          {paymentMethod === "mpesa" && ` We will send an M-Pesa prompt to ${form.phone}.`}
         </p>
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-left">
-          <p className="text-sm font-semibold text-green-800 mb-1">What happens next?</p>
-          <ul className="text-sm text-green-700 space-y-1">
-            <li>1. Order confirmation sent to {form.phone}</li>
-            <li>2. Seller prepares your items within 2-4 hours</li>
-            <li>3. Delivery partner picks up and delivers</li>
-            <li>4. Track your order from your dashboard</li>
-          </ul>
+
+        {/* E-Receipt */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 text-left">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">E-Receipt</h2>
+            <span className="text-xs font-semibold bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full capitalize">{paymentMethod.replace("_", " ")}</span>
+          </div>
+          <div className="space-y-2 text-sm border-b border-gray-100 pb-4 mb-4">
+            <div className="flex justify-between text-gray-600">
+              <span>Customer</span>
+              <span className="font-medium text-gray-900">{form.name}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Phone</span>
+              <span className="font-medium text-gray-900">{form.phone}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Delivery</span>
+              <span className="font-medium text-gray-900">{form.address}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Date</span>
+              <span className="font-medium text-gray-900">{new Date().toLocaleString("en-KE")}</span>
+            </div>
+          </div>
+          <div className="space-y-2 text-sm mb-4">
+            {receiptItems.map((item, idx) => (
+              <div key={idx} className="flex justify-between text-gray-700">
+                <span>{item.name} x{item.qty}</span>
+                <span className="font-semibold">KES {item.subtotal.toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2 text-sm border-t border-gray-100 pt-4">
+            <div className="flex justify-between text-gray-600">
+              <span>Subtotal</span>
+              <span>KES {subtotal.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Delivery</span>
+              <span className={deliveryFee === 0 ? "text-green-600" : ""}>{deliveryFee === 0 ? "FREE" : `KES ${deliveryFee}`}</span>
+            </div>
+            <div className="flex justify-between font-bold text-gray-900 text-base">
+              <span>Total Paid</span>
+              <span>KES {orderTotal.toLocaleString()}</span>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-4">Payment status: <span className="font-semibold text-green-600">Paid</span></p>
+          <p className="text-xs text-gray-400">Order status: <span className="font-semibold text-gray-900">Under Processing</span></p>
         </div>
+
         <div className="flex gap-3 justify-center">
           <Link
             href="/dashboard/orders"

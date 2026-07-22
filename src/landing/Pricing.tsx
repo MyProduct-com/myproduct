@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { C, PACKAGES } from "./Constants";
 import { useState } from "react";
 
@@ -56,7 +57,7 @@ function Pricing() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 24 }}>
                   {pkg.features.map(f => (
                     <div key={f} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
-                      <span style={{ color: pkg.popular ? C.mint : C.action, flexShrink: 0, fontSize: 14, marginTop: 1 }}>✓</span>
+                      <Check style={{ color: pkg.popular ? C.mint : C.action, flexShrink: 0, width: 14, height: 14, marginTop: 1 }} />
                       <span style={{ fontSize: 13, color: pkg.popular ? "rgba(255,255,255,.85)" : C.charcoal, lineHeight: 1.4 }}>{f}</span>
                     </div>
                   ))}
@@ -67,7 +68,6 @@ function Pricing() {
                   padding: "12px", borderRadius: 12, fontWeight: 700, fontSize: 14,
                   background: pkg.popular ? C.action : C.forest,
                   color: "#fff",
-                  boxShadow: pkg.popular ? "0 4px 16px rgba(37,165,90,.4)" : "none",
                   transition: "opacity .15s",
                 }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = "0.87"; }}

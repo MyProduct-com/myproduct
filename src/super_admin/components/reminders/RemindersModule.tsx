@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Megaphone, CheckCircle2, AlertTriangle, Loader2, Undo2 } from "lucide-react";
+import { getLogoIcon } from "@/lib/logoIcons";
 import { SA_THEME as T } from "../../data/theme";
 import type { Reminder, ManagedShop, SystemPackage } from "../../types/index";
 import { Card, Btn, Input, SectionHeader, Badge, Modal, Tabs, Checkbox } from "../layout/UI";
@@ -67,7 +69,7 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
       } as Reminder;
       onSend(rem);
       setSending(false);
-      addToast(`✅ Reminder sent to ${recipients.length} recipient${recipients.length !== 1 ? "s" : ""}.`, "success");
+      addToast(`Reminder sent to ${recipients.length} recipient${recipients.length !== 1 ? "s" : ""}.`, "success");
       setForm({ ...BLANK });
       setSelectedShops([]);
       setTab("history");
@@ -76,7 +78,7 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      <SectionHeader title="📣 Reminders & Communications" subtitle="Send targeted messages to users based on subscription status, package, or individual selection." />
+      <SectionHeader icon={Megaphone} title="Reminders & Communications" subtitle="Send targeted messages to users based on subscription status, package, or individual selection." />
 
       <Tabs
         tabs={[
@@ -173,7 +175,7 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
                   {shops.map(s => (
                     <Checkbox key={s.id} checked={selectedShops.includes(s.id)}
                       onChange={v => setSelectedShops(prev => v ? [...prev, s.id] : prev.filter(id => id !== s.id))}
-                      label={`${s.logoEmoji} ${s.name} (${s.ownerName})`} />
+                      label={`${s.name} (${s.ownerName})`} />
                   ))}
                 </div>
               )}
@@ -181,17 +183,24 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
 
             {/* Recipient preview */}
             <Card style={{ background: recipients.length > 0 ? T.successLight : T.bg, border: `1px solid ${recipients.length > 0 ? T.success : T.border}` }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: recipients.length > 0 ? T.success : T.textMuted, marginBottom: 8 }}>
-                {recipients.length > 0 ? `✅ ${recipients.length} recipient${recipients.length !== 1 ? "s" : ""} matched` : "⚠ No recipients matched"}
+              <div style={{ fontSize: 13, fontWeight: 700, color: recipients.length > 0 ? T.success : T.textMuted, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                {recipients.length > 0
+                  ? <><CheckCircle2 size={14} /> {recipients.length} recipient{recipients.length !== 1 ? "s" : ""} matched</>
+                  : <><AlertTriangle size={14} /> No recipients matched</>}
               </div>
-              {recipients.slice(0, 4).map(s => (
-                <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3 }}>{s.logoEmoji} {s.name} · {s.ownerEmail}</div>
-              ))}
+              {recipients.slice(0, 4).map(s => {
+                const LogoIcon = getLogoIcon(s.logoIcon);
+                return (
+                  <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3, display: "flex", alignItems: "center", gap: 6 }}>
+                    <LogoIcon size={12} /> {s.name} · {s.ownerEmail}
+                  </div>
+                );
+              })}
               {recipients.length > 4 && <div style={{ fontSize: 12, color: T.textMuted }}>+{recipients.length - 4} more…</div>}
             </Card>
 
             <Btn variant="primary" onClick={handleSend} disabled={sending || recipients.length === 0 || !form.title.trim() || !form.message.trim()} style={{ width: "100%" }}>
-              {sending ? "⏳ Sending…" : `📣 Send to ${recipients.length} Recipient${recipients.length !== 1 ? "s" : ""}`}
+              {sending ? <><Loader2 size={14} /> Sending…</> : <><Megaphone size={14} /> Send to {recipients.length} Recipient{recipients.length !== 1 ? "s" : ""}</>}
             </Btn>
           </div>
         </div>
@@ -217,7 +226,7 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
                   </div>
                 </div>
                 <Btn size="sm" variant="ghost" onClick={() => { set("title", r.title); set("message", r.message); set("targetType", r.targetType); setTab("compose"); }}>
-                  ↩ Resend
+                  <Undo2 size={14} /> Resend
                 </Btn>
               </Card>
             );

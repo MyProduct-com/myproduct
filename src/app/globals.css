@@ -53,6 +53,98 @@
   --radius-lg:  12px;
   --radius-xl:  16px;
   --radius-2xl: 20px;
+
+  /* ── Dashboard design system ("org-*") — DNA for the whole site ── */
+  --color-org-primary:       #1B3A2B;   /* deep forest green — sidebar, active states, CTAs */
+  --color-org-primary-hover: #142B20;
+  --color-org-primary-light: #E8EFE9;   /* light green tint — icon bg, badges */
+  --color-org-accent:        #6B8F71;   /* muted sage green — secondary chart bars */
+
+  --color-org-bg:            #F4F6F2;   /* app background */
+  --color-org-surface:       #FFFFFF;   /* cards */
+  --color-org-surface-alt:   #FAFBF9;   /* nested/inset surfaces */
+  --color-org-border:        #E4E8E2;
+
+  --color-org-text-primary:   #1A1D1B;
+  --color-org-text-secondary: #6B716C;
+  --color-org-text-muted:     #9CA39E;
+
+  --color-org-success:    #2E7D4F;
+  --color-org-success-bg: #E5F3EA;
+  --color-org-danger:     #D64545;
+  --color-org-danger-bg:  #FBEAEA;
+  --color-org-warning:    #C98A2C;
+
+  --font-org: "Inter", system-ui, -apple-system, sans-serif;
+
+  --text-org-xs:   12px;   /* labels, table meta, timestamps */
+  --text-org-sm:   13px;   /* body small, table cells */
+  --text-org-base: 14px;   /* default body */
+  --text-org-md:   16px;   /* card labels, nav items */
+  --text-org-lg:   20px;   /* section headings */
+  --text-org-xl:   28px;   /* stat numbers */
+  --text-org-2xl:  36px;   /* hero / page title only */
+
+  --font-weight-org-regular:  400;
+  --font-weight-org-medium:   500;
+  --font-weight-org-semibold: 600;
+  --font-weight-org-bold:     700;
+
+  --leading-org-tight:  1.2;
+  --leading-org-normal: 1.5;
+
+  --radius-org-card: 20px;
+  --radius-org-sm:   10px;
+  --radius-org-pill: 999px;
+
+  --shadow-org-card: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+/* Raw custom properties (var(--org-*)) for inline styles / non-Tailwind consumers,
+   e.g. the theme-driven shop_admin / shop_user / super_admin component trees. */
+:root {
+  --org-primary: #1B3A2B;
+  --org-primary-hover: #142B20;
+  --org-primary-light: #E8EFE9;
+  --org-accent: #6B8F71;
+
+  --org-bg: #F4F6F2;
+  --org-surface: #FFFFFF;
+  --org-surface-alt: #FAFBF9;
+  --org-border: #E4E8E2;
+
+  --org-text-primary: #1A1D1B;
+  --org-text-secondary: #6B716C;
+  --org-text-muted: #9CA39E;
+
+  --org-success: #2E7D4F;
+  --org-success-bg: #E5F3EA;
+  --org-danger: #D64545;
+  --org-danger-bg: #FBEAEA;
+  --org-warning: #C98A2C;
+
+  --org-font: "Inter", system-ui, -apple-system, sans-serif;
+
+  --org-text-xs: 12px;
+  --org-text-sm: 13px;
+  --org-text-base: 14px;
+  --org-text-md: 16px;
+  --org-text-lg: 20px;
+  --org-text-xl: 28px;
+  --org-text-2xl: 36px;
+
+  --org-weight-regular: 400;
+  --org-weight-medium: 500;
+  --org-weight-semibold: 600;
+  --org-weight-bold: 700;
+
+  --org-leading-tight: 1.2;
+  --org-leading-normal: 1.5;
+
+  --org-radius-card: 20px;
+  --org-radius-sm: 10px;
+  --org-radius-pill: 999px;
+  --org-shadow-card: 0 2px 12px rgba(0,0,0,0.04);
 }
 
 @layer base {

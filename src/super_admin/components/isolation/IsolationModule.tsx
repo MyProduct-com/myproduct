@@ -1,4 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
+import {
+  FlaskConical, X, Lock, Globe, Info, CheckCircle2, AlertTriangle,
+  XCircle, ArrowUpRight, ClipboardList, FileText, Loader2, type LucideIcon,
+} from "lucide-react";
+import { getLogoIcon } from "@/lib/logoIcons";
 import { SA_THEME as T } from "../../data/theme";
 import type { ManagedShop, IsolationLog } from "../../types/index";
 import { Card, Btn, Input, SectionHeader, Badge } from "../layout/UI";
@@ -95,14 +100,15 @@ export function IsolationModule({ shops, preloadShop, addToast }: Props) {
     warning: T.warning,
     error: T.danger,
   };
-  const logIcons: Record<IsolationLog["type"], string> = {
-    info: "ℹ", success: "✓", warning: "⚠", error: "✕",
+  const logIcons: Record<IsolationLog["type"], LucideIcon> = {
+    info: Info, success: CheckCircle2, warning: AlertTriangle, error: XCircle,
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <SectionHeader
-        title="🔬 Isolation Lab"
+        icon={FlaskConical}
+        title="Isolation Lab"
         subtitle="Load any shop or admin panel in a sandboxed view — troubleshoot without touching live data."
       />
 
@@ -119,7 +125,7 @@ export function IsolationModule({ shops, preloadShop, addToast }: Props) {
                 if (s) setUrlInput(s.shopUrl);
               }} style={{ width: "100%", padding: "9px 12px", borderRadius: T.radius, border: `1.5px solid ${T.border}`, fontSize: 13, color: T.text, background: T.surface }}>
                 <option value="">— or enter a custom URL below —</option>
-                {shops.map(s => <option key={s.id} value={s.id}>{s.logoEmoji} {s.name} ({s.status})</option>)}
+                {shops.map(s => <option key={s.id} value={s.id}>{s.name} ({s.status})</option>)}
               </select>
             </div>
 
@@ -146,9 +152,9 @@ export function IsolationModule({ shops, preloadShop, addToast }: Props) {
 
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <Btn onClick={handleLoad} variant="primary" disabled={loading || (!shopId && !urlInput.trim())}>
-              {loading ? "Loading…" : loaded ? "Reload" : "🔬 Launch Isolation Session"}
+              {loading ? "Loading…" : loaded ? "Reload" : <><FlaskConical size={14} /> Launch Isolation Session</>}
             </Btn>
-            {loaded && <Btn variant="ghost" onClick={handleClearSession}>✕ Clear Session</Btn>}
+            {loaded && <Btn variant="ghost" onClick={handleClearSession}><X size={14} /> Clear Session</Btn>}
             {selectedShop && (
               <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
                 <Badge label={selectedShop.status} bg={selectedShop.status === "active" ? "#dcfce7" : "#fee2e2"} color={selectedShop.status === "active" ? "#166534" : "#991b1b"} />
@@ -170,31 +176,34 @@ export function IsolationModule({ shops, preloadShop, addToast }: Props) {
                 <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#f59e0b" }} />
                 <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22c55e" }} />
               </div>
-              <div style={{ flex: 1, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 6, padding: "4px 10px", fontSize: 12, color: T.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                🔒 {customUrl || urlInput}
+              <div style={{ flex: 1, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 6, padding: "4px 10px", fontSize: 12, color: T.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}>
+                <Lock size={12} style={{ flexShrink: 0 }} /> {customUrl || urlInput}
               </div>
               <span style={{ fontSize: 10, background: "#fef9c3", color: "#854d0e", padding: "2px 8px", borderRadius: 999, fontWeight: 700 }}>ISOLATED</span>
             </div>
             {loading ? (
               <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12, color: T.textMuted }}>
-                <div style={{ fontSize: 32 }}>⏳</div>
+                <Loader2 size={32} />
                 <div style={{ fontSize: 14, fontWeight: 600 }}>Loading isolated session…</div>
               </div>
             ) : (
               <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 14, padding: 24, background: T.bg }}>
                 {/* In production, this would be a real iframe — sandboxed */}
-                <div style={{ fontSize: 48 }}>{selectedShop?.logoEmoji ?? "🌐"}</div>
+                {(() => {
+                  const LogoIcon = selectedShop ? getLogoIcon(selectedShop.logoIcon) : Globe;
+                  return <LogoIcon size={48} color={T.primary} />;
+                })()}
                 <div style={{ fontSize: 16, fontWeight: 700, color: T.text }}>{selectedShop?.name ?? "Custom URL"}</div>
                 <div style={{ fontSize: 12, color: T.textMuted, textAlign: "center", lineHeight: 1.6 }}>
                   Isolation frame active for:<br />
                   <code style={{ background: T.surface, border: `1px solid ${T.border}`, padding: "2px 8px", borderRadius: 4, fontSize: 11 }}>{customUrl || urlInput}</code>
                 </div>
-                <div style={{ fontSize: 12, color: T.textMuted, background: T.surface, border: `1px dashed ${T.border}`, borderRadius: T.radiusCard, padding: "10px 16px", textAlign: "center" }}>
-                  ℹ️ In production, an iframe sandbox renders here. Cross-origin policies restrict embedding on most external URLs. For full isolation, the shop must be hosted on this platform's domain.
+                <div style={{ fontSize: 12, color: T.textMuted, background: T.surface, border: `1px dashed ${T.border}`, borderRadius: T.radiusCard, padding: "10px 16px", textAlign: "center", display: "flex", alignItems: "center", gap: 8 }}>
+                  <Info size={16} style={{ flexShrink: 0 }} /> In production, an iframe sandbox renders here. Cross-origin policies restrict embedding on most external URLs. For full isolation, the shop must be hosted on this platform's domain.
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <Btn size="sm" variant="primary" onClick={() => window.open(customUrl || urlInput, "_blank")}>↗ Open in New Tab</Btn>
-                  {selectedShop && <Btn size="sm" variant="ghost" onClick={() => window.open(selectedShop.adminUrl, "_blank")}>↗ Admin Panel</Btn>}
+                  <Btn size="sm" variant="primary" onClick={() => window.open(customUrl || urlInput, "_blank")}><ArrowUpRight size={14} /> Open in New Tab</Btn>
+                  {selectedShop && <Btn size="sm" variant="ghost" onClick={() => window.open(selectedShop.adminUrl, "_blank")}><ArrowUpRight size={14} /> Admin Panel</Btn>}
                 </div>
               </div>
             )}
@@ -208,12 +217,15 @@ export function IsolationModule({ shops, preloadShop, addToast }: Props) {
                 Session Responses
               </div>
               <div style={{ flex: 1, overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 6, maxHeight: 260, fontFamily: "monospace" }}>
-                {logs.map(log => (
-                  <div key={log.id} style={{ fontSize: 11, color: logColors[log.type], display: "flex", gap: 8 }}>
-                    <span style={{ flexShrink: 0, fontWeight: 700 }}>{logIcons[log.type]}</span>
-                    <span style={{ flex: 1, lineHeight: 1.5 }}>{log.message}</span>
-                  </div>
-                ))}
+                {logs.map(log => {
+                  const LogIcon = logIcons[log.type];
+                  return (
+                    <div key={log.id} style={{ fontSize: 11, color: logColors[log.type], display: "flex", gap: 8 }}>
+                      <LogIcon size={12} style={{ flexShrink: 0 }} />
+                      <span style={{ flex: 1, lineHeight: 1.5 }}>{log.message}</span>
+                    </div>
+                  );
+                })}
                 <div ref={logEndRef} />
               </div>
               {/* Console input */}
@@ -245,15 +257,15 @@ export function IsolationModule({ shops, preloadShop, addToast }: Props) {
       {/* Empty state */}
       {!loaded && !loading && (
         <Card style={{ textAlign: "center", padding: "48px 24px" }}>
-          <div style={{ fontSize: 52 }}>🔬</div>
+          <div style={{ display: "flex", justifyContent: "center" }}><FlaskConical size={52} color={T.textMuted} /></div>
           <h3 style={{ margin: "14px 0 8px", color: T.text }}>Isolation Lab</h3>
           <p style={{ color: T.textMuted, fontSize: 14, lineHeight: 1.6, maxWidth: 440, margin: "0 auto 20px" }}>
             Select a registered shop or enter a custom URL to open it in an isolated sandbox. Monitor responses, run diagnostics, and take session notes — all without impacting production.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: 20 }}>
-            {[{ icon: "🔒", text: "Isolated from live data" }, { icon: "📋", text: "Session logging" }, { icon: "📝", text: "Support notes" }].map(f => (
+            {[{ icon: Lock, text: "Isolated from live data" }, { icon: ClipboardList, text: "Session logging" }, { icon: FileText, text: "Support notes" }].map(f => (
               <div key={f.text} style={{ fontSize: 12, color: T.textMuted, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                <span style={{ fontSize: 22 }}>{f.icon}</span>
+                <f.icon size={22} />
                 {f.text}
               </div>
             ))}

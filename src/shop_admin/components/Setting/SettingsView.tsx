@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { Store, Palette, Bell, AlertTriangle, ArrowRight, RotateCcw, CheckCircle2 } from "lucide-react";
 import type { Theme, Shop } from "../../types/index";
 import { SectionHeader, Btn, Input, Card } from "../layout/UI";
 import { useThemeStore } from "@/store/themeStore";
 import type { ShopTheme } from "@/store/themeStore";
+import { LOGO_ICON_OPTIONS, getLogoIcon } from "@/lib/logoIcons";
 
 interface SettingsViewProps {
   theme: Theme;
@@ -31,7 +33,7 @@ const COLOR_FIELDS: { key: keyof ShopTheme; label: string }[] = [
 const TEXT_FIELDS: { key: keyof ShopTheme; label: string; placeholder: string }[] = [
   { key: "shopName",    label: "Shop Name",     placeholder: "FreshMart"                  },
   { key: "shopTagline", label: "Tagline",       placeholder: "Farm to doorstep, every day." },
-  { key: "logoEmoji",   label: "Logo Emoji",    placeholder: "🛒"                          },
+  { key: "logoIcon",    label: "Logo Icon",     placeholder: "Store"                        },
   { key: "radius",      label: "Border Radius", placeholder: "8px"                         },
   { key: "radiusCard",  label: "Card Radius",   placeholder: "12px"                        },
 ];
@@ -61,7 +63,7 @@ export default function SettingsView({
     // Also sync shop name / tagline / emoji to theme store
     updateTheme("shopName",    shopForm.name);
     updateTheme("shopTagline", shopForm.tagline);
-    updateTheme("logoEmoji",   shopForm.logoEmoji);
+    updateTheme("logoIcon",    shopForm.logoIcon);
     onToast("Shop settings saved and reflected in storefront.", "success");
   };
 
@@ -79,7 +81,7 @@ export default function SettingsView({
   const applyChange = () => {
     if (!pending) return;
     updateTheme(pending.key, pending.newValue);
-    onToast(`${pending.label} updated in live shop ✓`, "success");
+    onToast(`${pending.label} updated in live shop`, "success");
     setPending(null);
   };
 
@@ -94,9 +96,9 @@ export default function SettingsView({
   };
 
   const tabs = [
-    { id: "shop",          label: "Shop Info",        icon: "🏪" },
-    { id: "theme",         label: "Storefront Theme", icon: "🎨" },
-    { id: "notifications", label: "Notifications",    icon: "🔔" },
+    { id: "shop",          label: "Shop Info",        icon: Store },
+    { id: "theme",         label: "Storefront Theme", icon: Palette },
+    { id: "notifications", label: "Notifications",    icon: Bell },
   ] as const;
 
   return (
@@ -121,7 +123,7 @@ export default function SettingsView({
               marginBottom: -2, display: "flex", alignItems: "center", gap: 6,
             }}
           >
-            {t.icon} {t.label}
+            <t.icon size={15} /> {t.label}
           </button>
         ))}
       </div>
@@ -138,7 +140,6 @@ export default function SettingsView({
                 <Input label="Shop Name" value={shopForm.name} onChange={setShopField("name")} theme={theme} />
               </div>
               <Input label="Tagline"    value={shopForm.tagline}   onChange={setShopField("tagline")}   theme={theme} />
-              <Input label="Logo Emoji" value={shopForm.logoEmoji} onChange={setShopField("logoEmoji")} theme={theme} />
               <Input label="Phone"      value={shopForm.phone}     onChange={setShopField("phone")}     theme={theme} />
               <Input label="Email"      value={shopForm.email}     onChange={setShopField("email")}     type="email" theme={theme} />
               <div style={{ gridColumn: "1/-1" }}>
@@ -147,6 +148,41 @@ export default function SettingsView({
               <Input label="Currency" value={shopForm.currency} onChange={setShopField("currency")} theme={theme} />
               <Input label="Timezone" value={shopForm.timezone} onChange={setShopField("timezone")} theme={theme} />
             </div>
+
+            {/* Logo icon picker */}
+            <div style={{ marginTop: 14, marginBottom: 4 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: theme.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Logo Icon
+              </label>
+              <div style={{
+                display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(44px, 1fr))", gap: 8,
+                maxHeight: 168, overflowY: "auto", padding: 10,
+                border: `1.5px solid ${theme.border}`, borderRadius: theme.radius, background: theme.bg,
+              }}>
+                {LOGO_ICON_OPTIONS.map((opt) => {
+                  const selected = shopForm.logoIcon === opt.name;
+                  return (
+                    <button
+                      key={opt.name}
+                      type="button"
+                      title={opt.name}
+                      onClick={() => setShopField("logoIcon")(opt.name)}
+                      style={{
+                        width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center",
+                        borderRadius: theme.radius,
+                        border: `2px solid ${selected ? theme.primary : theme.border}`,
+                        background: selected ? theme.primaryLight : theme.surface,
+                        color: selected ? theme.primary : theme.textMuted,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <opt.icon size={20} />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div style={{ marginTop: 16 }}>
               <Btn theme={theme} onClick={saveShop}>Save Shop Info</Btn>
             </div>
@@ -192,8 +228,8 @@ export default function SettingsView({
               display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
             }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#92400e", marginBottom: 6 }}>
-                  ⚠️ Confirm colour change — <span style={{ fontWeight: 400 }}>{pending.label}</span>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#92400e", marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                  <AlertTriangle size={16} /> Confirm colour change — <span style={{ fontWeight: 400 }}>{pending.label}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {/* Old colour */}
@@ -201,7 +237,7 @@ export default function SettingsView({
                     <div style={{ width: 28, height: 28, borderRadius: 6, background: pending.oldValue, border: "2px solid #e5e7eb" }} />
                     <span style={{ fontSize: 12, fontFamily: "monospace", color: "#6b7280" }}>{pending.oldValue}</span>
                   </div>
-                  <span style={{ fontSize: 18, color: "#92400e" }}>→</span>
+                  <ArrowRight size={18} color="#92400e" />
                   {/* New colour */}
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 28, height: 28, borderRadius: 6, background: pending.newValue, border: "2px solid #e5e7eb" }} />
@@ -279,7 +315,7 @@ export default function SettingsView({
             ))}
             <div style={{ marginTop: 8 }}>
               <Btn theme={theme} variant="secondary" onClick={() => setShowResetConfirm(true)}>
-                ↺ Reset to Default
+                <RotateCcw size={14} /> Reset to Default
               </Btn>
             </div>
           </Card>
@@ -295,7 +331,7 @@ export default function SettingsView({
                 padding: "16px 20px", color: "#fff",
                 display: "flex", alignItems: "center", gap: 12, marginBottom: 12,
               }}>
-                <span style={{ fontSize: 28 }}>{shopTheme.logoEmoji}</span>
+                {(() => { const PreviewIcon = getLogoIcon(shopTheme.logoIcon); return <PreviewIcon size={28} />; })()}
                 <div>
                   <div style={{ fontWeight: 900, fontSize: 18 }}>{shopTheme.shopName}</div>
                   <div style={{ fontSize: 12, opacity: 0.8 }}>{shopTheme.shopTagline}</div>
@@ -315,8 +351,8 @@ export default function SettingsView({
                   Badge
                 </span>
               </div>
-              <div style={{ marginTop: 12, fontSize: 12, color: theme.textMuted }}>
-                ✓ This preview reflects what customers see in the live shop right now.
+              <div style={{ marginTop: 12, fontSize: 12, color: theme.textMuted, display: "flex", alignItems: "center", gap: 6 }}>
+                <CheckCircle2 size={14} /> This preview reflects what customers see in the live shop right now.
               </div>
             </Card>
           </div>
@@ -366,7 +402,7 @@ export default function SettingsView({
             maxWidth: 420, width: "100%", textAlign: "center",
             boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
           }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🎨</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 12, color: theme.primary }}><Palette size={48} /></div>
             <div style={{ fontWeight: 800, fontSize: 18, color: "#111827", marginBottom: 8 }}>
               Reset theme to default?
             </div>

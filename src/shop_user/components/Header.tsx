@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { ShoppingCart, Menu, X, Hand } from "lucide-react";
 import type { User, Theme } from "../types/index";
+import { getLogoIcon } from "@/lib/logoIcons";
 
 interface HeaderProps {
   theme: Theme;
@@ -24,6 +26,7 @@ export default function Header({
   onSignOut,
 }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const LogoIcon = getLogoIcon(theme.logoIcon);
 
   return (
     <header
@@ -43,7 +46,7 @@ export default function Header({
         {/* ── Logo ── */}
         <div className="flex flex-col justify-center min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-2xl shrink-0">{theme.logoEmoji}</span>
+            <LogoIcon className="w-6 h-6 shrink-0" />
             <span
               className="font-black text-lg sm:text-xl leading-none tracking-tight truncate"
               style={{ letterSpacing: "-0.5px" }}
@@ -52,8 +55,8 @@ export default function Header({
             </span>
           </div>
           {user && (
-            <div className="text-[11px] mt-0.5 truncate" style={{ opacity: 0.85 }}>
-              Hello, {user.name.split(" ")[0]} 👋
+            <div className="text-[11px] mt-0.5 truncate flex items-center gap-1" style={{ opacity: 0.85 }}>
+              Hello, {user.name.split(" ")[0]} <Hand className="w-3 h-3" />
             </div>
           )}
         </div>
@@ -74,7 +77,7 @@ export default function Header({
             onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.25)")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.18)")}
           >
-            🛒 Cart
+            <ShoppingCart className="w-4 h-4" /> Cart
             {cartCount > 0 && (
               <span
                 className="text-[11px] font-black rounded-full px-1.5 py-0.5 min-w-[20px] text-center leading-none"
@@ -152,7 +155,7 @@ export default function Header({
             className="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all active:scale-90"
             style={{ background: "rgba(255,255,255,0.18)", border: "none", color: "#fff", cursor: "pointer", fontSize: 20 }}
           >
-            🛒
+            <ShoppingCart className="w-5 h-5" />
             {cartCount > 0 && (
               <span
                 className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center rounded-full text-[9px] font-black"
@@ -169,7 +172,7 @@ export default function Header({
             className="w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold transition-all active:scale-90"
             style={{ background: "rgba(255,255,255,0.18)", border: "none", color: "#fff", cursor: "pointer" }}
           >
-            {menuOpen ? "✕" : "☰"}
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>

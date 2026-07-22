@@ -1,189 +1,157 @@
-import React, { useState } from "react";
-import { SA_THEME as T } from "../../data/theme";
+"use client";
+import {
+  Hand, Sparkles, CircleDot, Store, Users, Wallet, Package,
+  ShoppingBag, Eye, Headphones, AlertTriangle,
+  Rocket, Megaphone, Globe, Monitor,
+} from "lucide-react";
+import { getLogoIcon } from "@/lib/logoIcons";
+import StatCard from "@/components/dashboard/StatCard";
+import ChartCard from "@/components/dashboard/ChartCard";
+import DonutChart from "@/components/dashboard/DonutChart";
+import TrafficPanel from "./TrafficPanel";
 import type { SuperAdmin, SystemMetrics } from "../../types/index";
-import { StatCard, Card, Badge, Btn, MiniBarChart } from "../layout/UI";
+import type { ShopSummary } from "../../data/getDashboardData";
 import { fmt, fmtDate } from "../../utils/helpers";
-import { statusColor } from "../../utils/helpers";
-import type { ManagedShop } from "../../types/index";
 
 interface Props {
   admin: SuperAdmin;
+  sessionUser: { name: string; email: string; image: string | null };
   metrics: SystemMetrics;
-  shops: ManagedShop[];
+  shops: ShopSummary[];
   onNavigate: (v: string) => void;
 }
 
-export function SuperAdminDashboard({ admin, metrics, shops, onNavigate }: Props) {
-  const [showShopVisits, setShowShopVisits] = useState(false);
+export function SuperAdminDashboard({ admin, sessionUser, metrics, shops, onNavigate }: Props) {
+  const firstName = sessionUser.name.split(" ")[0];
 
-  const pc = statusColor(admin.privilegeLevel);
-  const expiringShops = shops.filter(s => {
+  const expiringShops = shops.filter((s) => {
+    if (!s.expiresAt) return false;
     const days = Math.ceil((new Date(s.expiresAt).getTime() - Date.now()) / 86400000);
     return days <= 14 && days > 0 && s.status !== "pulled_down";
   });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-
-      {/* ── Welcome Banner ── */}
-      <div style={{
-        background: `linear-gradient(135deg, ${T.primary} 0%, ${T.accent} 100%)`,
-        borderRadius: T.radiusCard, padding: "22px 26px",
-        display: "flex", alignItems: "center", gap: 18,
-      }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: "50%", background: "rgba(255,255,255,.2)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 22, color: "#fff", fontWeight: 900, flexShrink: 0,
-        }}>
-          {admin.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-        </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>Welcome back, {admin.name.split(" ")[0]} 👋</div>
-          <div style={{ fontSize: 13, color: "rgba(255,255,255,.75)", marginTop: 3 }}>
-            Super Admin · {new Date().toLocaleDateString("en-KE", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+    <div className="space-y-5">
+      {/* Welcome banner */}
+      <div
+        className="rounded-[10px] p-4 sm:p-6 flex items-center gap-4 text-white"
+        style={{ background: "linear-gradient(135deg, #1B3A2B 0%, #6B8F71 100%)" }}
+      >
+        <div className="flex-1 min-w-0">
+          <div className="text-org-md font-org-bold flex items-center gap-2">
+            Welcome back, {firstName} <Hand size={18} />
           </div>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,.6)", marginBottom: 4 }}>Privilege Level</div>
-          <Badge label={admin.privilegeLevel === "full" ? "✦ Full Privilege" : "◑ Partial Privilege"} bg="rgba(255,255,255,.2)" color="#fff" />
-          {admin.privilegeLevel === "partial" && (
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,.5)", marginTop: 4 }}>
-              {admin.privileges.length} of 10 modules active
-            </div>
-          )}
+          <div className="text-org-sm opacity-75 mt-0.5">
+            Super Admin &middot; {new Date().toLocaleDateString("en-KE", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+          </div>
         </div>
       </div>
 
-      {/* ── Key Metrics ── */}
+      {/* System overview */}
       <div>
-        <h3 style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.05em" }}>System Overview</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
-          <StatCard icon="🏪" label="Total Shops" value={metrics.totalShops} sub={`${metrics.activeShops} active`} color={T.primary} />
-          <StatCard icon="👥" label="Subscribers" value={metrics.totalSubscribers} sub="registered users" color={T.accent} />
-          <StatCard icon="💰" label="Total Revenue" value={fmt(metrics.totalRevenue)} sub={`${fmt(metrics.monthlyRevenue)} this month`} color={T.success} />
-          <StatCard icon="📦" label="Total Orders" value={metrics.totalOrders.toLocaleString()} sub="all shops" />
-          <StatCard icon="🛍️" label="Abandoned Carts" value={metrics.abandonedCarts} sub="unpurchased carts" color={T.warning} />
-          <StatCard icon="👁️" label="Page Views" value={metrics.totalPageViews.toLocaleString()} sub="total visits" color={T.primary} />
-          <StatCard icon="🎧" label="Open Tickets" value={metrics.activeTickets} sub={`Avg ${metrics.avgResponseTime}h response`} color={metrics.activeTickets > 0 ? T.danger : T.success} />
-          <StatCard icon="⚠️" label="Suspended" value={metrics.suspendedShops} sub="shops suspended" color={T.danger} />
+        <h3 className="text-org-xs font-org-semibold text-org-text-muted uppercase tracking-wide mb-3">System Overview</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <StatCard label="Total Shops" value={String(metrics.totalShops)} icon={<Store size={16} />} />
+          <StatCard label="Subscribers" value={metrics.totalSubscribers.toLocaleString()} icon={<Users size={16} />} />
+          <StatCard label="Total Revenue" value={fmt(metrics.totalRevenue)} icon={<Wallet size={16} />} />
+          <StatCard label="Total Orders" value={metrics.totalOrders.toLocaleString()} icon={<Package size={16} />} />
+          <StatCard label="Abandoned Carts" value={metrics.abandonedCarts.toLocaleString()} icon={<ShoppingBag size={16} />} iconBg="bg-org-warning/15 text-org-warning" />
+          <StatCard label="Page Views" value={metrics.totalPageViews.toLocaleString()} icon={<Eye size={16} />} />
+          <StatCard label="Open Tickets" value={String(metrics.activeTickets)} icon={<Headphones size={16} />} iconBg={metrics.activeTickets > 0 ? "bg-org-danger-bg text-org-danger" : "bg-org-success-bg text-org-success"} />
+          <StatCard label="Suspended" value={String(metrics.suspendedShops)} icon={<AlertTriangle size={16} />} iconBg="bg-org-danger-bg text-org-danger" />
         </div>
       </div>
 
-      {/* ── Subscriber + Package Breakdown ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Package distribution */}
-        <Card>
-          <h4 style={{ margin: "0 0 14px", fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Package Distribution</h4>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {metrics.packageBreakdown.map(pkg => (
-              <div key={pkg.packageName} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 10, height: 10, borderRadius: "50%", background: pkg.color, flexShrink: 0 }} />
-                <div style={{ flex: 1, fontSize: 13, color: T.text }}>{pkg.packageName}</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{pkg.count}</div>
-                <div style={{ width: 80, height: 8, background: T.bg, borderRadius: 4, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${(pkg.count / metrics.totalShops) * 100}%`, background: pkg.color, borderRadius: 4 }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <ChartCard title="Package Distribution">
+          <DonutChart
+            data={metrics.packageBreakdown.map((pkg) => ({ label: pkg.packageName, value: pkg.count, color: pkg.color }))}
+          />
+        </ChartCard>
 
-        {/* Shop utilisation */}
-        <Card>
-          <h4 style={{ margin: "0 0 14px", fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Package Utilisation</h4>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {shops.map(s => {
-              const pct = Math.round((s.shopsCreated / s.packageShopLimit) * 100);
+        {/* Package utilisation */}
+        <ChartCard title="Package Utilisation">
+          <div className="flex flex-col gap-3">
+            {shops.map((s) => {
+              const pct = s.packageShopLimit > 0 ? Math.round((s.shopsCreated / s.packageShopLimit) * 100) : 0;
+              const LogoIcon = getLogoIcon(s.logoIcon);
               return (
                 <div key={s.id}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 3 }}>
-                    <span style={{ color: T.text, fontWeight: 600 }}>{s.logoEmoji} {s.name}</span>
-                    <span style={{ color: T.textMuted }}>{s.shopsCreated}/{s.packageShopLimit} shops</span>
+                  <div className="flex items-center justify-between text-org-xs mb-1">
+                    <span className="flex items-center gap-1.5 font-org-medium text-org-text-primary">
+                      <LogoIcon size={13} /> {s.name}
+                    </span>
+                    <span className="text-org-text-secondary">{s.shopsCreated}/{s.packageShopLimit} shops</span>
                   </div>
-                  <div style={{ height: 6, background: T.bg, borderRadius: 3, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${pct}%`, background: pct === 100 ? T.success : pct >= 75 ? T.warning : T.primary, borderRadius: 3 }} />
+                  <div className="h-1.5 bg-org-primary-light rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${pct === 100 ? "bg-org-success" : pct >= 75 ? "bg-org-warning" : "bg-org-primary"}`}
+                      style={{ width: `${Math.min(100, pct)}%` }}
+                    />
                   </div>
                 </div>
               );
             })}
           </div>
-        </Card>
+        </ChartCard>
       </div>
 
-      {/* ── Traffic Chart ── */}
-      <Card>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-          <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            {showShopVisits ? "Per-Shop Visits (All Time)" : "Platform Daily Traffic (7 days)"}
-          </h4>
-          <Btn variant="ghost" size="sm" onClick={() => setShowShopVisits(v => !v)}>
-            {showShopVisits ? "Show Platform Traffic" : "Per-Shop Visits ↗"}
-          </Btn>
-        </div>
+      {/* Traffic — with 7D/30D/6M/12M/custom range selector */}
+      <TrafficPanel shopVisits={metrics.shopVisits} />
 
-        {showShopVisits ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {metrics.shopVisits.map(sv => (
-              <div key={sv.shopId} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 140, fontSize: 12, fontWeight: 600, color: T.text, flexShrink: 0 }}>{sv.shopName}</div>
-                <div style={{ flex: 1, height: 12, background: T.bg, borderRadius: 6, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${(sv.visits / metrics.shopVisits[0].visits) * 100}%`, background: T.primary, borderRadius: 6 }} />
-                </div>
-                <div style={{ width: 60, fontSize: 12, color: T.textMuted, textAlign: "right" }}>{sv.visits.toLocaleString()}</div>
-                <div style={{ fontSize: 11, color: T.success, minWidth: 64, textAlign: "right", fontWeight: 600 }}>+{sv.today} today</div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div>
-            <MiniBarChart
-              data={metrics.dailyVisits.map(d => ({ label: d.date, value: d.visits }))}
-              color={T.primary}
-            />
-            <div style={{ display: "flex", gap: 20, marginTop: 12, fontSize: 12, color: T.textMuted }}>
-              <span>📈 Total views: <strong style={{ color: T.text }}>{metrics.dailyVisits.reduce((a, b) => a + b.visits, 0).toLocaleString()}</strong></span>
-              <span>👤 Unique visitors: <strong style={{ color: T.text }}>{metrics.dailyVisits.reduce((a, b) => a + b.uniqueVisitors, 0).toLocaleString()}</strong></span>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {/* ── Expiring Subscriptions Alert ── */}
+      {/* Expiring subscriptions */}
       {expiringShops.length > 0 && (
-        <Card style={{ borderLeft: `4px solid ${T.warning}` }}>
-          <h4 style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 700, color: T.warning }}>⚠️ Subscriptions Expiring Soon</h4>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {expiringShops.map(s => {
-              const days = Math.ceil((new Date(s.expiresAt).getTime() - Date.now()) / 86400000);
+        <ChartCard title="Subscriptions Expiring Soon" className="border-l-4 border-org-warning">
+          <div className="flex flex-col gap-2.5">
+            {expiringShops.map((s) => {
+              const LogoIcon = getLogoIcon(s.logoIcon);
+              const days = Math.ceil((new Date(s.expiresAt!).getTime() - Date.now()) / 86400000);
               return (
-                <div key={s.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}>
-                  <span>{s.logoEmoji} <strong>{s.name}</strong> — {s.ownerName}</span>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ color: days <= 3 ? T.danger : T.warning, fontWeight: 700 }}>{days}d left ({fmtDate(s.expiresAt)})</span>
-                    <Btn size="sm" variant="ghost" onClick={() => onNavigate("reminders")}>Send Reminder</Btn>
+                <div key={s.id} className="flex items-center justify-between text-org-sm">
+                  <span className="flex items-center gap-2 text-org-text-primary">
+                    <LogoIcon size={14} /> <strong>{s.name}</strong>
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className={`font-org-semibold flex items-center gap-1 ${days <= 3 ? "text-org-danger" : "text-org-warning"}`}>
+                      <AlertTriangle size={12} /> {days}d left ({fmtDate(String(s.expiresAt))})
+                    </span>
+                    <button onClick={() => onNavigate("reminders")} className="text-org-xs text-org-primary hover:underline font-org-medium">
+                      Send Reminder
+                    </button>
                   </div>
                 </div>
               );
             })}
           </div>
-        </Card>
+        </ChartCard>
       )}
 
-      {/* ── Quick Actions ── */}
-      <Card>
-        <h4 style={{ margin: "0 0 14px", fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Quick Actions</h4>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-          <Btn onClick={() => onNavigate("onboarding")} variant="primary">🚀 Onboard New User</Btn>
-          <Btn onClick={() => onNavigate("issues")} variant="ghost">🎧 View Support Tickets</Btn>
-          <Btn onClick={() => onNavigate("reminders")} variant="ghost">📣 Send Reminder</Btn>
-          <Btn onClick={() => onNavigate("shops")} variant="ghost">🏪 Manage Shops</Btn>
-          <Btn onClick={() => onNavigate("marketplace")} variant="ghost">🌐 Marketplace</Btn>
+      {/* Quick actions */}
+      <ChartCard title="Quick Actions">
+        <div className="flex flex-wrap gap-2.5">
+          <button onClick={() => onNavigate("onboarding")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm bg-org-primary text-white text-org-sm font-org-semibold hover:bg-org-primary-hover transition-colors">
+            <Rocket size={14} /> Onboard New User
+          </button>
+          <button onClick={() => onNavigate("issues")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+            <Headphones size={14} /> View Support Tickets
+          </button>
+          <button onClick={() => onNavigate("reminders")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+            <Megaphone size={14} /> Send Reminder
+          </button>
+          <button onClick={() => onNavigate("shops")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+            <Store size={14} /> Manage Shops
+          </button>
+          <button onClick={() => onNavigate("marketplace")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+            <Globe size={14} /> Marketplace
+          </button>
           {admin.privilegeLevel === "full" && (
-            <Btn onClick={() => onNavigate("dbterminal")} variant="accent">🖥️ DB Terminal</Btn>
+            <button onClick={() => onNavigate("dbterminal")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm bg-org-text-primary text-white text-org-sm font-org-semibold hover:opacity-90 transition-opacity">
+              <Monitor size={14} /> DB Terminal
+            </button>
           )}
         </div>
-      </Card>
+      </ChartCard>
     </div>
   );
 }

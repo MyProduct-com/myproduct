@@ -26,26 +26,34 @@ export const daysUntil = (dateStr: string): number => {
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 };
 
+// Constrained, org-token palette — success/warning/danger/neutral, plus a
+// brand-green "info" tone instead of the old ad-hoc blue/violet/orange mix.
+const SUCCESS = { bg: "#E5F3EA", text: "#2E7D4F" };
+const WARNING = { bg: "#FAF0E1", text: "#C98A2C" };
+const DANGER  = { bg: "#FBEAEA", text: "#D64545" };
+const INFO    = { bg: "#E8EFE9", text: "#1B3A2B" };
+const NEUTRAL = { bg: "#FAFBF9", text: "#6B716C" };
+
 export const statusColor = (status: string): { bg: string; text: string } => {
   const map: Record<string, { bg: string; text: string }> = {
-    active:       { bg: "#dcfce7", text: "#166534" },
-    suspended:    { bg: "#fef9c3", text: "#854d0e" },
-    pulled_down:  { bg: "#fee2e2", text: "#991b1b" },
-    trial:        { bg: "#dbeafe", text: "#1e40af" },
-    expired:      { bg: "#f1f5f9", text: "#475569" },
-    open:         { bg: "#fef9c3", text: "#854d0e" },
-    in_progress:  { bg: "#dbeafe", text: "#1e40af" },
-    resolved:     { bg: "#dcfce7", text: "#166534" },
-    closed:       { bg: "#f1f5f9", text: "#475569" },
-    sent:         { bg: "#dcfce7", text: "#166534" },
-    draft:        { bg: "#f1f5f9", text: "#475569" },
-    scheduled:    { bg: "#ede9fe", text: "#5b21b6" },
-    full:         { bg: "#ede9fe", text: "#5b21b6" },
-    partial:      { bg: "#dbeafe", text: "#1e40af" },
-    urgent:       { bg: "#fee2e2", text: "#991b1b" },
-    high:         { bg: "#ffedd5", text: "#9a3412" },
-    medium:       { bg: "#fef9c3", text: "#854d0e" },
-    low:          { bg: "#f1f5f9", text: "#475569" },
+    active:       SUCCESS,
+    suspended:    WARNING,
+    pulled_down:  DANGER,
+    trial:        INFO,
+    expired:      NEUTRAL,
+    open:         WARNING,
+    in_progress:  INFO,
+    resolved:     SUCCESS,
+    closed:       NEUTRAL,
+    sent:         SUCCESS,
+    draft:        NEUTRAL,
+    scheduled:    INFO,
+    full:         SUCCESS,
+    partial:      WARNING,
+    urgent:       DANGER,
+    high:         WARNING,
+    medium:       NEUTRAL,
+    low:          NEUTRAL,
   };
-  return map[status] ?? { bg: "#f1f5f9", text: "#475569" };
+  return map[status] ?? NEUTRAL;
 };

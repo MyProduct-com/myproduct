@@ -37,7 +37,7 @@ export default function Navbar() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  const cartCount = useCartStore((s) => s.count());
+  const cartCount = useCartStore((s) => s.distinctCount());
   const wishlistCount = useWishlistStore((s) => s.count());
   const { user, isAuthenticated, logout } = useAuthStore();
 

@@ -1,3 +1,4 @@
+import { Smartphone, CreditCard, Banknote } from "lucide-react";
 import type { Product, PaymentMethod } from "../types/index";
 
 export const MOCK_PRODUCTS: Product[] = [
@@ -64,7 +65,7 @@ export const MOCK_PRODUCTS: Product[] = [
 ];
 
 export const PAYMENT_METHODS: PaymentMethod[] = [
-  { id: "mpesa", label: "M-Pesa",           icon: "📱", desc: "Pay via M-Pesa Till or Paybill" },
-  { id: "card",  label: "Card",             icon: "💳", desc: "Visa / Mastercard" },
-  { id: "cod",   label: "Cash on Delivery", icon: "💵", desc: "Pay when your order arrives" },
+  { id: "mpesa", label: "M-Pesa",           icon: Smartphone, desc: "Pay via M-Pesa Till or Paybill" },
+  { id: "card",  label: "Card",             icon: CreditCard, desc: "Visa / Mastercard" },
+  { id: "cod",   label: "Cash on Delivery", icon: Banknote,   desc: "Pay when your order arrives" },
 ];

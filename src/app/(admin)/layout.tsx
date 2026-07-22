@@ -3,12 +3,14 @@ import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AdminSidebar from "@/components/layout/AdminSidebar";
+import { AUTH_DISABLED } from "@/lib/authFlags";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
+    if (AUTH_DISABLED) return;
     if (!isAuthenticated) {
       router.push("/auth/login?redirect=/admin");
     } else if (user?.role !== "admin") {
@@ -16,7 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [isAuthenticated, user, router]);
 
-  if (!isAuthenticated || user?.role !== "admin") return null;
+  if (!AUTH_DISABLED && (!isAuthenticated || user?.role !== "admin")) return null;
 
   return (
     <div className="min-h-screen flex bg-gray-50">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ArrowLeft, Package } from "lucide-react";
 import type { Order, OrderStatus, Theme } from "../types/index";
 import { fmt } from "../utils/helpers";
 import { PAYMENT_METHODS } from "../data/products";
@@ -26,9 +27,9 @@ export default function OrdersView({ orders, theme }: OrdersViewProps) {
     <div style={{ fontFamily: theme.fontFamily, maxWidth: 560, margin: "0 auto" }}>
       <button
         onClick={() => setSelectedId(null)}
-        style={{ background: "none", border: "none", color: theme.primary, fontWeight: 700, cursor: "pointer", marginBottom: 16, fontSize: 15 }}
+        style={{ background: "none", border: "none", color: theme.primary, fontWeight: 700, cursor: "pointer", marginBottom: 16, fontSize: 15, display: "flex", alignItems: "center", gap: 4 }}
       >
-        ← Orders
+        <ArrowLeft size={16} /> Orders
       </button>
 
       <div style={{ background: theme.surface, borderRadius: theme.radiusCard, padding: 20, border: `1.5px solid ${theme.border}` }}>
@@ -74,7 +75,7 @@ export default function OrdersView({ orders, theme }: OrdersViewProps) {
       <h3 style={{ fontWeight: 800, fontSize: 20, color: theme.black, marginBottom: 16 }}>My Orders</h3>
       {orders.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px 20px", color: theme.textMuted }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>📦</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><Package size={48} /></div>
           <p>No orders yet. Start shopping!</p>
         </div>
       ) : orders.map(o => (

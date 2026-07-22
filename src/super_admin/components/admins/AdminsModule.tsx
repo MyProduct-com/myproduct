@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Shield, Pencil, Save, Sparkles, CircleDot } from "lucide-react";
 import { SA_THEME as T } from "../../data/theme";
 import type { SuperAdmin, SuperAdminPrivilege } from "../../types/index";
 import { Card, Btn, Input, SectionHeader, Badge, Modal, Checkbox, ConfirmDialog } from "../layout/UI";
@@ -78,7 +79,8 @@ export function AdminsModule({ admins, currentAdminId, onSave, onRemove, addToas
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <SectionHeader
-        title="🛡️ System Admins"
+        icon={Shield}
+        title="System Admins"
         subtitle="Manage who has access to this super admin portal and what they can do."
         actions={<Btn variant="primary" onClick={openNew}>+ Add Admin</Btn>}
       />
@@ -147,7 +149,7 @@ export function AdminsModule({ admins, currentAdminId, onSave, onRemove, addToas
               </div>
 
               <div style={{ display: "flex", gap: 8 }}>
-                <Btn size="sm" variant="primary" onClick={() => openEdit(admin)} style={{ flex: 1 }}>✏️ Edit</Btn>
+                <Btn size="sm" variant="primary" onClick={() => openEdit(admin)} style={{ flex: 1 }}><Pencil size={14} /> Edit</Btn>
                 {!isCurrentUser && (
                   <Btn size="sm" variant="danger" onClick={() => setConfirmRemove(admin)}>Remove</Btn>
                 )}
@@ -179,8 +181,8 @@ export function AdminsModule({ admins, currentAdminId, onSave, onRemove, addToas
                   background: editing.privilegeLevel === level ? T.primaryLight : T.surface,
                   transition: "all .15s",
                 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: T.text, marginBottom: 3 }}>
-                    {level === "full" ? "✦ Full Privilege" : "◑ Partial Privilege"}
+                  <div style={{ fontWeight: 700, fontSize: 14, color: T.text, marginBottom: 3, display: "flex", alignItems: "center", gap: 6 }}>
+                    {level === "full" ? <><Sparkles size={14} /> Full Privilege</> : <><CircleDot size={14} /> Partial Privilege</>}
                   </div>
                   <div style={{ fontSize: 12, color: T.textMuted }}>
                     {level === "full"
@@ -216,7 +218,7 @@ export function AdminsModule({ admins, currentAdminId, onSave, onRemove, addToas
 
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 8, borderTop: `1px solid ${T.border}` }}>
             <Btn variant="ghost" onClick={() => setEditing(null)}>Cancel</Btn>
-            <Btn variant="primary" onClick={handleSave}>💾 {isNew ? "Create Admin" : "Save Changes"}</Btn>
+            <Btn variant="primary" onClick={handleSave}><Save size={14} /> {isNew ? "Create Admin" : "Save Changes"}</Btn>
           </div>
         </Modal>
       )}

@@ -19,7 +19,7 @@ export const DEFAULT_THEME: Theme = {
   // Shop identity
   shopName:       "FreshMart",
   shopTagline:    "Fresh picks, fair prices.",
-  logoEmoji:      "🛒",
+  logoIcon:       "ShoppingCart",
   // Radius
   radius:         "12px",
   radiusCard:     "16px",

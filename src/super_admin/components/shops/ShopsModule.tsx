@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import {
+  FlaskConical, Rocket, ArrowUpRight, Save, CheckCircle2,
+  PauseCircle, Ban, type LucideIcon,
+} from "lucide-react";
+import { getLogoIcon } from "@/lib/logoIcons";
 import { SA_THEME as T } from "../../data/theme";
 import type { ManagedShop, PaymentConfig } from "../../types/index";
 import {
@@ -9,15 +14,17 @@ import { fmt, fmtDate, timeAgo, statusColor, daysUntil } from "../../utils/helpe
 
 interface Props {
   shops: ManagedShop[];
+  initialSearch?: string;
+  initialStatus?: string;
   onUpdateShop: (id: string, updates: Partial<ManagedShop>) => void;
   onNavigateIsolation: (shop: ManagedShop) => void;
   onNavigateOnboarding: () => void;
   addToast: (msg: string, type?: string) => void;
 }
 
-export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNavigateOnboarding, addToast }: Props) {
-  const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+export function ShopsModule({ shops, initialSearch = "", initialStatus = "all", onUpdateShop, onNavigateIsolation, onNavigateOnboarding, addToast }: Props) {
+  const [search, setSearch] = useState(initialSearch);
+  const [filterStatus, setFilterStatus] = useState(initialStatus);
   const [filterPkg, setFilterPkg] = useState("all");
   const [selectedShop, setSelectedShop] = useState<ManagedShop | null>(null);
   const [shopTab, setShopTab] = useState("overview");
@@ -74,15 +81,20 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
   const columns = [
     {
       key: "shop", header: "Shop", width: "220px",
-      render: (s: ManagedShop) => (
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 8, background: T.primaryLight, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{s.logoEmoji}</div>
-          <div>
-            <div style={{ fontWeight: 700, color: T.text, fontSize: 13 }}>{s.name}</div>
-            <div style={{ fontSize: 11, color: T.textMuted }}>{s.ownerName}</div>
+      render: (s: ManagedShop) => {
+        const LogoIcon = getLogoIcon(s.logoIcon);
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: T.primaryLight, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <LogoIcon size={18} color={T.primary} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, color: T.text, fontSize: 13 }}>{s.name}</div>
+              <div style={{ fontSize: 11, color: T.textMuted }}>{s.ownerName}</div>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     { key: "status", header: "Status", width: "110px", render: (s: ManagedShop) => { const c = statusColor(s.status); return <Badge label={s.status} bg={c.bg} color={c.text} />; } },
     { key: "package", header: "Package", render: (s: ManagedShop) => <span style={{ fontSize: 12, color: T.text }}>{s.packageName} <span style={{ color: T.textMuted }}>({s.shopsCreated}/{s.packageShopLimit})</span></span> },
@@ -93,7 +105,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
       key: "actions", header: "Actions",
       render: (s: ManagedShop) => (
         <div style={{ display: "flex", gap: 6 }} onClick={e => e.stopPropagation()}>
-          <Btn size="sm" variant="ghost" onClick={() => onNavigateIsolation(s)}>🔬</Btn>
+          <Btn size="sm" variant="ghost" onClick={() => onNavigateIsolation(s)}><FlaskConical size={14} /></Btn>
           {s.status === "active" && <Btn size="sm" variant="warning" onClick={() => handleAction("suspend", s)}>Suspend</Btn>}
           {(s.status === "suspended" || s.status === "pulled_down") && <Btn size="sm" variant="success" onClick={() => handleAction("activate", s)}>Activate</Btn>}
           {s.status === "active" && <Btn size="sm" variant="danger" onClick={() => handleAction("pulldown", s)}>Pull Down</Btn>}
@@ -107,29 +119,31 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
       <SectionHeader
         title="Shops & Users"
         subtitle={`${shops.length} registered businesses`}
-        actions={<Btn onClick={onNavigateOnboarding} variant="primary">🚀 Onboard New User</Btn>}
+        actions={<Btn onClick={onNavigateOnboarding} variant="primary"><Rocket size={14} /> Onboard New User</Btn>}
       />
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:flex-wrap">
         <SearchBar value={search} onChange={setSearch} placeholder="Search shops, owners, emails…" />
-        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
-          style={{ padding: "8px 12px", borderRadius: T.radius, border: `1.5px solid ${T.border}`, fontSize: 13, color: T.text, background: T.surface, minWidth: 140 }}>
-          <option value="all">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="trial">Trial</option>
-          <option value="suspended">Suspended</option>
-          <option value="pulled_down">Pulled Down</option>
-          <option value="expired">Expired</option>
-        </select>
-        <select value={filterPkg} onChange={e => setFilterPkg(e.target.value)}
-          style={{ padding: "8px 12px", borderRadius: T.radius, border: `1.5px solid ${T.border}`, fontSize: 13, color: T.text, background: T.surface, minWidth: 140 }}>
-          {pkgOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
+        <div className="flex gap-3">
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="flex-1 sm:flex-none"
+            style={{ padding: "8px 12px", borderRadius: T.radius, border: `1.5px solid ${T.border}`, fontSize: 13, color: T.text, background: T.surface }}>
+            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="trial">Trial</option>
+            <option value="suspended">Suspended</option>
+            <option value="pulled_down">Pulled Down</option>
+            <option value="expired">Expired</option>
+          </select>
+          <select value={filterPkg} onChange={e => setFilterPkg(e.target.value)} className="flex-1 sm:flex-none"
+            style={{ padding: "8px 12px", borderRadius: T.radius, border: `1.5px solid ${T.border}`, fontSize: 13, color: T.text, background: T.surface }}>
+            {pkgOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </div>
       </div>
 
       {/* Summary pills */}
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1">
         {[
           { label: "All", value: shops.length, color: T.primary },
           { label: "Active", value: shops.filter(s => s.status === "active").length, color: T.success },
@@ -137,18 +151,69 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
           { label: "Suspended", value: shops.filter(s => s.status === "suspended").length, color: T.warning },
           { label: "Pulled Down", value: shops.filter(s => s.status === "pulled_down").length, color: T.danger },
         ].map(p => (
-          <div key={p.label} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 14px", display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
+          <div key={p.label} className="shrink-0" style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 14px", display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
             <span style={{ color: T.textMuted }}>{p.label}</span>
             <span style={{ fontWeight: 800, color: p.color }}>{p.value}</span>
           </div>
         ))}
       </div>
 
-      <Table columns={columns} data={filtered} onRowClick={s => { setSelectedShop(s); setShopTab("overview"); }} emptyMessage="No shops match your filter." />
+      {/* Mobile: stacked cards. Desktop (md+): table. */}
+      <div className="md:hidden flex flex-col gap-3">
+        {filtered.length === 0 ? (
+          <div className="text-center py-10" style={{ color: T.textMuted }}>No shops match your filter.</div>
+        ) : (
+          filtered.map((s) => {
+            const LogoIcon = getLogoIcon(s.logoIcon);
+            const c = statusColor(s.status);
+            const d = daysUntil(s.expiresAt);
+            return (
+              <div
+                key={s.id}
+                onClick={() => { setSelectedShop(s); setShopTab("overview"); }}
+                className="cursor-pointer"
+                style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: T.radiusCard, padding: 14 }}
+              >
+                <div className="flex items-start justify-between gap-2 mb-2.5">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="shrink-0 flex items-center justify-center" style={{ width: 36, height: 36, borderRadius: 8, background: T.primaryLight }}>
+                      <LogoIcon size={18} color={T.primary} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate" style={{ fontWeight: 700, color: T.text, fontSize: 13 }}>{s.name}</div>
+                      <div className="truncate" style={{ fontSize: 11, color: T.textMuted }}>{s.ownerName}</div>
+                    </div>
+                  </div>
+                  <Badge label={s.status} bg={c.bg} color={c.text} />
+                </div>
+                <div className="flex items-center justify-between text-[12px] mb-1" style={{ color: T.textMuted }}>
+                  <span>{s.packageName} ({s.shopsCreated}/{s.packageShopLimit})</span>
+                  <span style={{ fontWeight: 700, color: T.success }}>{fmt(s.totalRevenue)}</span>
+                </div>
+                <div className="flex items-center justify-between text-[12px] mb-3">
+                  <span style={{ color: d <= 14 ? (d <= 3 ? T.danger : T.warning) : T.textMuted, fontWeight: d <= 14 ? 700 : 400 }}>
+                    Expires {fmtDate(s.expiresAt)}{d <= 14 && ` (${d}d)`}
+                  </span>
+                  <span style={{ color: T.textMuted }}>Active {timeAgo(s.lastActivity)}</span>
+                </div>
+                <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
+                  <Btn size="sm" variant="ghost" onClick={() => onNavigateIsolation(s)}><FlaskConical size={14} /></Btn>
+                  {s.status === "active" && <Btn size="sm" variant="warning" onClick={() => handleAction("suspend", s)}>Suspend</Btn>}
+                  {(s.status === "suspended" || s.status === "pulled_down") && <Btn size="sm" variant="success" onClick={() => handleAction("activate", s)}>Activate</Btn>}
+                  {s.status === "active" && <Btn size="sm" variant="danger" onClick={() => handleAction("pulldown", s)}>Pull Down</Btn>}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+      <div className="hidden md:block">
+        <Table columns={columns} data={filtered} onRowClick={s => { setSelectedShop(s); setShopTab("overview"); }} emptyMessage="No shops match your filter." />
+      </div>
 
       {/* ── Shop Detail Modal ── */}
       {selectedShop && (
-        <Modal title={`${selectedShop.logoEmoji} ${selectedShop.name}`} onClose={() => setSelectedShop(null)} width={680}>
+        <Modal title={selectedShop.name} onClose={() => setSelectedShop(null)} width={680}>
           <Tabs
             tabs={[
               { id: "overview", label: "Overview" },
@@ -161,7 +226,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
 
           {shopTab === "overview" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 12 }}>
                 <InfoRow label="Owner" value={selectedShop.ownerName} />
                 <InfoRow label="Email" value={selectedShop.ownerEmail} />
                 <InfoRow label="Phone" value={selectedShop.ownerPhone} />
@@ -171,7 +236,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
                 <InfoRow label="Subscribed" value={fmtDate(selectedShop.subscribedAt)} />
                 <InfoRow label="Expires" value={fmtDate(selectedShop.expiresAt)} />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginTop: 6 }}>
+              <div className="grid grid-cols-2 sm:grid-cols-4" style={{ gap: 10, marginTop: 6 }}>
                 {[
                   { label: "Revenue", value: fmt(selectedShop.totalRevenue) },
                   { label: "Orders", value: selectedShop.totalOrders.toLocaleString() },
@@ -184,9 +249,9 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
                   </div>
                 ))}
               </div>
-              <div style={{ display: "flex", gap: 10 }}>
-                <Btn size="sm" variant="primary" onClick={() => onNavigateIsolation(selectedShop)}>🔬 Open in Isolation Lab</Btn>
-                <Btn size="sm" variant="ghost" onClick={() => window.open(selectedShop.shopUrl, "_blank")}>↗ Visit Shop</Btn>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <Btn size="sm" variant="primary" onClick={() => onNavigateIsolation(selectedShop)}><FlaskConical size={14} /> Open in Isolation Lab</Btn>
+                <Btn size="sm" variant="ghost" onClick={() => window.open(selectedShop.shopUrl, "_blank")}><ArrowUpRight size={14} /> Visit Shop</Btn>
               </div>
             </div>
           )}
@@ -199,7 +264,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
               <Input label="Bank Name" value={paymentForm.bankName ?? ""} onChange={v => setPaymentForm(f => ({ ...f, bankName: v }))} placeholder="e.g. Equity Bank" />
               <Input label="Bank Account Number" value={paymentForm.bankAccount ?? ""} onChange={v => setPaymentForm(f => ({ ...f, bankAccount: v }))} placeholder="0123456789" />
               <Input label="Bank Branch" value={paymentForm.bankBranch ?? ""} onChange={v => setPaymentForm(f => ({ ...f, bankBranch: v }))} placeholder="e.g. Westlands Branch" />
-              <Btn onClick={() => handleAction("payment", selectedShop)} variant="primary">💾 Save Payment Details</Btn>
+              <Btn onClick={() => handleAction("payment", selectedShop)} variant="primary"><Save size={14} /> Save Payment Details</Btn>
             </div>
           )}
 
@@ -207,15 +272,15 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <p style={{ margin: 0, fontSize: 13, color: T.textMuted }}>Admin-level actions for <strong>{selectedShop.name}</strong>. Use with care — these directly affect the shop.</p>
               {selectedShop.status !== "active" && (
-                <ActionCard icon="✅" title="Activate Shop" desc="Re-open the shop for business. All customer-facing pages will go live." btnLabel="Activate" variant="success" onClick={() => handleAction("activate", selectedShop)} />
+                <ActionCard icon={CheckCircle2} title="Activate Shop" desc="Re-open the shop for business. All customer-facing pages will go live." btnLabel="Activate" variant="success" onClick={() => handleAction("activate", selectedShop)} />
               )}
               {selectedShop.status === "active" && (
-                <ActionCard icon="⏸️" title="Suspend Shop" desc="Temporarily disable the shop. The owner can still log in but customers cannot browse." btnLabel="Suspend" variant="warning" onClick={() => handleAction("suspend", selectedShop)} />
+                <ActionCard icon={PauseCircle} title="Suspend Shop" desc="Temporarily disable the shop. The owner can still log in but customers cannot browse." btnLabel="Suspend" variant="warning" onClick={() => handleAction("suspend", selectedShop)} />
               )}
               {selectedShop.status !== "pulled_down" && (
-                <ActionCard icon="🔴" title="Pull Down Shop" desc="Immediately take the shop offline and notify the owner with a warning notice. Used for policy violations or suspected fraud." btnLabel="Pull Down" variant="danger" onClick={() => handleAction("pulldown", selectedShop)} />
+                <ActionCard icon={Ban} title="Pull Down Shop" desc="Immediately take the shop offline and notify the owner with a warning notice. Used for policy violations or suspected fraud." btnLabel="Pull Down" variant="danger" onClick={() => handleAction("pulldown", selectedShop)} />
               )}
-              <ActionCard icon="🔬" title="Open in Isolation Lab" desc="Load the shop in a sandboxed environment to troubleshoot issues without affecting live operations." btnLabel="Open Lab" variant="primary" onClick={() => { setSelectedShop(null); onNavigateIsolation(selectedShop); }} />
+              <ActionCard icon={FlaskConical} title="Open in Isolation Lab" desc="Load the shop in a sandboxed environment to troubleshoot issues without affecting live operations." btnLabel="Open Lab" variant="primary" onClick={() => { setSelectedShop(null); onNavigateIsolation(selectedShop); }} />
             </div>
           )}
         </Modal>
@@ -223,7 +288,7 @@ export function ShopsModule({ shops, onUpdateShop, onNavigateIsolation, onNaviga
 
       {/* ── Pull-down Confirm ── */}
       {confirmAction?.type === "pulldown" && (
-        <Modal title="⚠️ Pull Down Shop" onClose={() => setConfirmAction(null)} width={520}>
+        <Modal title="Pull Down Shop" onClose={() => setConfirmAction(null)} width={520}>
           <p style={{ margin: "0 0 14px", fontSize: 13, color: T.text }}>This will immediately take <strong>{confirmAction.shop.name}</strong> offline and send the following notice to the owner:</p>
           <Input label="Notice to Owner" value={pulldownNotice} onChange={setPulldownNotice} textarea rows={4} />
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 6 }}>
@@ -266,14 +331,14 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-function ActionCard({ icon, title, desc, btnLabel, variant, onClick }: {
-  icon: string; title: string; desc: string; btnLabel: string;
+function ActionCard({ icon: Icon, title, desc, btnLabel, variant, onClick }: {
+  icon: LucideIcon; title: string; desc: string; btnLabel: string;
   variant: "primary" | "danger" | "ghost" | "accent" | "success" | "warning";
   onClick: () => void;
 }) {
   return (
     <div style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: T.radiusCard, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14 }}>
-      <div style={{ fontSize: 22, flexShrink: 0 }}>{icon}</div>
+      <Icon size={22} style={{ flexShrink: 0 }} />
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 2 }}>{title}</div>
         <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.5 }}>{desc}</div>

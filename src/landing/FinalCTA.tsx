@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { Rocket } from "lucide-react";
 import { C } from "./Constants";
 
 function FinalCTA() {
   return (
     <section id="contact" style={{ padding: "96px 24px", background: `linear-gradient(135deg, ${C.forest}, #0d3a1e)` }}>
       <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>🚀</div>
+        <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}><Rocket style={{ width: 48, height: 48, color: "#fff" }} /></div>
         <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(30px, 4vw, 48px)", fontWeight: 700, color: "#fff", margin: "0 0 18px", letterSpacing: "-0.02em" }}>
           Ready to open your shop?
         </h2>
@@ -16,13 +17,13 @@ function FinalCTA() {
           <Link href="/auth/signup" style={{
             textDecoration: "none", padding: "16px 36px", borderRadius: 14,
             background: C.action, color: "#fff", fontWeight: 800, fontSize: 17,
-            boxShadow: "0 6px 24px rgba(37,165,90,.45)", transition: "transform .15s",
+            transition: "transform .15s",
           }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; }}>
             Start free — 14 days, no card required
           </Link>
-          <Link href="/shop" style={{
+          <Link href="/market" style={{
             textDecoration: "none", padding: "16px 28px", borderRadius: 14,
             background: "rgba(255,255,255,.12)", color: "#fff", fontWeight: 600, fontSize: 17,
             border: "1.5px solid rgba(255,255,255,.25)", transition: "background .15s",
