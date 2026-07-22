@@ -131,9 +131,9 @@ export default function AdminProductsPage() {
                             <img
                               src={p.image}
                               alt={p.name}
-                              className="w-9 h-9 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+                              className="w-9 h-9 rounded-lg object-cover bg-gray-100 shrink-0"
                             />
-                            <p className="font-medium text-gray-900 max-w-[160px] truncate">{p.name}</p>
+                            <p className="font-medium text-gray-900 max-w-40 truncate">{p.name}</p>
                           </div>
                         </td>
                         <td className="px-4 py-3 text-gray-600">{p.sellerName}</td>

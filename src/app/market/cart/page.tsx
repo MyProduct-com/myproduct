@@ -82,7 +82,7 @@ export default function CartPage() {
               key={item.id}
               className="bg-white rounded-xl border border-gray-100 p-4 flex gap-4"
             >
-              <Link href={`/products/${item.id}`} className="flex-shrink-0">
+              <Link href={`/products/${item.id}`} className="shrink-0">
                 <img
                   src={item.image}
                   alt={item.name}
@@ -103,7 +103,7 @@ export default function CartPage() {
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0 p-1"
+                    className="text-gray-400 hover:text-red-500 transition-colors shrink-0 p-1"
                     aria-label="Remove item"
                   >
                     <IconTrash size={16} />

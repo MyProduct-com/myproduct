@@ -29,11 +29,11 @@ export default function SellerSidebar() {
     exact ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className="w-60 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
+    <aside className="w-60 shrink-0 bg-white border-r border-gray-200 flex flex-col">
       {/* Store info */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
             <IconBuildingStore size={20} className="text-green-700" />
           </div>
           <div className="min-w-0">

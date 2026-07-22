@@ -314,7 +314,7 @@ export default function AddProductPage() {
         {/* Price preview */}
         {form.price && (
           <div className="mt-4 p-3 bg-gray-50 rounded-xl flex items-center gap-3 text-sm">
-            <IconInfoCircle size={16} className="text-gray-400 flex-shrink-0" />
+            <IconInfoCircle size={16} className="text-gray-400 shrink-0" />
             <span className="text-gray-600">
               Customers will see:{" "}
               <span className="font-bold text-gray-900">KES {Number(form.price).toLocaleString()}</span>
@@ -371,7 +371,7 @@ export default function AddProductPage() {
 
         <div className="flex gap-4">
           {/* Preview */}
-          <div className="w-28 h-28 rounded-xl border-2 border-dashed border-gray-200 flex-shrink-0 overflow-hidden bg-gray-50 flex items-center justify-center">
+          <div className="w-28 h-28 rounded-xl border-2 border-dashed border-gray-200 shrink-0 overflow-hidden bg-gray-50 flex items-center justify-center">
             {form.imageUrl ? (
               <img
                 src={form.imageUrl}
@@ -422,7 +422,7 @@ export default function AddProductPage() {
               className="sr-only"
             />
             <div
-              className={`w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${
+              className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center ${
                 form.status === "draft" ? "border-gray-500" : "border-gray-300"
               }`}
             >
@@ -454,7 +454,7 @@ export default function AddProductPage() {
               className="sr-only"
             />
             <div
-              className={`w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${
+              className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center ${
                 form.status === "live" ? "border-green-500" : "border-gray-300"
               }`}
             >

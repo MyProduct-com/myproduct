@@ -87,7 +87,7 @@ export default function AdminSellersPage() {
             <div className="p-5">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-green-100 text-green-700 font-bold text-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-green-100 text-green-700 font-bold text-lg flex items-center justify-center shrink-0">
                     {seller.name.charAt(0)}
                   </div>
                   <div>

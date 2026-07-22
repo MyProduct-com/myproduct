@@ -95,12 +95,12 @@ export default function Sidebar() {
       )}
 
       {/* Mobile drawer */}
-      <aside className={`md:hidden fixed top-0 left-0 h-full w-[220px] bg-white z-50 flex flex-col shadow-xl transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`md:hidden fixed top-0 left-0 h-full w-55 bg-white z-50 flex flex-col shadow-xl transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <NavContent />
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-[200px] shrink-0 h-screen sticky top-0 border-r border-black/10 bg-white flex-col">
+      <aside className="hidden md:flex w-50 shrink-0 h-screen sticky top-0 border-r border-black/10 bg-white flex-col">
         <NavContent />
       </aside>
     </>

@@ -143,7 +143,7 @@ export default async function SellerAnalyticsPage() {
                         <div className="flex items-center gap-3">
                           <span className="text-org-xs font-org-bold text-org-text-muted w-4 shrink-0">{i + 1}</span>
                           <img src={p.image} alt={p.name} className="w-9 h-9 rounded-lg object-cover shrink-0" />
-                          <span className="font-org-medium text-org-text-primary max-w-[220px] truncate">{p.name}</span>
+                          <span className="font-org-medium text-org-text-primary max-w-55 truncate">{p.name}</span>
                         </div>
                       </td>
                       <td className="px-2 py-3 text-right text-org-text-secondary">{p.views.toLocaleString()}</td>

@@ -80,7 +80,7 @@ export default function Header({
             <ShoppingCart className="w-4 h-4" /> Cart
             {cartCount > 0 && (
               <span
-                className="text-[11px] font-black rounded-full px-1.5 py-0.5 min-w-[20px] text-center leading-none"
+                className="text-[11px] font-black rounded-full px-1.5 py-0.5 min-w-5 text-center leading-none"
                 style={{ background: "#fff", color: theme.primary }}
               >
                 {cartCount}

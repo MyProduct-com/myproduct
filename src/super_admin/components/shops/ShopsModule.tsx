@@ -186,11 +186,11 @@ export function ShopsModule({ shops, initialSearch = "", initialStatus = "all", 
                   </div>
                   <Badge label={s.status} bg={c.bg} color={c.text} />
                 </div>
-                <div className="flex items-center justify-between text-[12px] mb-1" style={{ color: T.textMuted }}>
+                <div className="flex items-center justify-between text-org-xs mb-1" style={{ color: T.textMuted }}>
                   <span>{s.packageName} ({s.shopsCreated}/{s.packageShopLimit})</span>
                   <span style={{ fontWeight: 700, color: T.success }}>{fmt(s.totalRevenue)}</span>
                 </div>
-                <div className="flex items-center justify-between text-[12px] mb-3">
+                <div className="flex items-center justify-between text-org-xs mb-3">
                   <span style={{ color: d <= 14 ? (d <= 3 ? T.danger : T.warning) : T.textMuted, fontWeight: d <= 14 ? 700 : 400 }}>
                     Expires {fmtDate(s.expiresAt)}{d <= 14 && ` (${d}d)`}
                   </span>

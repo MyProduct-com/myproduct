@@ -90,7 +90,7 @@ export default function OrdersPage() {
                     <img
                       src={item.productImage}
                       alt={item.productName}
-                      className="w-14 h-14 rounded-xl object-cover bg-gray-50 flex-shrink-0"
+                      className="w-14 h-14 rounded-xl object-cover bg-gray-50 shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 line-clamp-1">{item.productName}</p>
