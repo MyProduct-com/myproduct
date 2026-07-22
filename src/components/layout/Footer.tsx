@@ -24,7 +24,7 @@ export default function Footer() {
               <span className="text-white">Products</span>
             </h3>
             <p className="text-sm leading-relaxed text-gray-400 mb-5">
-              Kenya&apos;s growing marketplace for electronics, fashion, groceries and more. Fast delivery, secure payments, trusted sellers.
+              Kenya&apos;s growing marketplace for electronic, fashion, groceries and more. Fast delivery, secure payments, trusted sellers.
             </p>
             <div className="flex gap-2.5">
               {[IconBrandFacebook, IconBrandTwitter, IconBrandInstagram, IconBrandWhatsapp].map(
