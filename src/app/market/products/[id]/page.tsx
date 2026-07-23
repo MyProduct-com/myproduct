@@ -21,8 +21,9 @@ import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useAuthStore } from "@/store/authStore";
 import ProductCard from "@/components/ui/ProductCard";
+import MarketChrome from "@/components/layout/MarketChrome";
 
-export default function ProductDetailPage() {
+function ProductDetailPageContent() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const product = mockProducts.find((p) => p.id === id);
@@ -296,5 +297,13 @@ export default function ProductDetailPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ProductDetailPage() {
+  return (
+    <MarketChrome>
+      <ProductDetailPageContent />
+    </MarketChrome>
   );
 }

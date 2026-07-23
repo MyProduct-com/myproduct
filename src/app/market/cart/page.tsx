@@ -12,11 +12,12 @@ import {
 } from "@tabler/icons-react";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
+import MarketChrome from "@/components/layout/MarketChrome";
 
 const DELIVERY_THRESHOLD = 2000;
 const DELIVERY_FEE = 150;
 
-export default function CartPage() {
+function CartPageContent() {
   const router = useRouter();
   const { items, removeItem, updateQty, clearCart, total, distinctCount, totalQty } = useCartStore();
   const { isAuthenticated } = useAuthStore();
@@ -203,5 +204,13 @@ export default function CartPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CartPage() {
+  return (
+    <MarketChrome>
+      <CartPageContent />
+    </MarketChrome>
   );
 }

@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { Search, MapPin, Truck, CheckCircle2, ArrowRight, X } from "lucide-react";
-import type { AdminOrder, OrderStatus, Theme } from "../../types/index";
-import { SectionHeader, Badge, Btn, Modal, Table } from "../layout/UI";
+import type { AdminOrder, OrderStatus } from "../../types/index";
+import StatusPill from "@/components/dashboard/StatusPill";
 import { fmt, fmtDateTime, payMethodLabel } from "../../utils/helpers";
 
 const STATUSES: OrderStatus[] = ["Pending","Under Processing","Dispatched","In Transit","Delivered","Cancelled","Returned"];
 
 interface OrdersViewProps {
-  theme: Theme;
   orders: AdminOrder[];
   onUpdate: (orders: AdminOrder[]) => void;
   onToast: (msg: string, type?: "success"|"error"|"info") => void;
 }
 
-export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersViewProps) {
+export default function OrdersView({ orders, onUpdate, onToast }: OrdersViewProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [payFilter, setPayFilter] = useState("All");
@@ -72,47 +71,24 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
     return acc;
   }, {} as Record<string, number>);
 
-  const columns = [
-    {
-      header: "Order ID", key: "id",
-      render: (o: AdminOrder) => <span style={{ fontWeight: 700, fontSize: 12 }}>{o.id}</span>,
-    },
-    {
-      header: "Customer", key: "customer",
-      render: (o: AdminOrder) => (
-        <div>
-          <div style={{ fontWeight: 600, color: theme.black }}>{o.customerName}</div>
-          <div style={{ fontSize: 11, color: theme.textMuted }}>{o.customerPhone}</div>
-        </div>
-      ),
-    },
-    { header: "Items", key: "items", render: (o: AdminOrder) => <span style={{ fontSize: 12 }}>{o.items.length} item{o.items.length !== 1 ? "s" : ""}</span> },
-    { header: "Total", key: "total", render: (o: AdminOrder) => <span style={{ fontWeight: 700 }}>{fmt(o.total)}</span> },
-    { header: "Payment", key: "pay", render: (o: AdminOrder) => <Badge status={o.paymentStatus} /> },
-    { header: "Status", key: "status", render: (o: AdminOrder) => <Badge status={o.status} /> },
-    { header: "Date", key: "date", render: (o: AdminOrder) => <span style={{ fontSize: 12, color: theme.textMuted }}>{fmtDateTime(o.createdAt)}</span> },
-  ];
-
   return (
-    <div>
-      <SectionHeader
-        title="Orders"
-        subtitle={`${orders.length} total · ${statusCounts["Pending"] || 0} pending · ${statusCounts["Under Processing"] || 0} processing`}
-        theme={theme}
-      />
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-org-lg font-org-bold text-org-text-primary">Orders</h1>
+        <p className="text-org-sm text-org-text-secondary mt-0.5">
+          {orders.length} total &middot; {statusCounts["Pending"] || 0} pending &middot; {statusCounts["Under Processing"] || 0} processing
+        </p>
+      </div>
 
       {/* Status quick-filter pills */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
         {["All", ...STATUSES].map(s => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            style={{
-              padding: "5px 14px", borderRadius: 20, cursor: "pointer",
-              background: statusFilter === s ? theme.primary : theme.surface,
-              color: statusFilter === s ? "#fff" : theme.textMuted,
-              fontWeight: 600, fontSize: 12, border: `1px solid ${statusFilter === s ? theme.primary : theme.border}`,
-            } as React.CSSProperties}
+            className={`shrink-0 px-3.5 py-1.5 rounded-org-pill text-org-xs font-org-semibold whitespace-nowrap transition-colors ${
+              statusFilter === s ? "bg-org-primary text-white" : "bg-org-surface text-org-text-secondary border border-org-border hover:border-org-primary"
+            }`}
           >
             {s} {s !== "All" && statusCounts[s] ? `(${statusCounts[s]})` : ""}
           </button>
@@ -120,22 +96,18 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
       </div>
 
       {/* Search + pay filter */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-        <div style={{ position: "relative", flex: 1 }}>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-org-text-muted" />
           <input
             placeholder="Search order ID, customer name or phone…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{
-              width: "100%", padding: "9px 12px 9px 36px", borderRadius: theme.radius,
-              border: `1.5px solid ${theme.border}`, fontSize: 13, boxSizing: "border-box",
-              background: theme.surface, outline: "none",
-            }}
+            className="w-full pl-9 pr-3 py-2.5 rounded-org-sm border border-org-border text-org-sm bg-org-surface text-org-text-primary outline-none focus:border-org-primary"
           />
-          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5, display: "flex" }}><Search size={14} /></span>
         </div>
         <select value={payFilter} onChange={e => setPayFilter(e.target.value)}
-          style={{ padding: "9px 12px", borderRadius: theme.radius, border: `1.5px solid ${theme.border}`, fontSize: 13, background: theme.surface }}>
+          className="px-3 py-2.5 rounded-org-sm border border-org-border text-org-sm bg-org-surface text-org-text-primary">
           <option value="All">All Payments</option>
           <option value="Pending">Pending</option>
           <option value="Paid">Paid</option>
@@ -143,97 +115,157 @@ export default function OrdersView({ theme, orders, onUpdate, onToast }: OrdersV
         </select>
       </div>
 
-      <Table columns={columns} data={filtered} theme={theme} onRowClick={setSelected} emptyMessage="No orders found." />
+      {/* Mobile: stacked cards */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {filtered.length === 0 ? (
+          <p className="text-org-sm text-org-text-secondary text-center py-8">No orders found.</p>
+        ) : filtered.map((o) => (
+          <div key={o.id} onClick={() => setSelected(o)} className="bg-org-surface rounded-org-card shadow-org-card p-3.5 cursor-pointer">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <p className="font-org-bold text-org-sm text-org-text-primary">{o.id}</p>
+                <p className="text-org-xs text-org-text-secondary">{o.customerName} &middot; {o.customerPhone}</p>
+              </div>
+              <StatusPill status={o.status} />
+            </div>
+            <div className="flex items-center justify-between text-org-sm">
+              <span className="text-org-text-secondary">{o.items.length} item{o.items.length !== 1 ? "s" : ""}</span>
+              <span className="font-org-bold text-org-text-primary">{fmt(o.total)}</span>
+            </div>
+            <div className="flex items-center justify-between mt-1.5">
+              <StatusPill status={o.paymentStatus} />
+              <span className="text-org-xs text-org-text-muted">{fmtDateTime(o.createdAt)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden md:block bg-org-surface rounded-org-card shadow-org-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-org-sm">
+            <thead className="bg-org-surface-alt border-b border-org-border">
+              <tr className="text-org-xs text-org-text-muted uppercase tracking-wider">
+                <th className="px-4 py-3 text-left font-org-medium">Order ID</th>
+                <th className="px-4 py-3 text-left font-org-medium">Customer</th>
+                <th className="px-4 py-3 text-left font-org-medium">Items</th>
+                <th className="px-4 py-3 text-right font-org-medium">Total</th>
+                <th className="px-4 py-3 text-left font-org-medium">Payment</th>
+                <th className="px-4 py-3 text-left font-org-medium">Status</th>
+                <th className="px-4 py-3 text-left font-org-medium">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-org-border">
+              {filtered.length === 0 ? (
+                <tr><td colSpan={7} className="text-center py-8 text-org-text-secondary">No orders found.</td></tr>
+              ) : filtered.map((o) => (
+                <tr key={o.id} onClick={() => setSelected(o)} className="hover:bg-org-surface-alt transition-colors cursor-pointer">
+                  <td className="px-4 py-3 font-org-bold text-org-xs text-org-text-primary">{o.id}</td>
+                  <td className="px-4 py-3">
+                    <p className="font-org-medium text-org-text-primary">{o.customerName}</p>
+                    <p className="text-org-xs text-org-text-muted">{o.customerPhone}</p>
+                  </td>
+                  <td className="px-4 py-3 text-org-text-secondary">{o.items.length} item{o.items.length !== 1 ? "s" : ""}</td>
+                  <td className="px-4 py-3 text-right font-org-semibold text-org-text-primary">{fmt(o.total)}</td>
+                  <td className="px-4 py-3"><StatusPill status={o.paymentStatus} /></td>
+                  <td className="px-4 py-3"><StatusPill status={o.status} /></td>
+                  <td className="px-4 py-3 text-org-xs text-org-text-muted">{fmtDateTime(o.createdAt)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Order Detail Modal */}
       {selected && (
-        <Modal title={`Order ${selected.id}`} onClose={() => setSelected(null)} theme={theme} width={620}>
-          {/* Status + badges */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
-            <Badge status={selected.status} />
-            <Badge status={selected.paymentStatus} />
-            <span style={{ fontSize: 12, color: theme.textMuted, alignSelf: "center" }}>
-              {payMethodLabel(selected.paymentMethod)}
-              {selected.paymentRef && ` · Ref: ${selected.paymentRef}`}
-            </span>
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={() => setSelected(null)}>
+          <div className="bg-org-surface rounded-org-card shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-5" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-org-md font-org-bold text-org-text-primary mb-4">Order {selected.id}</h2>
 
-          {/* Customer */}
-          <div style={{ background: theme.bg, borderRadius: theme.radius, padding: 14, marginBottom: 16, border: `1px solid ${theme.border}` }}>
-            <div style={{ fontWeight: 700, marginBottom: 6, color: theme.black }}>Customer</div>
-            <div style={{ fontSize: 13, color: theme.text }}>{selected.customerName}</div>
-            <div style={{ fontSize: 12, color: theme.textMuted }}>{selected.customerPhone} · {selected.customerEmail}</div>
-            <div style={{ fontSize: 12, color: theme.textMuted, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}><MapPin size={12} /> {selected.address}</div>
-          </div>
+            <div className="flex items-center gap-2.5 flex-wrap mb-5">
+              <StatusPill status={selected.status} />
+              <StatusPill status={selected.paymentStatus} />
+              <span className="text-org-xs text-org-text-muted">
+                {payMethodLabel(selected.paymentMethod)}
+                {selected.paymentRef && ` · Ref: ${selected.paymentRef}`}
+              </span>
+            </div>
 
-          {/* Items */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, marginBottom: 10, color: theme.black }}>Items</div>
-            {selected.items.map((item, i) => (
-              <div key={i} style={{
-                display: "flex", justifyContent: "space-between", padding: "8px 0",
-                borderBottom: `1px solid ${theme.border}`, fontSize: 13,
-              }}>
-                <div>
-                  <div style={{ fontWeight: 600, color: theme.black }}>{item.productName}</div>
-                  <div style={{ color: theme.textMuted }}>{item.qty} × {fmt(item.unitPrice)}</div>
+            {/* Customer */}
+            <div className="bg-org-surface-alt rounded-org-sm p-3.5 mb-4 border border-org-border">
+              <p className="font-org-bold text-org-text-primary mb-1.5">Customer</p>
+              <p className="text-org-sm text-org-text-primary">{selected.customerName}</p>
+              <p className="text-org-xs text-org-text-secondary">{selected.customerPhone} &middot; {selected.customerEmail}</p>
+              <p className="text-org-xs text-org-text-secondary mt-1 flex items-center gap-1"><MapPin size={12} /> {selected.address}</p>
+            </div>
+
+            {/* Items */}
+            <div className="mb-4">
+              <p className="font-org-bold text-org-text-primary mb-2.5">Items</p>
+              {selected.items.map((item, i) => (
+                <div key={i} className="flex justify-between py-2 border-b border-org-border text-org-sm">
+                  <div>
+                    <p className="font-org-medium text-org-text-primary">{item.productName}</p>
+                    <p className="text-org-text-secondary">{item.qty} &times; {fmt(item.unitPrice)}</p>
+                  </div>
+                  <span className="font-org-semibold text-org-text-primary">{fmt(item.totalPrice)}</span>
                 </div>
-                <span style={{ fontWeight: 700, color: theme.accent }}>{fmt(item.totalPrice)}</span>
+              ))}
+              <div className="flex justify-between py-2 text-org-xs text-org-text-secondary">
+                <span>Subtotal</span><span>{fmt(selected.subtotal)}</span>
               </div>
-            ))}
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", fontSize: 12, color: theme.textMuted }}>
-              <span>Subtotal</span><span>{fmt(selected.subtotal)}</span>
+              <div className="flex justify-between py-1 text-org-xs text-org-text-secondary">
+                <span>Delivery</span><span>{fmt(selected.deliveryFee)}</span>
+              </div>
+              <div className="flex justify-between font-org-bold text-org-md text-org-text-primary pt-2">
+                <span>Total</span><span>{fmt(selected.total)}</span>
+              </div>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", fontSize: 12, color: theme.textMuted }}>
-              <span>Delivery</span><span>{fmt(selected.deliveryFee)}</span>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: 16, color: theme.accent, paddingTop: 8 }}>
-              <span>Total</span><span>{fmt(selected.total)}</span>
-            </div>
-          </div>
 
-          {/* Tracking */}
-          {selected.trackingCode && (
-            <div style={{ background: theme.primaryLight, borderRadius: theme.radius, padding: 12, marginBottom: 16, border: `1px solid ${theme.primary}40` }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: theme.primary, display: "flex", alignItems: "center", gap: 4 }}><Truck size={14} /> Tracking Code: {selected.trackingCode}</div>
-              {selected.dispatchedAt && <div style={{ fontSize: 11, color: theme.textMuted, marginTop: 4 }}>Dispatched: {fmtDateTime(selected.dispatchedAt)}</div>}
-            </div>
-          )}
-
-          {/* Dispatch input */}
-          {selected.status === "Under Processing" && (
-            <div style={{ marginBottom: 16 }}>
-              <input
-                placeholder="Tracking code (optional, auto-generated if blank)"
-                value={trackingInput}
-                onChange={e => setTrackingInput(e.target.value)}
-                style={{ width: "100%", padding: "9px 12px", borderRadius: theme.radius, border: `1.5px solid ${theme.border}`, fontSize: 13, boxSizing: "border-box" }}
-              />
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {selected.paymentStatus === "Pending" && (
-              <Btn theme={theme} onClick={() => confirmPayment(selected)}><CheckCircle2 size={14} /> Confirm Payment</Btn>
+            {/* Tracking */}
+            {selected.trackingCode && (
+              <div className="bg-org-primary-light rounded-org-sm p-3 mb-4 border border-org-primary/30">
+                <p className="text-org-xs font-org-bold text-org-primary flex items-center gap-1.5"><Truck size={14} /> Tracking Code: {selected.trackingCode}</p>
+                {selected.dispatchedAt && <p className="text-org-xs text-org-text-secondary mt-1">Dispatched: {fmtDateTime(selected.dispatchedAt)}</p>}
+              </div>
             )}
+
+            {/* Dispatch input */}
             {selected.status === "Under Processing" && (
-              <Btn theme={theme} onClick={() => dispatch(selected)}><Truck size={14} /> Dispatch Order</Btn>
+              <div className="mb-4">
+                <input
+                  placeholder="Tracking code (optional, auto-generated if blank)"
+                  value={trackingInput}
+                  onChange={e => setTrackingInput(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-org-sm border border-org-border text-org-sm outline-none focus:border-org-primary"
+                />
+              </div>
             )}
-            {["Pending","Under Processing","Dispatched","In Transit"].includes(selected.status) &&
-             selected.status !== "Under Processing" && (
-              <Btn theme={theme} variant="ghost" onClick={() => advanceStatus(selected)}>
-                <ArrowRight size={14} /> Advance to {STATUSES[STATUSES.indexOf(selected.status) + 1]}
-              </Btn>
-            )}
-            {selected.status === "Pending" && (
-              <Btn theme={theme} variant="ghost" onClick={() => advanceStatus(selected)}><ArrowRight size={14} /> Start Processing</Btn>
-            )}
-            {!["Cancelled","Delivered","Returned"].includes(selected.status) && (
-              <Btn theme={theme} variant="danger" onClick={() => cancelOrder(selected)}><X size={14} /> Cancel</Btn>
-            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-2.5 flex-wrap">
+              {selected.paymentStatus === "Pending" && (
+                <button onClick={() => confirmPayment(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors"><CheckCircle2 size={14} /> Confirm Payment</button>
+              )}
+              {selected.status === "Under Processing" && (
+                <button onClick={() => dispatch(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors"><Truck size={14} /> Dispatch Order</button>
+              )}
+              {["Pending","Under Processing","Dispatched","In Transit"].includes(selected.status) &&
+               selected.status !== "Under Processing" && (
+                <button onClick={() => advanceStatus(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm border border-org-border text-org-text-secondary hover:bg-org-surface-alt text-org-sm font-org-medium transition-colors">
+                  <ArrowRight size={14} /> Advance to {STATUSES[STATUSES.indexOf(selected.status) + 1]}
+                </button>
+              )}
+              {selected.status === "Pending" && (
+                <button onClick={() => advanceStatus(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm border border-org-border text-org-text-secondary hover:bg-org-surface-alt text-org-sm font-org-medium transition-colors"><ArrowRight size={14} /> Start Processing</button>
+              )}
+              {!["Cancelled","Delivered","Returned"].includes(selected.status) && (
+                <button onClick={() => cancelOrder(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm bg-org-danger hover:opacity-90 text-white text-org-sm font-org-semibold transition-colors"><X size={14} /> Cancel</button>
+              )}
+            </div>
           </div>
-        </Modal>
+        </div>
       )}
     </div>
   );

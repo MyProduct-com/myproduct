@@ -7,6 +7,7 @@ import { SearchX } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { mockProducts } from "@/lib/mock-data";
 import type { ProductCategory } from "@/types/product";
+import MarketChrome from "@/components/layout/MarketChrome";
 
 const CATEGORIES: ProductCategory[] = [
   "Electronics", "Fashion", "Beauty & Health", "Grocery",
@@ -254,8 +255,10 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-400">Loading products...</div>}>
-      <ProductsContent />
-    </Suspense>
+    <MarketChrome>
+      <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-400">Loading products...</div>}>
+        <ProductsContent />
+      </Suspense>
+    </MarketChrome>
   );
 }

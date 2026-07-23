@@ -5,12 +5,13 @@ import {
 } from "lucide-react";
 import { LOGO_ICON_OPTIONS, getLogoIcon } from "@/lib/logoIcons";
 import { SA_THEME as T } from "../../data/theme";
-import type { SystemPackage, OnboardingForm } from "../../types/index";
+import type { SystemPackage, OnboardingForm, ManagedShop } from "../../types/index";
 import { Card, Btn, Input, Select, SectionHeader, Toggle, Badge } from "../layout/UI";
 import { genId } from "../../utils/helpers";
 
 interface Props {
   packages: SystemPackage[];
+  onLaunch: (shop: ManagedShop) => void;
   addToast: (msg: string, type?: string) => void;
 }
 
@@ -46,7 +47,7 @@ const DEMO_PRODUCTS = [
   { name: "Sample Product 3", price: 300, category: "General", stock: 20 },
 ];
 
-export function OnboardingModule({ packages, addToast }: Props) {
+export function OnboardingModule({ packages, onLaunch, addToast }: Props) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<OnboardingForm>(BLANK_FORM);
   const [products, setProducts] = useState(DEMO_PRODUCTS.map(p => ({ ...p, selected: true })));
@@ -80,15 +81,48 @@ export function OnboardingModule({ packages, addToast }: Props) {
 
   const handleLaunch = () => {
     setLaunching(true);
+    const pkg = packages.find(p => p.id === form.packageId);
+    const slug = form.shopName.toLowerCase().replace(/\s+/g, "-");
     const creds = {
       email: form.ownerEmail,
       password: form.password,
-      shopUrl: `https://${form.shopName.toLowerCase().replace(/\s+/g, "-")}.myproduct.co.ke`,
+      shopUrl: `https://${slug}.myproduct.co.ke`,
     };
+    const now = new Date();
+    const expires = new Date(now);
+    expires.setDate(expires.getDate() + (pkg?.billingCycle === "yearly" ? 365 : 30));
+
+    const newShop: ManagedShop = {
+      id: genId("shop"),
+      name: form.shopName,
+      logoIcon: form.shopLogoIcon,
+      tagline: form.shopTagline,
+      ownerName: form.ownerName,
+      ownerEmail: form.ownerEmail,
+      ownerPhone: form.ownerPhone,
+      address: form.shopAddress,
+      status: "active",
+      packageId: form.packageId,
+      packageName: pkg?.name ?? "—",
+      packageShopLimit: pkg?.shopLimit ?? 1,
+      shopsCreated: 1,
+      subscribedAt: now.toISOString(),
+      expiresAt: expires.toISOString(),
+      totalRevenue: 0,
+      totalOrders: 0,
+      totalProducts: products.filter(p => p.selected).length,
+      lastActivity: now.toISOString(),
+      shopUrl: creds.shopUrl,
+      adminUrl: `${creds.shopUrl}/admin`,
+      visitCount: 0,
+      cartAbandoned: 0,
+    };
+
     setTimeout(() => {
       setLaunching(false);
       setLaunched(true);
       setCredentials(creds);
+      onLaunch(newShop);
       addToast(`${form.shopName} onboarded successfully!`, "success");
     }, 2000);
   };
