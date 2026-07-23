@@ -3,10 +3,10 @@ import { C } from "./Constants";
 
 function About() {
   return (
-    <section id="about" style={{ padding: "96px 24px", background: C.ink, position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle, rgba(37,165,90,.06) 1px, transparent 1px)", backgroundSize: "28px 28px", pointerEvents: "none" }} />
+    <section id="about" style={{ padding: "96px 24px", background: "#000000", position: "relative", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px)", backgroundSize: "28px 28px", pointerEvents: "none" }} />
       <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center", position: "relative" }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: C.action, textTransform: "uppercase", letterSpacing: "0.1em" }}>Our mission</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,.55)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Our mission</span>
         <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, color: "#fff", margin: "14px 0 24px", letterSpacing: "-0.02em" }}>
           Built for Kenyan businesses,<br />by people who understand them.
         </h2>

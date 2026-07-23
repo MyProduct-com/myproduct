@@ -1,25 +1,24 @@
-import { ShoppingCart, Laptop, BookOpen, Shirt, Leaf, Wrench } from "lucide-react";
 import { C } from "./Constants";
 
 function TrustBar() {
-  const LOGOS = [
-    { icon: ShoppingCart, label: "FreshMart" },
-    { icon: Laptop, label: "TechZone" },
-    { icon: BookOpen, label: "BookNest" },
-    { icon: Shirt, label: "StyleHub" },
-    { icon: Leaf, label: "Mama Mboga" },
-    { icon: Wrench, label: "AutoParts KE" },
-  ];
+  const BRANDS = ["FreshMart", "TechZone", "BookNest", "StyleHub", "Mama Mboga", "AutoParts KE"];
+
   return (
     <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}`, padding: "16px 24px", overflow: "hidden" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", gap: 20 }}>
         <span style={{ fontSize: 12, color: C.slate, fontWeight: 600, flexShrink: 0, textTransform: "uppercase", letterSpacing: "0.05em" }}>Trusted by</span>
-        {LOGOS.map(l => (
-          <span key={l.label} style={{ fontSize: 13, fontWeight: 700, color: C.charcoal, padding: "6px 14px", background: C.canvas, borderRadius: 8, border: `1px solid ${C.border}`, display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <l.icon style={{ width: 14, height: 14 }} />
-            {l.label}
-          </span>
-        ))}
+        <div className="trust-marquee-viewport">
+          <div className="trust-marquee-track">
+            {[...BRANDS, ...BRANDS].map((label, i) => (
+              <span
+                key={i}
+                style={{ fontSize: 13, fontWeight: 700, color: C.charcoal, padding: "6px 14px", background: C.canvas, borderRadius: 8, border: `1px solid ${C.border}`, whiteSpace: "nowrap" }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

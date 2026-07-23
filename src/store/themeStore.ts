@@ -40,7 +40,7 @@ export const DEFAULT_SHOP_THEME: ShopTheme = {
   shopTagline:   "Fresh picks, fair prices.",
   logoIcon:      "ShoppingCart",
   radius:        "12px",
-  radiusCard:    "16px",
+  radiusCard:    "32px",
 };
 
 interface ThemeStore {

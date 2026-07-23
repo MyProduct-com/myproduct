@@ -162,7 +162,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <button
               onClick={handleAddToCart}
               className={`flex-1 min-w-0 py-3.5 rounded-full text-org-base font-bold transition-all flex items-center justify-center gap-1.5 ${
-                addedToCart ? "bg-border-mint text-[#1A6B3C]" : "bg-gray-900 text-white"
+                addedToCart ? "bg-border-mint text-[#1A6B3C]" : "bg-white/90 text-gray-900 group-hover:bg-gray-900 group-hover:text-white"
               }`}
             >
               <IconShoppingCart size={14} />
