@@ -17,13 +17,17 @@ const STATUS_TONE: Record<string, Tone> = {
   cancelled: "danger",
   refunded: "danger",
   failed: "danger",
+  returned: "danger",
   pending: "warning",
   processing: "warning",
+  under_processing: "warning",
   shipped: "info",
+  in_transit: "info",
+  dispatched: "info",
 };
 
 export default function StatusPill({ status }: { status: string }) {
-  const tone = STATUS_TONE[status.toLowerCase()] ?? "neutral";
+  const tone = STATUS_TONE[status.toLowerCase().replace(/\s+/g, "_")] ?? "neutral";
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-org-pill text-org-xs font-org-semibold capitalize ${TONES[tone]}`}>
       {status.toLowerCase()}

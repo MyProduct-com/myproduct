@@ -16,13 +16,14 @@ import {
 } from "@tabler/icons-react";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
+import MarketChrome from "@/components/layout/MarketChrome";
 
 const DELIVERY_THRESHOLD = 2000;
 const DELIVERY_FEE = 150;
 
 type PaymentMethod = "mpesa" | "card" | "cash_on_delivery";
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const router = useRouter();
   const { items, total, totalQty, clearCart } = useCartStore();
   const { user } = useAuthStore();
@@ -407,5 +408,13 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <MarketChrome>
+      <CheckoutPageContent />
+    </MarketChrome>
   );
 }

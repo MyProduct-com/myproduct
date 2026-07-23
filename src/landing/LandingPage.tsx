@@ -47,6 +47,20 @@ export default function LandingPage() {
           button.mobile-nav-toggle { display: flex !important; }
           div.mobile-nav-toggle { display: flex !important; }
         }
+
+        /* Footer — mobile-first: single column, then 2-up, then the full 4-up desktop layout */
+        .footer-pad { padding: 40px 20px 24px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
+        .footer-bottom { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+        @media (min-width: 640px) {
+          .footer-pad { padding: 52px 24px 28px; }
+          .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 40px; }
+          .footer-bottom { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        }
+        @media (min-width: 1024px) {
+          .footer-pad { padding: 60px 24px 32px; }
+          .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+        }
       `}</style>
       <div style={{ fontFamily: "'Inter', system-ui, sans-serif", background: C.canvas, color: C.charcoal, overflowX: "hidden" }}>
         <Nav scrolled={scrolled} />

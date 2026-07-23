@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Lock, ShieldCheck } from "lucide-react";
 import { getUiPrefs, applyThemeToDocument, DEFAULT_UI_PREFS } from "@/lib/uiPrefs";
+import { usePersistedState } from "@/lib/usePersistedState";
 import { SA_THEME as T } from "./data/theme";
 import type {
   SuperAdminView, SuperAdminPrivilege, SuperAdmin, ManagedShop, SystemPackage,
@@ -60,12 +61,14 @@ export default function SuperAdminPanel({ sessionUser, dashboardData }: SuperAdm
     name: sessionUser.name,
     email: sessionUser.email || MOCK_SUPER_ADMIN.email,
   });
-  const [shops, setShops] = useState<ManagedShop[]>(MOCK_SHOPS);
-  const [packages, setPackages] = useState<SystemPackage[]>(MOCK_PACKAGES);
-  const [tickets, setTickets] = useState<SupportTicket[]>(MOCK_TICKETS);
-  const [reminders, setReminders] = useState<Reminder[]>(MOCK_REMINDERS);
-  const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>(MOCK_MARKETPLACE_ITEMS);
-  const [systemAdmins, setSystemAdmins] = useState<SuperAdmin[]>(MOCK_SYSTEM_ADMINS);
+  // Persisted to localStorage (not a real backend yet) so admin actions
+  // survive a page refresh instead of resetting to the mock starting state.
+  const [shops, setShops] = usePersistedState<ManagedShop[]>("sa-shops", MOCK_SHOPS);
+  const [packages, setPackages] = usePersistedState<SystemPackage[]>("sa-packages", MOCK_PACKAGES);
+  const [tickets, setTickets] = usePersistedState<SupportTicket[]>("sa-tickets", MOCK_TICKETS);
+  const [reminders, setReminders] = usePersistedState<Reminder[]>("sa-reminders", MOCK_REMINDERS);
+  const [marketplaceItems, setMarketplaceItems] = usePersistedState<MarketplaceItem[]>("sa-marketplace-items", MOCK_MARKETPLACE_ITEMS);
+  const [systemAdmins, setSystemAdmins] = usePersistedState<SuperAdmin[]>("sa-system-admins", MOCK_SYSTEM_ADMINS);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   // ── Isolation preload ─────────────────────────────────────────────────────
@@ -76,8 +79,8 @@ export default function SuperAdminPanel({ sessionUser, dashboardData }: SuperAdm
   const [shopStatusFilter, setShopStatusFilter] = useState("all");
   const [shopsQueryToken, setShopsQueryToken] = useState(0);
 
-  // ── Dismissed notifications ──────────────────────────────────────────────
-  const [dismissedNotifIds, setDismissedNotifIds] = useState<Set<string>>(new Set());
+  // ── Dismissed notifications (array, not Set — Sets aren't JSON-serializable) ─
+  const [dismissedNotifIds, setDismissedNotifIds] = usePersistedState<string[]>("sa-dismissed-notifs", []);
 
   // ── UI preferences (theme, notification categories) ──────────────────────
   // Starts at the SSR-safe default (not read from localStorage) so the server
@@ -212,6 +215,7 @@ export default function SuperAdminPanel({ sessionUser, dashboardData }: SuperAdm
         return (
           <OnboardingModule
             packages={packages}
+            onLaunch={(shop) => setShops((prev) => [shop, ...prev])}
             addToast={addToast}
           />
         );
@@ -343,8 +347,8 @@ export default function SuperAdminPanel({ sessionUser, dashboardData }: SuperAdm
           .map((s) => ({ id: `suspended-${s.id}`, title: `${s.name} is suspended`, message: "Review and reactivate if resolved", tone: "info" as const }))
       : []),
   ];
-  const notifications = allNotifications.filter((n) => !dismissedNotifIds.has(n.id));
-  const clearNotifications = () => setDismissedNotifIds((prev) => new Set([...prev, ...allNotifications.map((n) => n.id)]));
+  const notifications = allNotifications.filter((n) => !dismissedNotifIds.includes(n.id));
+  const clearNotifications = () => setDismissedNotifIds((prev) => Array.from(new Set([...prev, ...allNotifications.map((n) => n.id)])));
 
   const shellItems: ShellItem[] = NAV_ITEMS.map((item) => ({
     key: item.id,

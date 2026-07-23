@@ -1,8 +1,17 @@
 "use client";
 import { useState } from "react";
-import { Check, Loader2, User as UserIcon, Palette, Bell, PanelLeft } from "lucide-react";
+import { Check, Loader2, User as UserIcon, Palette, Bell, PanelLeft, RotateCcw } from "lucide-react";
 import ChartCard from "@/components/dashboard/ChartCard";
 import { THEME_PALETTE, getUiPrefs, setUiPrefs, applyThemeToDocument } from "@/lib/uiPrefs";
+import { clearPersistedState } from "@/lib/usePersistedState";
+
+// Keys used by usePersistedState across the super_admin modules — see
+// SuperAdminPanel.tsx and MarketplaceModule.tsx. Kept in one place so the
+// reset button below can't silently miss one.
+const DEMO_DATA_KEYS = [
+  "sa-shops", "sa-packages", "sa-tickets", "sa-reminders",
+  "sa-marketplace-items", "sa-marketplace-inquiries", "sa-system-admins", "sa-dismissed-notifs",
+];
 
 interface Props {
   currentName: string;
@@ -54,6 +63,13 @@ export function SettingsModule({ currentName, currentEmail, onNameSaved, addToas
   const toggleNotif = (key: keyof typeof prefs.notifications) => {
     const next = setUiPrefs({ notifications: { ...prefs.notifications, [key]: !prefs.notifications[key] } });
     setPrefs(next);
+  };
+
+  const resetDemoData = () => {
+    if (!window.confirm("Reset all shops, packages, tickets, reminders, marketplace listings, and admins back to their starting demo data? This can't be undone.")) return;
+    DEMO_DATA_KEYS.forEach(clearPersistedState);
+    addToast("Demo data reset. Reloading…", "success");
+    window.location.reload();
   };
 
   return (
@@ -146,6 +162,19 @@ export function SettingsModule({ currentName, currentEmail, onNameSaved, addToas
             <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${prefs.sidebarDefaultExpanded ? "left-4" : "left-0.5"}`} />
           </button>
         </label>
+      </ChartCard>
+
+      {/* Demo data */}
+      <ChartCard title="Demo Data" subtitle="This platform isn't connected to a live database yet — actions here are saved to this browser only" action={<RotateCcw size={16} className="text-org-text-muted" />}>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-org-sm text-org-text-secondary">Undo every change you've made across Shops, Packages, Tickets, Reminders, Marketplace, and Admins.</p>
+          <button
+            onClick={resetDemoData}
+            className="text-org-sm font-org-semibold text-org-danger border border-org-danger/30 hover:bg-org-danger-bg px-4 py-2 rounded-org-sm transition-colors shrink-0"
+          >
+            Reset to Demo Data
+          </button>
+        </div>
       </ChartCard>
     </div>
   );

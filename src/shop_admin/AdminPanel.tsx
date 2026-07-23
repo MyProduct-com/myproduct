@@ -1,12 +1,15 @@
 "use client";
 import { useState, useCallback } from "react";
+import {
+  LayoutDashboard, ShoppingBag, Package, Monitor,
+  ClipboardList, Wallet, Users, Settings as SettingsIcon, Ticket,
+} from "lucide-react";
 import type {
   AdminView, AdminProduct, AdminOrder, SubAdmin, AccountingEntry,
-  StockMovement, POSSession, POSTransaction, Subscription, Theme,
-  Shop, Toast,
+  StockMovement, POSSession, POSTransaction, Subscription,
+  Shop, Toast, AdminPrivilege,
 } from "./types/index";
 
-import { ADMIN_THEME, SIDEBAR_WIDTH, HEADER_HEIGHT } from "./data/theme";
 import {
   MOCK_ADMIN, MOCK_PRODUCTS, MOCK_ORDERS, MOCK_STAFF,
   MOCK_ACCOUNTING, MOCK_STOCK_MOVEMENTS, MOCK_POS_SESSIONS,
@@ -14,10 +17,10 @@ import {
   MOCK_DAILY_STATS, MOCK_TOP_PRODUCTS,
 } from "./constants/mockData";
 import { genId } from "./utils/helpers";
+import { getLogoIcon } from "@/lib/logoIcons";
 
-import AdminHeader    from "./components/layout/AdminHeader";
-import Sidebar        from "./components/layout/Sidebar";
 import ToastContainer from "./components/layout/ToastContainer";
+import DashboardShell, { type ShellItem } from "@/components/dashboard/DashboardShell";
 import Dashboard      from "./components/dashboard/Dashboard";
 import ProductsView   from "./components/products/ProductsView";
 import OrdersView     from "./components/orders/OrdersView";
@@ -27,8 +30,6 @@ import AccountingView from "./components/accounting/AccountingView";
 import StaffView      from "./components/staff/StaffView";
 import SettingsView   from "./components/Setting/SettingsView";
 import SubscriptionView from "./components/Subscription/SubscriptionView";
-import { useThemeStore } from "@/store/themeStore";
-import type { ShopTheme } from "@/store/themeStore";
 
 const INITIAL_SHOP: Shop = {
   id: "shop_001",
@@ -42,17 +43,19 @@ const INITIAL_SHOP: Shop = {
   timezone: "Africa/Nairobi",
 };
 
+const NAV_ITEMS: { view: AdminView; label: string; icon: typeof LayoutDashboard; privilege: AdminPrivilege | null }[] = [
+  { view: "dashboard",    label: "Dashboard",    icon: LayoutDashboard, privilege: null },
+  { view: "products",     label: "Products",     icon: ShoppingBag, privilege: "products" },
+  { view: "orders",       label: "Orders",       icon: Package, privilege: "orders" },
+  { view: "pos",          label: "Point of Sale", icon: Monitor, privilege: "pos" },
+  { view: "inventory",    label: "Inventory",    icon: ClipboardList, privilege: "inventory" },
+  { view: "accounting",   label: "Accounting",   icon: Wallet, privilege: "accounting" },
+  { view: "staff",        label: "Staff",        icon: Users, privilege: "staff" },
+  { view: "subscription", label: "Subscription", icon: Ticket, privilege: "subscription" },
+];
+
 export default function AdminPanel() {
   const [activeView, setActiveView] = useState<AdminView>("dashboard");
-
-  const { theme: shopTheme, updateTheme: updateShopTheme, resetTheme: resetShopTheme } = useThemeStore();
-  const theme = ADMIN_THEME;
-  const updateTheme = (key: keyof Theme, val: string) => {
-    updateShopTheme(key as keyof ShopTheme, val);
-  };
-  const resetTheme = () => {
-    resetShopTheme();
-  }
 
   const [shop, setShop] = useState<Shop>(INITIAL_SHOP);
 
@@ -89,14 +92,21 @@ export default function AdminPanel() {
   ).length;
   const lowStockCount = products.filter(p => p.stock <= p.lowStockThreshold).length;
 
-  const handleSignOut = () => toast("Signed out. (demo — refresh to reset)", "info");
+  const isSuperAdmin = MOCK_ADMIN.role === "superadmin";
+  const canAccess = (privilege: AdminPrivilege | null): boolean =>
+    isSuperAdmin || privilege === null || MOCK_ADMIN.privileges.includes(privilege);
+
+  const badgeFor = (view: AdminView): number | undefined => {
+    if (view === "orders") return pendingOrders > 0 ? pendingOrders : undefined;
+    if (view === "inventory") return lowStockCount > 0 ? lowStockCount : undefined;
+    return undefined;
+  };
 
   const renderView = () => {
     switch (activeView) {
       case "dashboard":
         return (
           <Dashboard
-            theme={theme}
             orders={orders}
             products={products}
             dailyStats={MOCK_DAILY_STATS}
@@ -104,18 +114,10 @@ export default function AdminPanel() {
           />
         );
       case "products":
-        return (
-          <ProductsView
-            theme={theme}
-            products={products}
-            onUpdate={setProducts}
-            onToast={toast}
-          />
-        );
+        return <ProductsView onToast={toast} />;
       case "orders":
         return (
           <OrdersView
-            theme={theme}
             orders={orders}
             onUpdate={setOrders}
             onToast={toast}
@@ -124,7 +126,6 @@ export default function AdminPanel() {
       case "pos":
         return (
           <POSView
-            theme={theme}
             products={products}
             sessions={posSessions}
             transactions={posTransactions}
@@ -139,7 +140,6 @@ export default function AdminPanel() {
       case "inventory":
         return (
           <InventoryView
-            theme={theme}
             products={products}
             movements={movements}
             currentUserId={MOCK_ADMIN.id}
@@ -152,7 +152,6 @@ export default function AdminPanel() {
       case "accounting":
         return (
           <AccountingView
-            theme={theme}
             entries={accounting}
             currentUserId={MOCK_ADMIN.id}
             onEntries={setAccounting}
@@ -162,7 +161,6 @@ export default function AdminPanel() {
       case "staff":
         return (
           <StaffView
-            theme={theme}
             staff={staff}
             onStaff={setStaff}
             onToast={toast}
@@ -171,10 +169,7 @@ export default function AdminPanel() {
       case "settings":
         return (
           <SettingsView
-            theme={theme}
             shop={shop}
-            onTheme={updateTheme}
-            onThemeReset={resetTheme}
             onShop={setShop}
             onToast={toast}
           />
@@ -182,7 +177,6 @@ export default function AdminPanel() {
       case "subscription":
         return (
           <SubscriptionView
-            theme={theme}
             subscription={subscription}
             plans={SUBSCRIPTION_PLANS}
             onSubscription={setSubscription}
@@ -194,45 +188,28 @@ export default function AdminPanel() {
     }
   };
 
+  const railItems: ShellItem[] = NAV_ITEMS.filter((item) => canAccess(item.privilege)).map((item) => ({
+    key: item.view,
+    label: item.label,
+    icon: item.icon,
+    active: activeView === item.view,
+    onClick: () => setActiveView(item.view),
+    badge: badgeFor(item.view),
+  }));
+
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: theme.bg,
-      fontFamily: theme.fontFamily,
-      color: theme.text,
-    }}>
-      {/* Fixed Header */}
-      <AdminHeader
-        admin={MOCK_ADMIN}
-        shop={{ ...INITIAL_SHOP, name: shop.name, logoIcon: shop.logoIcon }}
-        theme={theme}
-        onSignOut={handleSignOut}
-      />
-
-      {/* Fixed Sidebar */}
-      <Sidebar
-        active={activeView}
-        privileges={MOCK_ADMIN.privileges}
-        isSuperAdmin={MOCK_ADMIN.role === "superadmin"}
-        theme={theme}
-        pendingOrders={pendingOrders}
-        lowStockCount={lowStockCount}
-        onNavigate={setActiveView}
-      />
-
-      {/* Main scrollable content */}
-      <main style={{
-        marginLeft: SIDEBAR_WIDTH,
-        marginTop: HEADER_HEIGHT,
-        minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
-        padding: 28,
-        boxSizing: "border-box",
-      }}>
+    <>
+      <DashboardShell
+        brand={{ name: shop.name, icon: getLogoIcon(shop.logoIcon) }}
+        railItems={railItems}
+        navItems={[]}
+        user={{ name: MOCK_ADMIN.name, email: MOCK_ADMIN.email, avatarUrl: null }}
+        onSettingsClick={() => setActiveView("settings")}
+      >
         {renderView()}
-      </main>
+      </DashboardShell>
 
-      {/* Toast notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
-    </div>
+    </>
   );
 }

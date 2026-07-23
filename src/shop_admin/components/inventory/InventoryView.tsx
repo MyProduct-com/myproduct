@@ -1,12 +1,11 @@
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { AlertTriangle, Search, XCircle, ArrowDownToLine, ArrowUpFromLine, HeartCrack, Settings2, ArrowRight } from "lucide-react";
-import type { AdminProduct, StockMovement, Theme } from "../../types/index";
-import { SectionHeader, Btn, Modal, Table, Input, Select } from "../layout/UI";
+import type { AdminProduct, StockMovement } from "../../types/index";
+import ChartCard from "@/components/dashboard/ChartCard";
 import { fmt, fmtDateTime, genId } from "../../utils/helpers";
 
 interface InventoryViewProps {
-  theme: Theme;
   products: AdminProduct[];
   movements: StockMovement[];
   currentUserId: string;
@@ -23,8 +22,11 @@ const MOVEMENT_TYPES = [
   { value: "loss",        label: "Loss / Damage / Expiry" },
 ];
 
+const TYPE_TONE: Record<string, string> = { in: "text-org-success", out: "text-org-warning", adjustment: "text-org-accent", loss: "text-org-danger" };
+const TYPE_ICON: Record<string, LucideIcon> = { in: ArrowDownToLine, out: ArrowUpFromLine, loss: HeartCrack, adjustment: Settings2 };
+
 export default function InventoryView({
-  theme, products, movements, currentUserId, currentUserName,
+  products, movements, currentUserId, currentUserName,
   onProducts, onMovements, onToast,
 }: InventoryViewProps) {
   const [search, setSearch] = useState("");
@@ -46,6 +48,7 @@ export default function InventoryView({
 
   const lowCount = products.filter(p => p.stock <= p.lowStockThreshold && p.stock > 0).length;
   const outCount = products.filter(p => p.stock === 0).length;
+  const totalStockValue = products.reduce((s, p) => s + p.costPrice * p.stock, 0);
 
   const openAdjust = (p: AdminProduct) => {
     setSelectedProduct(p); setMovType("in"); setQty("1"); setReason(""); setShowAdjust(true);
@@ -70,163 +73,198 @@ export default function InventoryView({
     setShowAdjust(false);
   };
 
-  const stockColor = (p: AdminProduct) =>
-    p.stock === 0 ? "#ef4444" : p.stock <= p.lowStockThreshold ? "#f59e0b" : theme.primary;
-
-  const columns = [
-    {
-      header: "Product", key: "name",
-      render: (p: AdminProduct) => (
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src={p.image} alt={p.name} style={{ width: 36, height: 36, borderRadius: 6, objectFit: "cover" }} />
-          <div>
-            <div style={{ fontWeight: 700, color: theme.black }}>{p.name}</div>
-            <div style={{ fontSize: 11, color: theme.textMuted }}>SKU: {p.sku} · {p.supplier}</div>
-          </div>
-        </div>
-      ),
-    },
-    { header: "Category", key: "cat", render: (p: AdminProduct) => <span style={{ fontSize: 12 }}>{p.category}</span> },
-    {
-      header: "Stock", key: "stock",
-      render: (p: AdminProduct) => (
-        <div>
-          <div style={{ fontWeight: 800, fontSize: 16, color: stockColor(p) }}>{p.stock}</div>
-          <div style={{ fontSize: 11, color: theme.textMuted }}>{p.unit} · Alert at {p.lowStockThreshold}</div>
-        </div>
-      ),
-    },
-    {
-      header: "Status", key: "status",
-      render: (p: AdminProduct) => {
-        const label = p.stock === 0 ? "Out of Stock" : p.stock <= p.lowStockThreshold ? "Low Stock" : "In Stock";
-        const color = stockColor(p);
-        return (
-          <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, background: color + "18", color, fontSize: 11, fontWeight: 700 }}>
-            {label}
-          </span>
-        );
-      },
-    },
-    { header: "Cost", key: "cost", render: (p: AdminProduct) => <span style={{ fontSize: 12 }}>{fmt(p.costPrice)}</span> },
-    { header: "Value", key: "value", render: (p: AdminProduct) => <span style={{ fontWeight: 700, color: theme.accent }}>{fmt(p.costPrice * p.stock)}</span> },
-    {
-      header: "Adjust", key: "adj",
-      render: (p: AdminProduct) => (
-        <Btn theme={theme} variant="ghost" small onClick={e => { (e as any).stopPropagation(); openAdjust(p); }}>
-          ± Adjust
-        </Btn>
-      ),
-    },
-  ];
-
-  const totalStockValue = products.reduce((s, p) => s + p.costPrice * p.stock, 0);
+  const stockTone = (p: AdminProduct) =>
+    p.stock === 0 ? "text-org-danger" : p.stock <= p.lowStockThreshold ? "text-org-warning" : "text-org-primary";
+  const stockLabel = (p: AdminProduct) =>
+    p.stock === 0 ? "Out of Stock" : p.stock <= p.lowStockThreshold ? "Low Stock" : "In Stock";
 
   return (
-    <div>
-      <SectionHeader
-        title="Inventory"
-        subtitle={`Total stock value: ${fmt(totalStockValue)} · ${lowCount} low stock · ${outCount} out of stock`}
-        theme={theme}
-      />
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-org-lg font-org-bold text-org-text-primary">Inventory</h1>
+        <p className="text-org-sm text-org-text-secondary mt-0.5">
+          Total stock value: {fmt(totalStockValue)} &middot; {lowCount} low stock &middot; {outCount} out of stock
+        </p>
+      </div>
 
       {/* Alert banner */}
       {(lowCount > 0 || outCount > 0) && (
-        <div style={{
-          background: "#fef9c3", border: "1px solid #fcd34d", borderRadius: theme.radius,
-          padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10,
-        }}>
-          <AlertTriangle size={20} color="#92400e" />
-          <div>
-            <span style={{ fontWeight: 700, color: "#92400e" }}>Stock Alert: </span>
-            <span style={{ color: "#78350f", fontSize: 13 }}>
+        <div className="flex items-center gap-3 bg-org-warning/10 border border-org-warning/30 rounded-org-sm px-4 py-3">
+          <AlertTriangle size={20} className="text-org-warning shrink-0" />
+          <div className="flex-1 text-org-sm">
+            <span className="font-org-bold text-org-warning">Stock Alert: </span>
+            <span className="text-org-text-secondary">
               {outCount > 0 && `${outCount} item${outCount>1?"s":""} out of stock. `}
               {lowCount > 0 && `${lowCount} item${lowCount>1?"s":""} running low.`}
             </span>
           </div>
-          <Btn theme={theme} variant="secondary" small onClick={() => setFilter("Low")} style={{ marginLeft: "auto" }}>View Low Stock</Btn>
+          <button onClick={() => setFilter("Low")} className="text-org-xs font-org-semibold text-org-warning hover:underline shrink-0">View Low Stock</button>
         </div>
       )}
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-        <div style={{ position: "relative", flex: 1 }}>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-org-text-muted" />
           <input
             placeholder="Search product or SKU…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ width: "100%", padding: "9px 12px 9px 36px", borderRadius: theme.radius, border: `1.5px solid ${theme.border}`, fontSize: 13, boxSizing: "border-box", background: theme.surface, outline: "none" }}
+            className="w-full pl-9 pr-3 py-2.5 rounded-org-sm border border-org-border text-org-sm bg-org-surface text-org-text-primary outline-none focus:border-org-primary"
           />
-          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.5, display: "flex" }}><Search size={14} /></span>
         </div>
-        {["All","Low","Out"].map(f => (
-          <button key={f} onClick={() => setFilter(f)} style={{
-            padding: "9px 16px", borderRadius: theme.radius, border: `1.5px solid ${filter===f ? theme.primary : theme.border}`,
-            background: filter===f ? theme.primaryLight : theme.surface,
-            color: filter===f ? theme.primary : theme.textMuted,
-            fontWeight: 700, fontSize: 12, cursor: "pointer",
-            display: "inline-flex", alignItems: "center", gap: 6,
-          }}>
-            {f === "All" ? "All Stock" : f === "Low" ? <><AlertTriangle size={14} /> Low ({lowCount})</> : <><XCircle size={14} /> Out ({outCount})</>}
-          </button>
+        <div className="flex gap-2">
+          {["All","Low","Out"].map(f => (
+            <button key={f} onClick={() => setFilter(f)} className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-org-sm text-org-xs font-org-semibold whitespace-nowrap transition-colors ${
+              filter===f ? "bg-org-primary-light text-org-primary border border-org-primary" : "bg-org-surface text-org-text-secondary border border-org-border"
+            }`}>
+              {f === "All" ? "All Stock" : f === "Low" ? <><AlertTriangle size={14} /> Low ({lowCount})</> : <><XCircle size={14} /> Out ({outCount})</>}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile: stacked cards */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {filtered.length === 0 ? (
+          <p className="text-org-sm text-org-text-secondary text-center py-8">No products found.</p>
+        ) : filtered.map((p) => (
+          <div key={p.id} className="bg-org-surface rounded-org-card shadow-org-card p-3.5">
+            <div className="flex items-center gap-3">
+              <img src={p.image} alt={p.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="font-org-medium text-org-text-primary truncate">{p.name}</p>
+                <p className="text-org-xs text-org-text-muted">SKU: {p.sku} &middot; {p.supplier}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className={`font-org-bold text-org-md ${stockTone(p)}`}>{p.stock}</p>
+                <p className="text-org-xs text-org-text-muted">{p.unit}</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-org-border text-org-xs">
+              <span className={`font-org-semibold ${stockTone(p)}`}>{stockLabel(p)}</span>
+              <span className="text-org-text-secondary">Value: {fmt(p.costPrice * p.stock)}</span>
+            </div>
+            <button onClick={() => openAdjust(p)} className="w-full mt-2.5 text-center text-org-xs font-org-semibold text-org-primary bg-org-primary-light rounded-org-sm py-2">± Adjust Stock</button>
+          </div>
         ))}
       </div>
 
-      <Table columns={columns} data={filtered} theme={theme} emptyMessage="No products found." />
-
-      {/* Stock Movements log */}
-      <div style={{ marginTop: 28 }}>
-        <div style={{ fontWeight: 700, fontSize: 16, color: theme.black, marginBottom: 12 }}>Stock Movement Log</div>
-        <div style={{ background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radiusCard, overflow: "hidden" }}>
-          {movements.length === 0 ? (
-            <div style={{ textAlign: "center", padding: 32, color: theme.textMuted }}>No movements recorded.</div>
-          ) : movements.slice(0, 20).map(m => {
-            const typeColors: Record<string, string> = { in: "#16a34a", out: "#f59e0b", adjustment: "#6366f1", loss: "#ef4444" };
-            const movementIcons: Record<string, LucideIcon> = { in: ArrowDownToLine, out: ArrowUpFromLine, loss: HeartCrack, adjustment: Settings2 };
-            const MovementIcon = movementIcons[m.type] ?? Settings2;
-            return (
-              <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: `1px solid ${theme.border}` }}>
-                <MovementIcon size={18} color={typeColors[m.type]} />
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontWeight: 700, color: theme.black }}>{m.productName}</span>
-                  <span style={{ fontSize: 12, color: theme.textMuted, marginLeft: 8 }}>{m.reason}</span>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontWeight: 700, color: typeColors[m.type] }}>
-                    {m.type==="in" || m.type==="adjustment" ? "+" : "-"}{m.qty}
-                  </div>
-                  <div style={{ fontSize: 11, color: theme.textMuted, display: "flex", alignItems: "center", gap: 4, justifyContent: "flex-end" }}>{m.previousStock} <ArrowRight size={11} /> {m.newStock}</div>
-                </div>
-                <div style={{ textAlign: "right", minWidth: 120 }}>
-                  <div style={{ fontSize: 11, color: theme.textMuted }}>{m.userName}</div>
-                  <div style={{ fontSize: 11, color: theme.textMuted }}>{fmtDateTime(m.createdAt)}</div>
-                </div>
-              </div>
-            );
-          })}
+      {/* Desktop: table */}
+      <div className="hidden md:block bg-org-surface rounded-org-card shadow-org-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-org-sm">
+            <thead className="bg-org-surface-alt border-b border-org-border">
+              <tr className="text-org-xs text-org-text-muted uppercase tracking-wider">
+                <th className="px-4 py-3 text-left font-org-medium">Product</th>
+                <th className="px-4 py-3 text-left font-org-medium">Category</th>
+                <th className="px-4 py-3 text-left font-org-medium">Stock</th>
+                <th className="px-4 py-3 text-left font-org-medium">Status</th>
+                <th className="px-4 py-3 text-right font-org-medium">Cost</th>
+                <th className="px-4 py-3 text-right font-org-medium">Value</th>
+                <th className="px-4 py-3 text-right font-org-medium">Adjust</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-org-border">
+              {filtered.length === 0 ? (
+                <tr><td colSpan={7} className="text-center py-8 text-org-text-secondary">No products found.</td></tr>
+              ) : filtered.map((p) => (
+                <tr key={p.id} className="hover:bg-org-surface-alt transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <img src={p.image} alt={p.name} className="w-9 h-9 rounded-lg object-cover shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-org-medium text-org-text-primary truncate max-w-[200px]">{p.name}</p>
+                        <p className="text-org-xs text-org-text-muted">SKU: {p.sku} &middot; {p.supplier}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-org-text-secondary">{p.category}</td>
+                  <td className="px-4 py-3">
+                    <p className={`font-org-bold text-org-md ${stockTone(p)}`}>{p.stock}</p>
+                    <p className="text-org-xs text-org-text-muted">{p.unit} &middot; Alert at {p.lowStockThreshold}</p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex px-2.5 py-1 rounded-org-pill text-org-xs font-org-semibold bg-org-surface-alt ${stockTone(p)}`}>{stockLabel(p)}</span>
+                  </td>
+                  <td className="px-4 py-3 text-right text-org-text-secondary">{fmt(p.costPrice)}</td>
+                  <td className="px-4 py-3 text-right font-org-semibold text-org-text-primary">{fmt(p.costPrice * p.stock)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button onClick={() => openAdjust(p)} className="text-org-xs font-org-semibold text-org-primary hover:underline">± Adjust</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
+      {/* Stock Movements log */}
+      <ChartCard title="Stock Movement Log">
+        {movements.length === 0 ? (
+          <p className="text-org-sm text-org-text-secondary text-center py-8">No movements recorded.</p>
+        ) : (
+          <div className="flex flex-col">
+            {movements.slice(0, 20).map(m => {
+              const MovementIcon = TYPE_ICON[m.type] ?? Settings2;
+              return (
+                <div key={m.id} className="flex items-center gap-3 py-2.5 border-b border-org-border last:border-0">
+                  <MovementIcon size={16} className={`shrink-0 ${TYPE_TONE[m.type]}`} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-org-sm font-org-medium text-org-text-primary truncate">{m.productName}</p>
+                    <p className="text-org-xs text-org-text-secondary truncate">{m.reason}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className={`font-org-semibold text-org-sm ${TYPE_TONE[m.type]}`}>{m.type==="in" || m.type==="adjustment" ? "+" : "-"}{m.qty}</p>
+                    <p className="text-org-xs text-org-text-muted flex items-center gap-1 justify-end">{m.previousStock} <ArrowRight size={11} /> {m.newStock}</p>
+                  </div>
+                  <div className="text-right shrink-0 min-w-[100px] hidden sm:block">
+                    <p className="text-org-xs text-org-text-muted">{m.userName}</p>
+                    <p className="text-org-xs text-org-text-muted">{fmtDateTime(m.createdAt)}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </ChartCard>
+
       {/* Adjust Modal */}
       {showAdjust && selectedProduct && (
-        <Modal title={`Adjust Stock: ${selectedProduct.name}`} onClose={() => setShowAdjust(false)} theme={theme} width={440}>
-          <div style={{ background: theme.bg, borderRadius: theme.radius, padding: 14, marginBottom: 16, display: "flex", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, color: theme.textMuted }}>Current Stock</span>
-            <span style={{ fontWeight: 800, fontSize: 18, color: stockColor(selectedProduct) }}>{selectedProduct.stock} {selectedProduct.unit}</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={() => setShowAdjust(false)}>
+          <div className="bg-org-surface rounded-org-card shadow-lg w-full max-w-sm p-5" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-org-md font-org-bold text-org-text-primary mb-4">Adjust Stock: {selectedProduct.name}</h2>
+            <div className="flex justify-between items-center bg-org-surface-alt rounded-org-sm p-3.5 mb-4">
+              <span className="text-org-sm text-org-text-secondary">Current Stock</span>
+              <span className={`font-org-bold text-org-md ${stockTone(selectedProduct)}`}>{selectedProduct.stock} {selectedProduct.unit}</span>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-org-xs font-org-medium text-org-text-secondary mb-1.5">Movement Type</label>
+                <select value={movType} onChange={(e) => setMovType(e.target.value)} className="w-full px-3 py-2 rounded-org-sm border border-org-border text-org-sm bg-org-surface text-org-text-primary">
+                  {MOVEMENT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-org-xs font-org-medium text-org-text-secondary mb-1.5">Quantity</label>
+                <input type="number" value={qty} onChange={(e) => setQty(e.target.value)} className="w-full px-3 py-2 rounded-org-sm border border-org-border text-org-sm bg-org-surface text-org-text-primary outline-none focus:border-org-primary" />
+              </div>
+              <div>
+                <label className="block text-org-xs font-org-medium text-org-text-secondary mb-1.5">Reason / Notes</label>
+                <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Supplier delivery, damaged goods…" className="w-full px-3 py-2 rounded-org-sm border border-org-border text-org-sm bg-org-surface text-org-text-primary outline-none focus:border-org-primary" />
+              </div>
+            </div>
+            <div className="bg-org-surface-alt rounded-org-sm p-3 mt-4 text-org-sm text-org-text-secondary">
+              New stock will be: <strong className="text-org-text-primary">
+                {Math.max(0, selectedProduct.stock + (["in","adjustment"].includes(movType) ? Number(qty) : -Number(qty)))} {selectedProduct.unit}
+              </strong>
+            </div>
+            <div className="flex gap-2.5 justify-end mt-5">
+              <button onClick={() => setShowAdjust(false)} className="px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-secondary hover:bg-org-surface-alt transition-colors">Cancel</button>
+              <button onClick={handleAdjust} className="px-4 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors">Save Adjustment</button>
+            </div>
           </div>
-          <Select label="Movement Type" value={movType} onChange={setMovType} options={MOVEMENT_TYPES} theme={theme} />
-          <Input label="Quantity" value={qty} onChange={setQty} type="number" theme={theme} required />
-          <Input label="Reason / Notes" value={reason} onChange={setReason} theme={theme} placeholder="e.g. Supplier delivery, damaged goods…" />
-          <div style={{ background: theme.bg, borderRadius: theme.radius, padding: 12, marginBottom: 16, fontSize: 13 }}>
-            New stock will be: <strong style={{ color: theme.accent }}>
-              {Math.max(0, selectedProduct.stock + (["in","adjustment"].includes(movType) ? Number(qty) : -Number(qty)))} {selectedProduct.unit}
-            </strong>
-          </div>
-          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-            <Btn theme={theme} variant="secondary" onClick={() => setShowAdjust(false)}>Cancel</Btn>
-            <Btn theme={theme} onClick={handleAdjust}>Save Adjustment</Btn>
-          </div>
-        </Modal>
+        </div>
       )}
     </div>
   );

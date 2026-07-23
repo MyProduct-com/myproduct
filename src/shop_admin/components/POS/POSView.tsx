@@ -1,12 +1,10 @@
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Smartphone, Banknote, CreditCard, Monitor, ShoppingCart, Circle } from "lucide-react";
-import type { AdminProduct, POSSession, POSCartItem, POSTransaction, Theme } from "../../types/index";
+import type { AdminProduct, POSSession, POSCartItem, POSTransaction } from "../../types/index";
 import { fmt, genId } from "../../utils/helpers";
-import { Btn, Modal, SectionHeader } from "../layout/UI";
 
 interface POSViewProps {
-  theme: Theme;
   products: AdminProduct[];
   sessions: POSSession[];
   transactions: POSTransaction[];
@@ -25,11 +23,10 @@ const PAYMENT_OPTS: { id: string; label: string; icon: LucideIcon }[] = [
 ];
 
 function POSTerminal({
-  session, products, theme, onCharge, onClose,
+  session, products, onCharge, onClose,
 }: {
   session: POSSession;
   products: AdminProduct[];
-  theme: Theme;
   onCharge: (items: POSCartItem[], total: number, discount: number, method: string, ref: string) => void;
   onClose: () => void;
 }) {
@@ -38,7 +35,6 @@ function POSTerminal({
   const [discount, setDiscount] = useState(0);
   const [payMethod, setPayMethod] = useState("mpesa");
   const [payRef, setPayRef] = useState("");
-  const [showPay, setShowPay] = useState(false);
 
   const publishedProducts = products.filter(p => p.published && p.stock > 0);
   const filteredProds = publishedProducts.filter(p =>
@@ -66,113 +62,98 @@ function POSTerminal({
     setCart([]);
     setDiscount(0);
     setPayRef("");
-    setShowPay(false);
   };
 
   return (
-    <div style={{ display: "flex", height: "100%", gap: 0, border: `1px solid ${theme.border}`, borderRadius: theme.radiusCard, overflow: "hidden" }}>
+    <div className="flex flex-col lg:flex-row border border-org-border rounded-org-card overflow-hidden">
       {/* Product panel */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", background: theme.bg }}>
-        <div style={{ padding: 12, borderBottom: `1px solid ${theme.border}`, background: theme.surface }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: theme.black, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+      <div className="flex-1 flex flex-col bg-org-bg lg:max-h-[640px]">
+        <div className="p-3 border-b border-org-border bg-org-surface">
+          <div className="font-org-bold text-org-sm text-org-text-primary mb-2 flex items-center gap-1.5">
             <Monitor size={16} /> {session.sessionName}
-            <span style={{ marginLeft: 8, fontSize: 11, color: theme.primary, display: "inline-flex", alignItems: "center", gap: 4 }}><Circle size={8} fill="currentColor" /> Active</span>
+            <span className="ml-2 text-org-xs text-org-primary inline-flex items-center gap-1"><Circle size={8} fill="currentColor" /> Active</span>
           </div>
           <input
             placeholder="Search products…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{
-              width: "100%", padding: "8px 12px", borderRadius: theme.radius,
-              border: `1.5px solid ${theme.border}`, fontSize: 13, boxSizing: "border-box",
-            }}
+            className="w-full px-3 py-2 rounded-org-sm border border-org-border text-org-sm"
           />
         </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: 10, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 8, alignContent: "start" }}>
+        <div className="flex-1 overflow-y-auto p-2.5 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 content-start max-h-[400px] lg:max-h-none">
           {filteredProds.map(p => (
             <button
               key={p.id}
               onClick={() => addToCart(p)}
-              style={{
-                background: theme.surface, border: `1.5px solid ${theme.border}`, borderRadius: theme.radius,
-                padding: 10, cursor: "pointer", textAlign: "left", transition: "all 0.15s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = theme.primary; e.currentTarget.style.background = theme.primaryLight; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = theme.border; e.currentTarget.style.background = theme.surface; }}
+              className="bg-org-surface border border-org-border rounded-org-sm p-2.5 text-left hover:border-org-primary hover:bg-org-primary-light transition-colors"
             >
-              <img src={p.image} alt={p.name} style={{ width: "100%", height: 70, objectFit: "cover", borderRadius: 6, marginBottom: 6 }} />
-              <div style={{ fontSize: 12, fontWeight: 700, color: theme.black, lineHeight: 1.3 }}>{p.name}</div>
-              <div style={{ fontSize: 12, color: theme.accent, fontWeight: 800, marginTop: 4 }}>{fmt(p.price)}</div>
-              <div style={{ fontSize: 10, color: theme.textMuted }}>{p.unit} · {p.stock} left</div>
+              <img src={p.image} alt={p.name} className="w-full h-16 object-cover rounded-lg mb-1.5" />
+              <p className="text-org-xs font-org-bold text-org-text-primary leading-tight truncate">{p.name}</p>
+              <p className="text-org-xs font-org-bold text-org-text-primary mt-1">{fmt(p.price)}</p>
+              <p className="text-[10px] text-org-text-muted">{p.unit} &middot; {p.stock} left</p>
             </button>
           ))}
         </div>
       </div>
 
       {/* Cart panel */}
-      <div style={{ width: 300, display: "flex", flexDirection: "column", borderLeft: `1px solid ${theme.border}`, background: theme.surface }}>
-        <div style={{ padding: "12px 16px", borderBottom: `1px solid ${theme.border}`, fontWeight: 800, fontSize: 15, color: theme.black, display: "flex", alignItems: "center", gap: 6 }}>
-          <ShoppingCart size={16} /> Cart {cart.length > 0 && <span style={{ background: theme.primary, color: "#fff", borderRadius: 20, padding: "1px 8px", fontSize: 11 }}>{cart.reduce((s,i) => s+i.qty,0)}</span>}
+      <div className="w-full lg:w-75 flex flex-col border-t lg:border-t-0 lg:border-l border-org-border bg-org-surface">
+        <div className="px-4 py-3 border-b border-org-border font-org-bold text-org-md text-org-text-primary flex items-center gap-1.5">
+          <ShoppingCart size={16} /> Cart {cart.length > 0 && <span className="bg-org-primary text-white rounded-org-pill px-2 py-0.5 text-org-xs">{cart.reduce((s,i) => s+i.qty,0)}</span>}
         </div>
 
-        <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
+        <div className="flex-1 overflow-y-auto p-2.5 max-h-64 lg:max-h-none">
           {cart.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "32px 16px", color: theme.textMuted }}>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}><ShoppingCart size={36} /></div>
-              <p style={{ fontSize: 13 }}>Tap a product to add it</p>
+            <div className="text-center py-8 px-4 text-org-text-secondary">
+              <div className="flex justify-center mb-1.5"><ShoppingCart size={32} /></div>
+              <p className="text-org-sm">Tap a product to add it</p>
             </div>
           ) : cart.map(item => (
-            <div key={item.productId} style={{
-              display: "flex", alignItems: "center", gap: 8, padding: "8px 0",
-              borderBottom: `1px solid ${theme.border}`,
-            }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: theme.black }}>{item.name}</div>
-                <div style={{ fontSize: 11, color: theme.textMuted }}>{fmt(item.price)} each</div>
+            <div key={item.productId} className="flex items-center gap-2 py-2 border-b border-org-border last:border-0">
+              <div className="flex-1 min-w-0">
+                <p className="text-org-xs font-org-bold text-org-text-primary truncate">{item.name}</p>
+                <p className="text-org-xs text-org-text-muted">{fmt(item.price)} each</p>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <button onClick={() => changeQty(item.productId, -1)} style={{ background: theme.bg, border: `1px solid ${theme.border}`, borderRadius: 4, width: 24, height: 24, cursor: "pointer", fontWeight: 900 }}>−</button>
-                <span style={{ fontWeight: 700, fontSize: 13, minWidth: 20, textAlign: "center" }}>{item.qty}</span>
-                <button onClick={() => changeQty(item.productId, 1)} style={{ background: theme.primary, border: "none", borderRadius: 4, width: 24, height: 24, cursor: "pointer", color: "#fff", fontWeight: 900 }}>+</button>
+              <div className="flex items-center gap-1 shrink-0">
+                <button onClick={() => changeQty(item.productId, -1)} className="w-6 h-6 rounded bg-org-bg border border-org-border font-org-bold">−</button>
+                <span className="font-org-bold text-org-sm min-w-5 text-center">{item.qty}</span>
+                <button onClick={() => changeQty(item.productId, 1)} className="w-6 h-6 rounded bg-org-primary text-white font-org-bold">+</button>
               </div>
-              <div style={{ minWidth: 60, textAlign: "right" }}>
-                <div style={{ fontWeight: 800, fontSize: 12, color: theme.accent }}>{fmt(item.price * item.qty)}</div>
-                <button onClick={() => removeItem(item.productId)} style={{ background: "none", border: "none", color: theme.danger, cursor: "pointer", fontSize: 11 }}>remove</button>
+              <div className="min-w-15 text-right shrink-0">
+                <p className="font-org-bold text-org-xs text-org-text-primary">{fmt(item.price * item.qty)}</p>
+                <button onClick={() => removeItem(item.productId)} className="text-org-danger text-[11px]">remove</button>
               </div>
             </div>
           ))}
         </div>
 
         {/* Totals */}
-        <div style={{ padding: 14, borderTop: `1px solid ${theme.border}` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: theme.textMuted, marginBottom: 6 }}>
+        <div className="p-3.5 border-t border-org-border">
+          <div className="flex justify-between text-org-sm text-org-text-secondary mb-1.5">
             <span>Subtotal</span><span>{fmt(subtotal)}</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <span style={{ fontSize: 13, color: theme.textMuted }}>Discount</span>
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-org-sm text-org-text-secondary">Discount</span>
             <input
               type="number"
               value={discount}
               onChange={e => setDiscount(Number(e.target.value))}
-              style={{ width: 80, padding: "4px 8px", borderRadius: 6, border: `1px solid ${theme.border}`, fontSize: 13, textAlign: "right" }}
+              className="w-20 px-2 py-1 rounded border border-org-border text-org-sm text-right"
             />
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 900, fontSize: 18, color: theme.accent, marginBottom: 14 }}>
+          <div className="flex justify-between font-org-bold text-org-lg text-org-text-primary mb-3.5">
             <span>Total</span><span>{fmt(total)}</span>
           </div>
 
           {/* Payment method */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+          <div className="flex gap-1.5 mb-2.5">
             {PAYMENT_OPTS.map(o => (
               <button
                 key={o.id}
                 onClick={() => setPayMethod(o.id)}
-                style={{
-                  flex: 1, padding: "7px 4px", border: `2px solid ${payMethod === o.id ? theme.primary : theme.border}`,
-                  borderRadius: theme.radius, background: payMethod === o.id ? theme.primaryLight : theme.bg,
-                  cursor: "pointer", fontSize: 11, fontWeight: 700, color: payMethod === o.id ? theme.primary : theme.text,
-                  display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
-                }}
+                className={`flex-1 py-1.5 px-1 rounded-org-sm border-2 text-org-xs font-org-bold flex flex-col items-center gap-0.5 transition-colors ${
+                  payMethod === o.id ? "border-org-primary bg-org-primary-light text-org-primary" : "border-org-border bg-org-bg text-org-text-primary"
+                }`}
               >
                 <o.icon size={14} /> {o.label}
               </button>
@@ -184,22 +165,18 @@ function POSTerminal({
               placeholder="M-Pesa ref (optional)"
               value={payRef}
               onChange={e => setPayRef(e.target.value)}
-              style={{ width: "100%", padding: "8px", borderRadius: theme.radius, border: `1px solid ${theme.border}`, fontSize: 12, boxSizing: "border-box", marginBottom: 10 }}
+              className="w-full p-2 rounded-org-sm border border-org-border text-org-xs mb-2.5"
             />
           )}
 
           <button
             onClick={handleCharge}
             disabled={cart.length === 0}
-            style={{
-              width: "100%", padding: "12px", background: cart.length === 0 ? theme.border : theme.primary,
-              color: "#fff", border: "none", borderRadius: theme.radius,
-              fontWeight: 800, fontSize: 15, cursor: cart.length === 0 ? "not-allowed" : "pointer",
-            }}
+            className={`w-full py-3 rounded-org-sm text-white font-org-bold text-org-md transition-colors ${cart.length === 0 ? "bg-org-border cursor-not-allowed" : "bg-org-primary hover:bg-org-primary-hover"}`}
           >
             Charge {fmt(total)}
           </button>
-          <button onClick={onClose} style={{ width: "100%", padding: "8px", background: "none", border: "none", color: theme.danger, cursor: "pointer", fontSize: 12, marginTop: 8 }}>
+          <button onClick={onClose} className="w-full py-2 bg-transparent text-org-danger text-org-xs mt-2">
             Close Session
           </button>
         </div>
@@ -208,13 +185,12 @@ function POSTerminal({
   );
 }
 
-export default function POSView({ theme, products, sessions, transactions, currentUserId, currentUserName, onSessions, onTransactions, onStockUpdate, onToast }: POSViewProps) {
+export default function POSView({ products, sessions, transactions, currentUserId, currentUserName, onSessions, onTransactions, onStockUpdate, onToast }: POSViewProps) {
   const [showNewSession, setShowNewSession] = useState(false);
   const [newSessionName, setNewSessionName] = useState("");
   const [openingFloat, setOpeningFloat] = useState("5000");
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [activeSession2Id, setActiveSession2Id] = useState<string | null>(null);
-  const [receiptTxn, setReceiptTxn] = useState<POSTransaction | null>(null);
 
   const activeSessions = sessions.filter(s => s.active);
   const session1 = activeSessions[0] ?? null;
@@ -250,7 +226,7 @@ export default function POSView({ theme, products, sessions, transactions, curre
   const handleCharge = (sessionId: string, items: POSCartItem[], total: number, discount: number, method: string, ref: string) => {
     const txn: POSTransaction = {
       id: genId("txn"), sessionId, items, subtotal: total + discount, discount, total,
-      paymentMethod: method as any, paymentRef: ref || undefined,
+      paymentMethod: method as POSTransaction["paymentMethod"], paymentRef: ref || undefined,
       cashierId: currentUserId, createdAt: new Date().toISOString(),
     };
     onTransactions([...transactions, txn]);
@@ -263,98 +239,91 @@ export default function POSView({ theme, products, sessions, transactions, curre
   const todaySales = todayTxns.reduce((s, t) => s + t.total, 0);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <SectionHeader
-        title="Point of Sale"
-        subtitle={`${activeSessions.length}/2 sessions active · Today: ${fmt(todaySales)} (${todayTxns.length} transactions)`}
-        theme={theme}
-        action={
-          activeSessions.length < 2
-            ? <Btn theme={theme} onClick={() => setShowNewSession(true)}>+ Open Session</Btn>
-            : undefined
-        }
-      />
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-org-lg font-org-bold text-org-text-primary">Point of Sale</h1>
+          <p className="text-org-sm text-org-text-secondary mt-0.5">
+            {activeSessions.length}/2 sessions active &middot; Today: {fmt(todaySales)} ({todayTxns.length} transactions)
+          </p>
+        </div>
+        {activeSessions.length < 2 && (
+          <button onClick={() => setShowNewSession(true)} className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors">
+            + Open Session
+          </button>
+        )}
+      </div>
 
       {/* Session cards */}
-      <div style={{ display: "flex", gap: 16 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {activeSessions.map(s => (
-          <div key={s.id} style={{
-            flex: 1, background: theme.surface, border: `1.5px solid ${theme.primary}40`,
-            borderRadius: theme.radiusCard, padding: 16,
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+          <div key={s.id} className="bg-org-surface border border-org-primary/25 rounded-org-card p-4">
+            <div className="flex justify-between items-start mb-3">
               <div>
-                <div style={{ fontWeight: 700, color: theme.black }}>{s.sessionName}</div>
-                <div style={{ fontSize: 12, color: theme.textMuted }}>Cashier: {s.cashierName}</div>
+                <p className="font-org-bold text-org-text-primary">{s.sessionName}</p>
+                <p className="text-org-xs text-org-text-secondary">Cashier: {s.cashierName}</p>
               </div>
-              <span style={{ fontSize: 11, background: theme.primaryLight, color: theme.primary, padding: "3px 10px", borderRadius: 20, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}><Circle size={7} fill="currentColor" /> Active</span>
+              <span className="text-org-xs bg-org-primary-light text-org-primary px-2.5 py-1 rounded-org-pill font-org-semibold inline-flex items-center gap-1"><Circle size={7} fill="currentColor" /> Active</span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-              <div style={{ background: theme.bg, borderRadius: 8, padding: "10px 14px" }}>
-                <div style={{ fontSize: 11, color: theme.textMuted }}>Sales</div>
-                <div style={{ fontWeight: 800, color: theme.accent }}>{fmt(s.totalSales)}</div>
+            <div className="grid grid-cols-2 gap-2.5 mb-3.5">
+              <div className="bg-org-surface-alt rounded-lg px-3.5 py-2.5">
+                <p className="text-org-xs text-org-text-muted">Sales</p>
+                <p className="font-org-bold text-org-text-primary">{fmt(s.totalSales)}</p>
               </div>
-              <div style={{ background: theme.bg, borderRadius: 8, padding: "10px 14px" }}>
-                <div style={{ fontSize: 11, color: theme.textMuted }}>Transactions</div>
-                <div style={{ fontWeight: 800, color: theme.black }}>{s.totalTransactions}</div>
+              <div className="bg-org-surface-alt rounded-lg px-3.5 py-2.5">
+                <p className="text-org-xs text-org-text-muted">Transactions</p>
+                <p className="font-org-bold text-org-text-primary">{s.totalTransactions}</p>
               </div>
             </div>
-            <Btn theme={theme} style={{ width: "100%" }} onClick={() => { setActiveSessionId(s.id); }}>Open Terminal</Btn>
+            <button onClick={() => setActiveSessionId(s.id)} className="w-full py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors">Open Terminal</button>
           </div>
         ))}
 
         {activeSessions.length === 0 && (
-          <div style={{ flex: 1, textAlign: "center", padding: "48px 20px", color: theme.textMuted, border: `2px dashed ${theme.border}`, borderRadius: theme.radiusCard }}>
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}><Monitor size={48} /></div>
-            <p>No active POS sessions. Open a session to start selling.</p>
-            <Btn theme={theme} onClick={() => setShowNewSession(true)}>+ Open Session</Btn>
+          <div className="sm:col-span-2 text-center py-12 px-5 text-org-text-secondary border-2 border-dashed border-org-border rounded-org-card">
+            <div className="flex justify-center mb-2"><Monitor size={44} /></div>
+            <p className="mb-3">No active POS sessions. Open a session to start selling.</p>
+            <button onClick={() => setShowNewSession(true)} className="px-4 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors">+ Open Session</button>
           </div>
         )}
       </div>
 
       {/* POS Terminal(s) */}
       {session1 && activeSessionId === session1.id && (
-        <div style={{ height: 580 }}>
-          <POSTerminal
-            session={session1} products={products} theme={theme}
-            onCharge={(items, total, discount, method, ref) => handleCharge(session1.id, items, total, discount, method, ref)}
-            onClose={() => closeSession(session1.id)}
-          />
-        </div>
+        <POSTerminal
+          session={session1} products={products}
+          onCharge={(items, total, discount, method, ref) => handleCharge(session1.id, items, total, discount, method, ref)}
+          onClose={() => closeSession(session1.id)}
+        />
       )}
       {session2 && activeSession2Id === session2.id && (
-        <div style={{ height: 580 }}>
-          <POSTerminal
-            session={session2} products={products} theme={theme}
-            onCharge={(items, total, discount, method, ref) => handleCharge(session2.id, items, total, discount, method, ref)}
-            onClose={() => closeSession(session2.id)}
-          />
-        </div>
+        <POSTerminal
+          session={session2} products={products}
+          onCharge={(items, total, discount, method, ref) => handleCharge(session2.id, items, total, discount, method, ref)}
+          onClose={() => closeSession(session2.id)}
+        />
       )}
       {session1 && session2 && (
-        <div style={{ display: "flex", gap: 10 }}>
-          <Btn theme={theme} variant={activeSessionId === session1.id ? "primary" : "secondary"} onClick={() => setActiveSessionId(session1.id)}>Open {session1.sessionName}</Btn>
-          <Btn theme={theme} variant={activeSession2Id === session2.id ? "primary" : "secondary"} onClick={() => setActiveSession2Id(session2.id)}>Open {session2.sessionName}</Btn>
+        <div className="flex flex-col sm:flex-row gap-2.5">
+          <button onClick={() => setActiveSessionId(session1.id)} className={`flex-1 py-2 rounded-org-sm text-org-sm font-org-semibold transition-colors ${activeSessionId === session1.id ? "bg-org-primary text-white" : "border border-org-border text-org-text-secondary"}`}>Open {session1.sessionName}</button>
+          <button onClick={() => setActiveSession2Id(session2.id)} className={`flex-1 py-2 rounded-org-sm text-org-sm font-org-semibold transition-colors ${activeSession2Id === session2.id ? "bg-org-primary text-white" : "border border-org-border text-org-text-secondary"}`}>Open {session2.sessionName}</button>
         </div>
       )}
 
       {/* Recent transactions */}
       {todayTxns.length > 0 && (
-        <div style={{ background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: theme.radiusCard, overflow: "hidden" }}>
-          <div style={{ padding: "14px 20px", borderBottom: `1px solid ${theme.border}`, fontWeight: 700, color: theme.black }}>Today's Transactions</div>
-          <div style={{ maxHeight: 240, overflowY: "auto" }}>
+        <div className="bg-org-surface border border-org-border rounded-org-card overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-org-border font-org-bold text-org-text-primary">Today&apos;s Transactions</div>
+          <div className="max-h-60 overflow-y-auto">
             {[...todayTxns].reverse().map(t => (
-              <div key={t.id} style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "10px 20px", borderBottom: `1px solid ${theme.border}`,
-              }}>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: theme.black }}>{t.items.map(i => i.name).join(", ")}</div>
-                  <div style={{ fontSize: 11, color: theme.textMuted }}>{new Date(t.createdAt).toLocaleTimeString("en-KE", {hour:"2-digit",minute:"2-digit"})} · {t.paymentMethod}</div>
+              <div key={t.id} className="flex items-center justify-between gap-3 px-5 py-2.5 border-b border-org-border last:border-0">
+                <div className="min-w-0">
+                  <p className="text-org-xs font-org-bold text-org-text-primary truncate">{t.items.map(i => i.name).join(", ")}</p>
+                  <p className="text-org-xs text-org-text-muted">{new Date(t.createdAt).toLocaleTimeString("en-KE", {hour:"2-digit",minute:"2-digit"})} &middot; {t.paymentMethod}</p>
                 </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontWeight: 800, color: theme.accent }}>{fmt(t.total)}</div>
-                  {t.discount > 0 && <div style={{ fontSize: 10, color: theme.textMuted }}>-{fmt(t.discount)} discount</div>}
+                <div className="text-right shrink-0">
+                  <p className="font-org-bold text-org-text-primary">{fmt(t.total)}</p>
+                  {t.discount > 0 && <p className="text-[10px] text-org-text-muted">-{fmt(t.discount)} discount</p>}
                 </div>
               </div>
             ))}
@@ -364,30 +333,33 @@ export default function POSView({ theme, products, sessions, transactions, curre
 
       {/* New Session Modal */}
       {showNewSession && (
-        <Modal title="Open POS Session" onClose={() => setShowNewSession(false)} theme={theme} width={400}>
-          <div style={{ marginBottom: 14 }}>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: theme.textMuted, marginBottom: 5, textTransform: "uppercase" }}>Session Name</label>
-            <input
-              placeholder={`Till ${String.fromCharCode(65 + activeSessions.length)} - Morning`}
-              value={newSessionName}
-              onChange={e => setNewSessionName(e.target.value)}
-              style={{ width: "100%", padding: "9px 12px", borderRadius: theme.radius, border: `1.5px solid ${theme.border}`, fontSize: 13, boxSizing: "border-box" }}
-            />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={() => setShowNewSession(false)}>
+          <div className="bg-org-surface rounded-org-card shadow-lg w-full max-w-sm p-5" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-org-md font-org-bold text-org-text-primary mb-4">Open POS Session</h2>
+            <div className="mb-3.5">
+              <label className="block text-org-xs font-org-medium text-org-text-secondary mb-1.5">Session Name</label>
+              <input
+                placeholder={`Till ${String.fromCharCode(65 + activeSessions.length)} - Morning`}
+                value={newSessionName}
+                onChange={e => setNewSessionName(e.target.value)}
+                className="w-full px-3 py-2 rounded-org-sm border border-org-border text-org-sm"
+              />
+            </div>
+            <div className="mb-5">
+              <label className="block text-org-xs font-org-medium text-org-text-secondary mb-1.5">Opening Float (KSh)</label>
+              <input
+                type="number"
+                value={openingFloat}
+                onChange={e => setOpeningFloat(e.target.value)}
+                className="w-full px-3 py-2 rounded-org-sm border border-org-border text-org-sm"
+              />
+            </div>
+            <div className="flex gap-2.5 justify-end">
+              <button onClick={() => setShowNewSession(false)} className="px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-secondary hover:bg-org-surface-alt transition-colors">Cancel</button>
+              <button onClick={openSession} className="px-4 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors">Open Session</button>
+            </div>
           </div>
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: theme.textMuted, marginBottom: 5, textTransform: "uppercase" }}>Opening Float (KSh)</label>
-            <input
-              type="number"
-              value={openingFloat}
-              onChange={e => setOpeningFloat(e.target.value)}
-              style={{ width: "100%", padding: "9px 12px", borderRadius: theme.radius, border: `1.5px solid ${theme.border}`, fontSize: 13, boxSizing: "border-box" }}
-            />
-          </div>
-          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-            <Btn theme={theme} variant="secondary" onClick={() => setShowNewSession(false)}>Cancel</Btn>
-            <Btn theme={theme} onClick={openSession}>Open Session</Btn>
-          </div>
-        </Modal>
+        </div>
       )}
     </div>
   );

@@ -31,37 +31,35 @@ const SOCIALS = [
 
 function Footer() {
   const COL_LINKS: Record<string, { label: string; href: string }[]> = {
-    "Platform": [
+    "Product": [
       { label: "Features", href: "#features" },
       { label: "Pricing", href: "#pricing" },
-      { label: "Marketplace", href: "#marketplace" },
       { label: "How it works", href: "#how-it-works" },
+      { label: "Discover Shops", href: "/market" },
     ],
-    "Accounts": [
+    "Get Started": [
       { label: "Sign up", href: "/auth/signup" },
       { label: "Log in", href: "/auth/login" },
-      { label: "Shop admin", href: "/shop_admin" },
-      { label: "Super admin", href: "/super_admin" },
     ],
     "Company": [
       { label: "About us", href: "#about" },
       { label: "Contact", href: "#contact" },
-      { label: "Privacy policy", href: "#" },
-      { label: "Terms of service", href: "#" },
+      { label: "Privacy policy", href: "/privacy" },
+      { label: "Terms of service", href: "/terms" },
     ],
   };
 
   return (
-    <footer style={{ background: C.ink, borderTop: "1px solid rgba(255,255,255,.07)", padding: "60px 24px 32px" }}>
+    <footer className="footer-pad" style={{ background: "#000000", borderTop: "1px solid rgba(255,255,255,.07)" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 40, marginBottom: 48 }}>
+        <div className="footer-grid">
           {/* Brand */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${C.forest}, ${C.action})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, color: "#fff", fontWeight: 900 }}>M</div>
               <span style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>MyProduct</span>
             </div>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,.45)", lineHeight: 1.7, maxWidth: 280, margin: "0 0 20px" }}>
+            <p style={{ fontSize: 14, color: "#fff", lineHeight: 1.7, maxWidth: 280, margin: "0 0 20px" }}>
               Kenya's complete e-commerce platform for small and medium businesses. Launch your shop today.
             </p>
             <div style={{ display: "flex", gap: 10 }}>
@@ -82,12 +80,12 @@ function Footer() {
           {/* Link columns */}
           {Object.entries(COL_LINKS).map(([col, links]) => (
             <div key={col}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>{col}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>{col}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {links.map(l => (
-                  <a key={l.label} href={l.href} style={{ fontSize: 14, color: "rgba(255,255,255,.55)", textDecoration: "none", transition: "color .15s" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.55)"; }}>
+                  <a key={l.label} href={l.href} style={{ fontSize: 14, color: "#fff", textDecoration: "none", transition: "transform .15s", display: "inline-block" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateX(4px)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "translateX(0)"; }}>
                     {l.label}
                   </a>
                 ))}
@@ -96,11 +94,11 @@ function Footer() {
           ))}
         </div>
 
-        <div style={{ borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 28, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,.3)", display: "inline-flex", alignItems: "center", gap: 4 }}>© {new Date().getFullYear()} MyProduct. Built in Kenya <Flag style={{ width: 13, height: 13 }} /></span>
+        <div className="footer-bottom" style={{ borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 28 }}>
+          <span style={{ fontSize: 13, color: "#fff", display: "inline-flex", alignItems: "center", gap: 4 }}>© {new Date().getFullYear()} MyProduct. Built in Kenya <Flag style={{ width: 13, height: 13 }} /></span>
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.action, animation: "pulse 2s infinite" }} />
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>All systems operational</span>
+            <span style={{ fontSize: 12, color: "#fff" }}>All systems operational</span>
           </div>
         </div>
       </div>

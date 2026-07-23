@@ -4,6 +4,7 @@ import { SA_THEME as T } from "../../data/theme";
 import type { MarketplaceItem, TicketMessage } from "../../types/index";
 import { Card, Btn, SectionHeader, Badge, SearchBar, Table, Modal, Input, Tabs } from "../layout/UI";
 import { statusColor, timeAgo, genId } from "../../utils/helpers";
+import { usePersistedState } from "@/lib/usePersistedState";
 
 interface Props {
   items: MarketplaceItem[];
@@ -47,7 +48,7 @@ export function MarketplaceModule({ items, onUpdateItem, adminName, adminId, add
   const [filterFlag, setFilterFlag] = useState("all");
   const [selected, setSelected] = useState<MarketplaceItem | null>(null);
   const [tab, setTab] = useState("items");
-  const [inquiries, setInquiries] = useState<MarketplaceInquiry[]>(MOCK_INQUIRIES);
+  const [inquiries, setInquiries] = usePersistedState<MarketplaceInquiry[]>("sa-marketplace-inquiries", MOCK_INQUIRIES);
   const [selectedInquiry, setSelectedInquiry] = useState<MarketplaceInquiry | null>(null);
   const [replyText, setReplyText] = useState("");
   const [flagReason, setFlagReason] = useState("");

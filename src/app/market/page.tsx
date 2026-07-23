@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getLogoIcon } from "@/lib/logoIcons";
 import { MOCK_SHOPS } from "@/super_admin/data/mockData";
 import { SHOP_THEME_PRESETS, DEFAULT_SHOP_THEME_PRESET } from "@/lib/shopThemePresets";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 interface DiscoverShop {
   slug: string;
@@ -42,7 +44,9 @@ export default async function DiscoverShopsPage() {
   const shops = await getDiscoverShops();
 
   return (
-    <div className="pb-16">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Navbar />
+      <main className="flex-1 pb-16">
       {/* ── HERO ──────────────────────────────────────────── */}
       <section className="bg-[#1A6B3C]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 text-center">
@@ -75,7 +79,7 @@ export default async function DiscoverShopsPage() {
                 return (
                   <Link
                     key={shop.slug}
-                    href={`/shop/${shop.slug}`}
+                    href={`/market/${shop.slug}`}
                     className="group flex flex-col bg-white rounded-xl border-[0.5px] border-gray-200 p-6 hover:border-border-mint hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all"
                   >
                     <div
@@ -120,6 +124,8 @@ export default async function DiscoverShopsPage() {
           </Link>
         </div>
       </section>
+      </main>
+      <Footer />
     </div>
   );
 }
