@@ -13,7 +13,7 @@ function HowItWorks() {
           </h2>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 0, position: "relative" }}>
+        <div className="how-grid" style={{ position: "relative" }}>
           {HOW_IT_WORKS.map((step, i) => (
             <div key={step.step} style={{ padding: "32px 28px", position: "relative" }}>
               {i < HOW_IT_WORKS.length - 1 && (

@@ -1,23 +1,25 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Package, Store, Search, X, ShoppingCart, ArrowRight, ArrowUp } from "lucide-react";
-import type { User, Theme, CartItem, Order, PlacedOrderPayload } from "./types/index";
-import { genOrderId } from "./utils/helpers";
+import { Search, X, ShoppingCart, ArrowRight, ArrowUp, Truck, ShieldCheck, Leaf, MapPin, Phone, MessageSquare, MessageCircle } from "lucide-react";
+import type { User, Theme, CartItem, PlacedOrderPayload } from "./types/index";
 import { useProductStore } from "@/store/productStore";
 import type { SharedProduct } from "@/store/productStore";
+import { useStorefrontContentStore } from "@/store/storefrontContentStore";
 
 import Header        from "./components/Header";
+import ShopHero      from "./components/ShopHero";
+import CategoryBar   from "./components/CategoryBar";
 import ProductCard   from "./components/ProductCard";
 import ProductModal  from "./components/ProductModal";
 import CartModal     from "./components/CartModal";
 import CheckoutModal from "./components/CheckoutModal";
-import OrdersView    from "./components/OrdersView";
 import AuthModal     from "./components/AuthModal";
+import BestSellers   from "./components/BestSellers";
+import HowItWorks    from "./components/HowItWorks";
+import Testimonials  from "./components/Testimonials";
 import Footer        from "./components/Footer";
 import { useThemeStore } from "@/store/themeStore";
-
-type ActiveTab = "shop" | "orders";
 
 interface ShopStorefrontProps {
   initialTheme?: Partial<Theme>;
@@ -27,6 +29,12 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
   // ── Theme ──────────────────────────────────────────────────────────────────
   const storeTheme = useThemeStore((s) => s.theme);
   const theme = { ...storeTheme, ...initialTheme } as Theme;
+
+  // ── Editable page content (hero, about, how-it-works, testimonials, contact, footer) ──
+  const content = useStorefrontContentStore((s) => s.content);
+  const heroTitle = content.hero.title || `Welcome to ${theme.shopName}`;
+  const aboutTitle = content.about.title || `About ${theme.shopName}`;
+  const digitsOnly = (s: string) => s.replace(/[^\d+]/g, "");
 
   // ── Shared product store — reads only published + in-stock products ────────
   // FIX: select the raw `products` array (stable reference from Zustand) instead
@@ -46,9 +54,6 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
   const [showAuth, setShowAuth]     = useState(false);
   const [authInitMode, setAuthInitMode] = useState<"login" | "signup">("login");
 
-  // ── Tab ────────────────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState<ActiveTab>("shop");
-
   // ── Cart ───────────────────────────────────────────────────────────────────
   const [cart, setCart]           = useState<CartItem[]>([]);
   const [showCart, setShowCart]   = useState(false);
@@ -57,11 +62,13 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
   // ── Product modal ──────────────────────────────────────────────────────────
   const [selectedProduct, setSelectedProduct] = useState<SharedProduct | null>(null);
 
-  // ── Search ─────────────────────────────────────────────────────────────────
+  // ── Search & category filter ────────────────────────────────────────────────
   const [search, setSearch] = useState("");
-
-  // ── Orders ─────────────────────────────────────────────────────────────────
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [category, setCategory] = useState("All");
+  const categories = useMemo(
+    () => Array.from(new Set(shopProducts.map((p) => p.category))),
+    [shopProducts]
+  );
 
   // ── UI helpers ─────────────────────────────────────────────────────────────
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -108,25 +115,19 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
     });
 
   // ── Order handler ──────────────────────────────────────────────────────────
-  const handleOrderPlaced = ({ items, total, payMethod }: PlacedOrderPayload) => {
-    setOrders((o) => [{
-      id:        genOrderId(),
-      date:      new Date().toLocaleDateString("en-KE", { day: "2-digit", month: "short", year: "numeric" }),
-      items,     total, payMethod,
-      status:    "Under Processing",
-      payStatus: payMethod === "cod" ? "Pending" : "Paid",
-    }, ...o]);
+  const handleOrderPlaced = (_payload: PlacedOrderPayload) => {
     setCart([]);
     setShowCheckout(false);
   };
 
-  // ── Filtered products (search) ─────────────────────────────────────────────
+  // ── Filtered products (search + category) ───────────────────────────────────
   const filtered = useMemo(() =>
     shopProducts.filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.description.toLowerCase().includes(search.toLowerCase())
+      (category === "All" || p.category === category) &&
+      (p.name.toLowerCase().includes(search.toLowerCase()) ||
+       p.description.toLowerCase().includes(search.toLowerCase()))
     ),
-    [shopProducts, search]
+    [shopProducts, search, category]
   );
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -145,171 +146,223 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
         onThemeEdit={() => {}}
       />
 
-      {/* Announcement bar */}
-      <div
-        className="hidden sm:block text-center text-xs font-medium py-2 px-4 tracking-wide"
-        style={{ background: theme.surface, borderBottom: `1px solid ${theme.border}`, color: theme.accent }}
-      >
-        {theme.shopTagline} &nbsp;·&nbsp; Free delivery on orders over KSh 500 &nbsp;·&nbsp;
-        <span className="font-semibold">Same-day delivery in Nairobi</span>
-      </div>
+      {/* Hero */}
+      <ShopHero theme={theme} slides={content.hero.slides} title={heroTitle} ctaText={content.hero.ctaText} />
 
-      {/* Tabs */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4">
-        <div className="flex gap-1" style={{ borderBottom: `2px solid ${theme.border}` }}>
-          {(["shop", "orders"] as ActiveTab[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className="px-5 py-2.5 text-sm font-semibold transition-colors capitalize"
-              style={{
-                color:            activeTab === tab ? theme.primary : theme.textMuted,
-                background:       "none",
-                border:           "none",
-                borderBottom:     activeTab === tab ? `2.5px solid ${theme.primary}` : "2.5px solid transparent",
-                marginBottom:     -2,
-                cursor:           "pointer",
-              }}
-            >
-              <span className="inline-flex items-center gap-1.5">
-                {tab === "orders" ? <Package className="w-4 h-4" /> : <Store className="w-4 h-4" />}
-                {tab === "orders" ? "My Orders" : "Marketplace"}
-              </span>
-              {tab === "orders" && orders.length > 0 && (
-                <span
-                  className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white"
-                  style={{ background: theme.primary }}
-                >
-                  {orders.length}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Category bar — full-bleed sticky strip */}
+      {categories.length > 0 && (
+        <CategoryBar theme={theme} categories={categories} active={category} onChange={setCategory} />
+      )}
 
       {/* Main content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-32">
+      <main id="products" className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 sm:pb-10 scroll-mt-16">
 
-        {/* ── Shop tab ── */}
-        {activeTab === "shop" && (
-          <>
-            {/* Search */}
-            <div className="py-4">
-              <div
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all"
-                style={{ borderColor: theme.border, background: theme.surface }}
-              >
-                <Search className="w-4.5 h-4.5 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search products…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="flex-1 bg-transparent text-sm outline-none"
-                  style={{ color: theme.text }}
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-4.5 h-4.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm" style={{ color: theme.textMuted }}>
-                {filtered.length} product{filtered.length !== 1 ? "s" : ""} available
-                {search && (
-                  <span className="ml-1">
-                    for &ldquo;<strong style={{ color: theme.primary }}>{search}</strong>&rdquo;
-                  </span>
-                )}
-              </p>
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="text-xs font-medium hover:underline"
-                  style={{ color: theme.primary }}
-                >
-                  Clear search
-                </button>
-              )}
-            </div>
-
-            {/* Product grid */}
-            {filtered.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                {filtered.map((p) => (
-                  <ProductCard
-                    key={p.id}
-                    product={p}
-                    theme={theme}
-                    cartItem={getCartItem(p.id)}
-                    onAdd={() => addToCart(p.id)}
-                    onIncrease={() => increaseQty(p.id)}
-                    onDecrease={() => decreaseQty(p.id)}
-                    onClick={() => setSelectedProduct(p)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20">
-                <div className="flex justify-center mb-4">
-                  {search ? <Search className="w-12 h-12" /> : <ShoppingCart className="w-12 h-12" />}
-                </div>
-                <p className="text-base font-semibold mb-1" style={{ color: theme.text }}>
-                  {search ? "No products found" : "No products available yet"}
-                </p>
-                <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
-                  {search
-                    ? "Try a different search term"
-                    : "The shop admin hasn't published any products yet"}
-                </p>
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="text-sm font-semibold hover:underline"
-                    style={{ color: theme.primary }}
-                  >
-                    Show all products
-                  </button>
-                )}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ── Orders tab ── */}
-        {activeTab === "orders" && (
-          orders.length > 0 ? (
-            <div className="pt-4">
-              <OrdersView orders={orders} theme={theme} />
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <div className="flex justify-center mb-4"><Package className="w-12 h-12" /></div>
-              <p className="text-base font-semibold mb-1" style={{ color: theme.text }}>
-                No orders yet
-              </p>
-              <p className="text-sm mb-5" style={{ color: theme.textMuted }}>
-                Your orders will appear here after checkout
-              </p>
+        {/* Search */}
+        <div className="py-4">
+          <div
+            className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all"
+            style={{ borderColor: theme.border, background: theme.surface }}
+          >
+            <Search className="w-4.5 h-4.5 shrink-0" />
+            <input
+              type="text"
+              placeholder="Search products…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 bg-transparent text-sm outline-none"
+              style={{ color: theme.text }}
+            />
+            {search && (
               <button
-                onClick={() => setActiveTab("shop")}
-                className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
-                style={{ background: theme.primary }}
+                onClick={() => setSearch("")}
+                className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
               >
-                Start shopping
+                <X className="w-4.5 h-4.5" />
               </button>
+            )}
+          </div>
+        </div>
+
+        {/* Heading row */}
+        <div className="flex items-end justify-between gap-4 mb-6 flex-wrap">
+          <h2 className="text-xl sm:text-2xl font-bold" style={{ color: theme.black }}>
+            {category === "All" ? "Fresh today" : category}
+          </h2>
+          <p className="text-sm" style={{ color: theme.textMuted }}>
+            {filtered.length} product{filtered.length !== 1 ? "s" : ""} available
+            {search && (
+              <span className="ml-1">
+                for &ldquo;<strong style={{ color: theme.primary }}>{search}</strong>&rdquo;
+              </span>
+            )}
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="ml-2 font-medium hover:underline"
+                style={{ color: theme.primary }}
+              >
+                Clear search
+              </button>
+            )}
+          </p>
+        </div>
+
+        {/* Product grid */}
+        {filtered.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {filtered.map((p) => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                theme={theme}
+                cartItem={getCartItem(p.id)}
+                onAdd={() => addToCart(p.id)}
+                onIncrease={() => increaseQty(p.id)}
+                onDecrease={() => decreaseQty(p.id)}
+                onClick={() => setSelectedProduct(p)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <div className="flex justify-center mb-4">
+              {search ? <Search className="w-12 h-12" /> : <ShoppingCart className="w-12 h-12" />}
             </div>
-          )
+            <p className="text-base font-semibold mb-1" style={{ color: theme.text }}>
+              {search ? "No products found" : "No products available yet"}
+            </p>
+            <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
+              {search
+                ? "Try a different search term"
+                : "The shop admin hasn't published any products yet"}
+            </p>
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="text-sm font-semibold hover:underline"
+                style={{ color: theme.primary }}
+              >
+                Show all products
+              </button>
+            )}
+          </div>
         )}
       </main>
+
+      {/* ── Best Sellers ── */}
+      {shopProducts.length > 0 && (
+        <BestSellers
+          theme={theme}
+          products={shopProducts}
+          getCartItem={getCartItem}
+          onAdd={addToCart}
+          onClick={setSelectedProduct}
+        />
+      )}
+
+      {/* ── About ── */}
+      <section id="about" className="scroll-mt-16 py-16" style={{ background: theme.surface, borderTop: `1px solid ${theme.border}` }}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4" style={{ color: theme.black }}>
+            {aboutTitle}
+          </h2>
+          <p className="text-sm sm:text-base leading-relaxed max-w-2xl mx-auto mb-12" style={{ color: theme.textMuted }}>
+            {content.about.description}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { icon: Leaf, title: "Fresh & Quality", desc: "Sourced and checked for quality before it reaches you." },
+              { icon: Truck, title: "Fast Delivery", desc: "Same-day delivery in Nairobi, free over KSh 500." },
+              { icon: ShieldCheck, title: "Trusted Shopping", desc: "Secure checkout and support on every order." },
+            ].map((f) => (
+              <div key={f.title} className="flex flex-col items-center text-center px-4">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
+                  style={{ background: theme.primaryLight, color: theme.primary }}
+                >
+                  <f.icon className="w-5 h-5" />
+                </div>
+                <p className="font-semibold text-sm mb-1" style={{ color: theme.black }}>{f.title}</p>
+                <p className="text-xs leading-relaxed" style={{ color: theme.textMuted }}>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How it works ── */}
+      <HowItWorks
+        theme={theme}
+        title={content.howItWorks.title}
+        subtitle={content.howItWorks.subtitle}
+        steps={content.howItWorks.steps}
+      />
+
+      {/* ── Testimonials ── */}
+      <Testimonials theme={theme} testimonials={content.testimonials} />
+
+      {/* ── Contact ── */}
+      <section id="contact" className="scroll-mt-16 py-16" style={{ borderTop: `1px solid ${theme.border}` }}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: theme.black }}>
+            Get in Touch
+          </h2>
+          <p className="text-sm sm:text-base leading-relaxed mb-10 max-w-xl mx-auto" style={{ color: theme.textMuted }}>
+            Have a question about an order or a product? Reach us directly — we usually reply within minutes.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <a
+              href={`tel:${digitsOnly(content.contact.phone)}`}
+              className="flex flex-col items-center gap-3 px-5 py-6 rounded-2xl transition-colors hover:opacity-80"
+              style={{ background: theme.surface, border: `1px solid ${theme.border}` }}
+            >
+              <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: theme.primaryLight, color: theme.primary }}>
+                <Phone className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: theme.black }}>Call Us</p>
+                <p className="text-xs mt-0.5" style={{ color: theme.textMuted }}>{content.contact.phone}</p>
+              </div>
+            </a>
+
+            <a
+              href={`sms:${digitsOnly(content.contact.phone)}`}
+              className="flex flex-col items-center gap-3 px-5 py-6 rounded-2xl transition-colors hover:opacity-80"
+              style={{ background: theme.surface, border: `1px solid ${theme.border}` }}
+            >
+              <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: theme.primaryLight, color: theme.primary }}>
+                <MessageSquare className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: theme.black }}>Send an SMS</p>
+                <p className="text-xs mt-0.5" style={{ color: theme.textMuted }}>{content.contact.phone}</p>
+              </div>
+            </a>
+
+            <a
+              href={`https://wa.me/${digitsOnly(content.contact.whatsapp).replace(/^\+/, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 px-5 py-6 rounded-2xl transition-colors hover:opacity-80"
+              style={{ background: theme.surface, border: `1px solid ${theme.border}` }}
+            >
+              <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: theme.primaryLight, color: theme.primary }}>
+                <MessageCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: theme.black }}>Chat on WhatsApp</p>
+                <p className="text-xs mt-0.5" style={{ color: theme.textMuted }}>{content.contact.whatsapp}</p>
+              </div>
+            </a>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-sm" style={{ color: theme.textMuted }}>
+            <MapPin className="w-4 h-4 shrink-0" style={{ color: theme.primary }} />
+            Nairobi, Kenya
+          </div>
+        </div>
+      </section>
 
       {/* Floating cart bar — mobile only */}
       {mounted && cartCount > 0 && (
@@ -395,6 +448,9 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
 
       <Footer
         theme={theme}
+        socials={content.footer.socials}
+        footerBg={content.footer.bg}
+        footerText={content.footer.text}
         onLoginClick={openLogin}
         onSignupClick={openSignup}
         onCartOpen={() => setShowCart(true)}

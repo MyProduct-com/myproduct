@@ -1,9 +1,13 @@
-import { Camera, MessageCircle } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import type { Theme } from "../types/index.js";
+import type { FooterSocial } from "@/store/storefrontContentStore";
 import { getLogoIcon } from "@/lib/logoIcons";
 
 interface FooterProps {
   theme: Theme;
+  socials: FooterSocial[];
+  footerBg: string;
+  footerText: string;
   onLoginClick: () => void;
   onSignupClick: () => void;
   onCartOpen: () => void;
@@ -38,14 +42,10 @@ const LINK_GROUPS = [
   },
 ];
 
-const SOCIALS = [
-  { label: "Twitter / X", char: "𝕏" },
-  { label: "Instagram", icon: Camera },
-  { label: "WhatsApp", icon: MessageCircle },
-];
-
-export default function Footer({ theme, onLoginClick, onSignupClick, onCartOpen }: FooterProps) {
+export default function Footer({ theme, socials, footerBg, footerText, onLoginClick, onSignupClick, onCartOpen }: FooterProps) {
   const LogoIcon = getLogoIcon(theme.logoIcon);
+  const bg = footerBg || theme.primary;
+  const fg = footerText || "#ffffff";
 
   const handleAction = (action?: string): void => {
     if (action === "login") onLoginClick();
@@ -54,77 +54,55 @@ export default function Footer({ theme, onLoginClick, onSignupClick, onCartOpen 
   };
 
   return (
-    <footer style={{ background: theme.primary, color: "#fff", fontFamily: theme.fontFamily, marginTop: 64 }}>
+    <footer className="mt-16" style={{ background: bg, color: fg, fontFamily: theme.fontFamily }}>
       {/* Main grid */}
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: "0 auto",
-          padding: "48px 24px 36px",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr 1fr",
-          gap: 32,
-        }}
-      >
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-12 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 sm:gap-10">
+
         {/* Brand column */}
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-            <LogoIcon size={30} />
-            <span style={{ fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px" }}>{theme.shopName}</span>
+        <div className="col-span-2 md:col-span-1">
+          <div className="flex items-center gap-2 mb-3">
+            <LogoIcon className="w-7 h-7 shrink-0" />
+            <span className="font-black text-xl tracking-tight">{theme.shopName}</span>
           </div>
-          <p style={{ fontSize: 13, lineHeight: 1.7, opacity: 0.8, margin: "0 0 20px", maxWidth: 200 }}>
+          <p className="text-sm leading-relaxed opacity-80 mb-5 max-w-xs">
             {theme.shopTagline || "Fresh groceries delivered straight to your door."}
           </p>
-          <div style={{ display: "flex", gap: 8 }}>
-            {SOCIALS.map(s => (
-              <button
-                key={s.label}
-                title={s.label}
-                style={{
-                  background: "rgba(255,255,255,0.15)",
-                  border: "none",
-                  borderRadius: 8,
-                  width: 36,
-                  height: 36,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  fontSize: 15,
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.28)")}
-                onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
-              >
-                {s.icon ? <s.icon size={16} /> : s.char}
-              </button>
-            ))}
-          </div>
+          {socials.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {socials.map((s) => (
+                <a
+                  key={s.id}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={s.label}
+                  className="inline-flex items-center gap-1.5 px-3 h-9 rounded-lg text-xs font-semibold transition-colors"
+                  style={{ background: "rgba(255,255,255,0.15)", color: fg }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.28)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
+                >
+                  {s.label} <ExternalLink size={12} />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Link columns */}
-        {LINK_GROUPS.map(group => (
+        {LINK_GROUPS.map((group) => (
           <div key={group.heading}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.6, marginBottom: 14 }}>
+            <div className="text-[11px] font-bold tracking-widest uppercase opacity-60 mb-3.5">
               {group.heading}
             </div>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {group.items.map(item => (
-                <li key={item.text} style={{ marginBottom: 10 }}>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
+              {group.items.map((item) => (
+                <li key={item.text}>
                   <button
                     onClick={() => handleAction(item.action)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      color: "#fff",
-                      fontSize: 14,
-                      opacity: 0.82,
-                      cursor: "pointer",
-                      fontFamily: theme.fontFamily,
-                      textAlign: "left",
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = "0.82")}
+                    className="text-sm text-left transition-opacity"
+                    style={{ background: "none", border: "none", padding: 0, color: fg, opacity: 0.82, cursor: "pointer", fontFamily: theme.fontFamily }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.82")}
                   >
                     {item.text}
                   </button>
@@ -136,40 +114,21 @@ export default function Footer({ theme, onLoginClick, onSignupClick, onCartOpen 
       </div>
 
       {/* Divider */}
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.18)" }} />
+      <div style={{ borderTop: `1px solid ${fg}30` }} />
 
       {/* Bottom bar */}
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: "0 auto",
-          padding: "16px 24px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
-        <span style={{ fontSize: 12, opacity: 0.6 }}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <span className="text-xs opacity-60 order-2 sm:order-1">
           © {new Date().getFullYear()} {theme.shopName}. All rights reserved.
         </span>
-        <div style={{ display: "flex", gap: 20 }}>
-          {["Privacy Policy", "Terms of Service", "Cookie Settings"].map(t => (
+        <div className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 order-1 sm:order-2">
+          {["Privacy Policy", "Terms of Service", "Cookie Settings"].map((t) => (
             <button
               key={t}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#fff",
-                fontSize: 12,
-                opacity: 0.6,
-                cursor: "pointer",
-                fontFamily: theme.fontFamily,
-                padding: 0,
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={e => (e.currentTarget.style.opacity = "0.6")}
+              className="text-xs transition-opacity"
+              style={{ background: "none", border: "none", color: fg, opacity: 0.6, cursor: "pointer", fontFamily: theme.fontFamily, padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.6")}
             >
               {t}
             </button>

@@ -1,21 +1,27 @@
 import Link from "next/link";
-import { Leaf, Headphones, BookOpen, Footprints, Coffee, Plug, Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import { C } from "./Constants";
 
+// Duotone mosaic tiles — grayscale photos tinted with a cycling brand colour
+// via mix-blend-mode, with alternating row-spans for a bento/mosaic feel
+// instead of a plain even thumbnail grid.
+const TINTS = [C.forest, C.ember, C.gold, "#1e40af"];
+
+const MOSAIC_TILES = [
+  { image: "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=600&q=80&auto=format&fit=crop", span: 2 },
+  { image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&q=80&auto=format&fit=crop", span: 1 },
+  { image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=600&q=80&auto=format&fit=crop", span: 1 },
+  { image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=600&q=80&auto=format&fit=crop", span: 3 },
+  { image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&q=80&auto=format&fit=crop", span: 1 },
+  { image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80&auto=format&fit=crop", span: 2 },
+  { image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&q=80&auto=format&fit=crop", span: 1 },
+];
 
 function MarketplacePreview() {
-  const ITEMS = [
-    { icon: Leaf, name: "Sukuma Wiki", shop: "FreshMart", price: "KSh 30", tag: "Groceries" },
-    { icon: Headphones, name: "Wireless Earbuds Pro", shop: "TechZone", price: "KSh 3,500", tag: "Electronics" },
-    { icon: BookOpen, name: "Business Strategy 2025", shop: "BookNest", price: "KSh 1,200", tag: "Books" },
-    { icon: Footprints, name: "Air Max Sneakers", shop: "StyleHub", price: "KSh 4,200", tag: "Fashion" },
-    { icon: Coffee, name: "Kenyan AA Coffee 250g", shop: "FreshMart", price: "KSh 480", tag: "Groceries" },
-    { icon: Plug, name: "USB-C Hub 7-in-1", shop: "TechZone", price: "KSh 2,800", tag: "Electronics" },
-  ];
   return (
     <section id="marketplace" style={{ padding: "96px 24px", background: `linear-gradient(180deg, ${C.canvas} 0%, ${C.mint}55 100%)` }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
+        <div className="market-grid">
           <div>
             <span style={{ fontSize: 12, fontWeight: 700, color: C.action, textTransform: "uppercase", letterSpacing: "0.1em" }}>Shared marketplace</span>
             <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 700, color: C.ink, margin: "12px 0 18px", letterSpacing: "-0.02em" }}>
@@ -37,22 +43,12 @@ function MarketplacePreview() {
             </Link>
           </div>
 
-          {/* Grid preview */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {ITEMS.map((item, i) => (
-              <div key={i} style={{
-                background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14,
-                padding: "16px 14px", transition: "transform .2s, box-shadow .2s",
-              }}
-                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform = "translateY(-3px)"; el.style.boxShadow = "0 8px 24px rgba(0,0,0,.08)"; }}
-                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform = ""; el.style.boxShadow = ""; }}>
-                <div style={{ marginBottom: 8 }}><item.icon style={{ width: 28, height: 28, color: C.forest }} /></div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: C.ink, marginBottom: 4, lineHeight: 1.3 }}>{item.name}</div>
-                <div style={{ fontSize: 11, color: C.slate, marginBottom: 8 }}>by {item.shop}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: C.forest }}>{item.price}</span>
-                  <span style={{ fontSize: 10, background: C.mint, color: C.forest, padding: "2px 8px", borderRadius: 999, fontWeight: 700 }}>{item.tag}</span>
-                </div>
+          {/* Duotone photo mosaic */}
+          <div className="market-mosaic">
+            {MOSAIC_TILES.map((tile, i) => (
+              <div key={i} className={`market-mosaic-tile${tile.span > 1 ? ` span-${tile.span}` : ""}`}>
+                <img src={tile.image} alt="" />
+                <div className="market-tint" style={{ background: TINTS[i % TINTS.length] }} />
               </div>
             ))}
           </div>
