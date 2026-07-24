@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Search, MapPin, Truck, CheckCircle2, ArrowRight, X } from "lucide-react";
-import type { AdminOrder, OrderStatus } from "../../types/index";
+import { Search, MapPin, Truck, CheckCircle2, ArrowRight, Undo2, X } from "lucide-react";
+import type { AdminOrder, OrderStatus, PaymentStatus } from "../../types/index";
 import StatusPill from "@/components/dashboard/StatusPill";
 import { fmt, fmtDateTime, payMethodLabel } from "../../utils/helpers";
 
@@ -10,12 +10,14 @@ interface OrdersViewProps {
   orders: AdminOrder[];
   onUpdate: (orders: AdminOrder[]) => void;
   onToast: (msg: string, type?: "success"|"error"|"info") => void;
+  /** Pre-select a payment-status filter — set when arriving via the dashboard's "Process Refund" quick action. */
+  initialPaymentFilter?: PaymentStatus;
 }
 
-export default function OrdersView({ orders, onUpdate, onToast }: OrdersViewProps) {
+export default function OrdersView({ orders, onUpdate, onToast, initialPaymentFilter }: OrdersViewProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [payFilter, setPayFilter] = useState("All");
+  const [payFilter, setPayFilter] = useState<string>(initialPaymentFilter ?? "All");
   const [selected, setSelected] = useState<AdminOrder | null>(null);
   const [trackingInput, setTrackingInput] = useState("");
 
@@ -64,6 +66,12 @@ export default function OrdersView({ orders, onUpdate, onToast }: OrdersViewProp
     updateOrder(order.id, { status: "Cancelled" });
     onToast(`Order ${order.id} cancelled`, "info");
     setSelected(prev => prev ? { ...prev, status: "Cancelled" } : null);
+  };
+
+  const refundOrder = (order: AdminOrder) => {
+    updateOrder(order.id, { paymentStatus: "Refunded" });
+    onToast(`${fmt(order.total)} refunded for ${order.id}`, "success");
+    setSelected(prev => prev ? { ...prev, paymentStatus: "Refunded" } : null);
   };
 
   const statusCounts = STATUSES.reduce((acc, s) => {
@@ -247,6 +255,9 @@ export default function OrdersView({ orders, onUpdate, onToast }: OrdersViewProp
             <div className="flex gap-2.5 flex-wrap">
               {selected.paymentStatus === "Pending" && (
                 <button onClick={() => confirmPayment(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors"><CheckCircle2 size={14} /> Confirm Payment</button>
+              )}
+              {selected.paymentStatus === "Paid" && (
+                <button onClick={() => refundOrder(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm border border-org-danger text-org-danger hover:bg-org-danger-bg text-org-sm font-org-semibold transition-colors"><Undo2 size={14} /> Refund Payment</button>
               )}
               {selected.status === "Under Processing" && (
                 <button onClick={() => dispatch(selected)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-org-sm bg-org-primary hover:bg-org-primary-hover text-white text-org-sm font-org-semibold transition-colors"><Truck size={14} /> Dispatch Order</button>

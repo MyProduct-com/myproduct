@@ -1,7 +1,7 @@
 import type {
   AdminProduct, AdminOrder, SubAdmin, AccountingEntry,
   StockMovement, POSSession, POSTransaction, Subscription,
-  SubscriptionPlan, DailyStat, TopProduct, AdminUser,
+  SubscriptionPlan, TopProduct, AdminUser,
 } from "../types/index";
 
 // ─── Admin User ───────────────────────────────────────────────────────────────
@@ -98,16 +98,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 ];
 
 // ─── Analytics ────────────────────────────────────────────────────────────────
-export const MOCK_DAILY_STATS: DailyStat[] = [
-  { date:"Jun 6",  revenue:12400, orders:8,  customers:7,  avgOrderValue:1550 },
-  { date:"Jun 7",  revenue:18200, orders:14, customers:12, avgOrderValue:1300 },
-  { date:"Jun 8",  revenue:9800,  orders:6,  customers:6,  avgOrderValue:1633 },
-  { date:"Jun 9",  revenue:22100, orders:18, customers:15, avgOrderValue:1228 },
-  { date:"Jun 10", revenue:31500, orders:24, customers:20, avgOrderValue:1313 },
-  { date:"Jun 11", revenue:27800, orders:21, customers:18, avgOrderValue:1324 },
-  { date:"Jun 12", revenue:15600, orders:11, customers:9,  avgOrderValue:1418 },
-];
-
 export const MOCK_TOP_PRODUCTS: TopProduct[] = [
   { productId:5, name:"Unga wa Ugali",   unitsSold:142, revenue:25560, image:"https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=100" },
   { productId:6, name:"Cooking Oil",     unitsSold:98,  revenue:31360, image:"https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=100" },

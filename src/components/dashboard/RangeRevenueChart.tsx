@@ -1,10 +1,10 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TrendingUp, Receipt } from "lucide-react";
 import ChartCard from "./ChartCard";
 import TrafficLineChart from "./TrafficLineChart";
 
-type PresetRange = "7d" | "30d" | "6m" | "12m" | "custom";
+export type PresetRange = "7d" | "30d" | "6m" | "12m" | "custom";
 
 const PRESETS: { id: PresetRange; label: string; days?: number }[] = [
   { id: "7d", label: "7D", days: 7 },
@@ -33,9 +33,13 @@ interface Props {
    * since this is a Client Component and can't accept functions as props
    * from a Server Component caller. */
   currency?: string;
+  /** Preset the range selector starts on. Uncontrolled after that — only used as the initial value. */
+  defaultPreset?: PresetRange;
+  /** Reports the effective window back to the parent (e.g. so KPI cards above the chart can match it). */
+  onRangeChange?: (range: { days: number; label: string }) => void;
 }
 
-export default function RangeRevenueChart({ title = "Revenue Overview", data, currency = "KES" }: Props) {
+export default function RangeRevenueChart({ title = "Revenue Overview", data, currency = "KES", defaultPreset = "30d", onRangeChange }: Props) {
   const formatMoney = (n: number) => `${currency} ${n.toLocaleString()}`;
   const rows = useMemo(
     () => data.map((r) => ({ date: typeof r.date === "string" ? new Date(r.date) : r.date, revenue: r.revenue })),
@@ -48,7 +52,7 @@ export default function RangeRevenueChart({ title = "Revenue Overview", data, cu
   const twelveMonthsAgo = new Date(today);
   twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
 
-  const [preset, setPreset] = useState<PresetRange>("30d");
+  const [preset, setPreset] = useState<PresetRange>(defaultPreset);
   const [customFrom, setCustomFrom] = useState(monthInputValue(twelveMonthsAgo));
   const [customTo, setCustomTo] = useState(monthInputValue(today));
 
@@ -83,6 +87,11 @@ export default function RangeRevenueChart({ title = "Revenue Overview", data, cu
   const rangeLabel = preset === "custom"
     ? `${MONTH_FMT.format(new Date(Number(customFrom.split("-")[0]), Number(customFrom.split("-")[1]) - 1))} – ${MONTH_FMT.format(new Date(Number(customTo.split("-")[0]), Number(customTo.split("-")[1]) - 1))}`
     : PRESETS.find((p) => p.id === preset)!.label;
+
+  useEffect(() => {
+    onRangeChange?.({ days: rangeDays, label: rangeLabel });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rangeDays, rangeLabel]);
 
   return (
     <ChartCard title={`${title} (${rangeLabel})`}>
