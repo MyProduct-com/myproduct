@@ -217,14 +217,6 @@ export interface Subscription {
 
 
 
-export interface DailyStat {
-  date: string;
-  revenue: number;
-  orders: number;
-  customers: number;
-  avgOrderValue: number;
-}
-
 export interface TopProduct {
   productId: number;
   name: string;
@@ -270,4 +262,11 @@ export interface Toast {
   id: string;
   message: string;
   type: "success" | "error" | "info";
+}
+
+/** Extra context passed alongside a dashboard "jump to view" click, so the target view can pre-focus on what the user came for. */
+export interface DashboardNavOptions {
+  openAddProduct?: boolean;
+  lowStockOnly?: boolean;
+  paymentFilter?: PaymentStatus;
 }

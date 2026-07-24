@@ -24,6 +24,10 @@ const EMPTY_FORM: ProductFormState = {
 
 interface ProductsViewProps {
   onToast: (msg: string, type?: "success" | "error" | "info") => void;
+  /** Open the Add Product modal as soon as the view mounts — set when arriving via a dashboard "Add Product" quick action. */
+  openAddOnMount?: boolean;
+  /** Pre-filter the list to only low/out-of-stock items — set when arriving via the dashboard's Low Stock alert card. */
+  focusLowStock?: boolean;
 }
 
 function StatusBadge({ published }: { published: boolean }) {
@@ -34,7 +38,7 @@ function StatusBadge({ published }: { published: boolean }) {
   );
 }
 
-export default function ProductsView({ onToast }: ProductsViewProps) {
+export default function ProductsView({ onToast, openAddOnMount, focusLowStock }: ProductsViewProps) {
   const products      = useProductStore((s) => s.products);
   const addProduct    = useProductStore((s) => s.addProduct);
   const updateProduct = useProductStore((s) => s.updateProduct);
@@ -44,7 +48,8 @@ export default function ProductsView({ onToast }: ProductsViewProps) {
   const [search, setSearch]               = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [statusFilter, setStatusFilter]   = useState("All");
-  const [showModal, setShowModal]         = useState(false);
+  const [lowStockOnly, setLowStockOnly]   = useState(!!focusLowStock);
+  const [showModal, setShowModal]         = useState(!!openAddOnMount);
   const [editProduct, setEditProduct]     = useState<SharedProduct | null>(null);
   const [form, setForm]                   = useState<ProductFormState>(EMPTY_FORM);
   const [showDbSearch, setShowDbSearch]   = useState(false);
@@ -60,7 +65,8 @@ export default function ProductsView({ onToast }: ProductsViewProps) {
     const matchStatus =
       statusFilter === "All" ||
       (statusFilter === "Published" ? p.published : !p.published);
-    return matchSearch && matchCat && matchStatus;
+    const matchStock = !lowStockOnly || p.stock <= p.lowStockThreshold;
+    return matchSearch && matchCat && matchStatus && matchStock;
   });
 
   const openAdd = () => {
@@ -192,6 +198,14 @@ export default function ProductsView({ onToast }: ProductsViewProps) {
             <option value="Published">Published</option>
             <option value="Draft">Draft</option>
           </select>
+          <button
+            onClick={() => setLowStockOnly((v) => !v)}
+            className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-org-sm border text-org-sm font-org-medium transition-colors ${
+              lowStockOnly ? "bg-org-warning/15 border-org-warning text-org-warning" : "border-org-border text-org-text-secondary hover:bg-org-surface-alt"
+            }`}
+          >
+            <AlertTriangle size={14} /> Low stock
+          </button>
         </div>
       </div>
 

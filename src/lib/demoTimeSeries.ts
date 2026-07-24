@@ -33,3 +33,36 @@ export function generateDemoDailyRevenue(totalDays: number, baseline: number): D
   }
   return out;
 }
+
+export interface DemoDailyStat {
+  date: Date;
+  revenue: number;
+  orders: number;
+  customers: number;
+}
+
+/**
+ * Same deterministic model as generateDemoDailyRevenue, extended with plausible
+ * orders/customers counts derived from that day's revenue — so KPI cards, the
+ * order-status breakdown, and the revenue chart all read from one consistent
+ * series instead of drifting mock arrays. Safe to delete once real per-day
+ * order/customer queries exist.
+ */
+export function generateDemoDailyStats(totalDays: number, revenueBaseline: number, avgOrderValueBaseline: number): DemoDailyStat[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const out: DemoDailyStat[] = [];
+  for (let i = totalDays - 1; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dayOfWeek = date.getDay();
+    const weekendDip = dayOfWeek === 0 || dayOfWeek === 6 ? 0.65 : 1;
+    const growth = 1 + ((totalDays - i) / totalDays) * 0.4;
+    const noise = 0.8 + Math.sin(i * 1.3) * 0.12 + seeded(i) * 0.18;
+    const revenue = Math.round(revenueBaseline * weekendDip * growth * noise);
+    const orders = Math.max(1, Math.round((revenue / avgOrderValueBaseline) * (0.85 + seeded(i * 7) * 0.3)));
+    const customers = Math.max(1, Math.round(orders * (0.72 + seeded(i * 13) * 0.2)));
+    out.push({ date, revenue, orders, customers });
+  }
+  return out;
+}
