@@ -19,13 +19,16 @@ import BestSellers   from "./components/BestSellers";
 import HowItWorks    from "./components/HowItWorks";
 import Testimonials  from "./components/Testimonials";
 import Footer        from "./components/Footer";
+import StorefrontAnnouncementBanner from "./components/StorefrontAnnouncementBanner";
 import { useThemeStore } from "@/store/themeStore";
 
 interface ShopStorefrontProps {
   initialTheme?: Partial<Theme>;
+  /** Shop id used for customer announcements (notification bus). */
+  shopId?: string;
 }
 
-export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProps) {
+export default function ShopStorefront({ initialTheme = {}, shopId = "shop_001" }: ShopStorefrontProps) {
   // ── Theme ──────────────────────────────────────────────────────────────────
   const storeTheme = useThemeStore((s) => s.theme);
   const theme = { ...storeTheme, ...initialTheme } as Theme;
@@ -145,6 +148,8 @@ export default function ShopStorefront({ initialTheme = {} }: ShopStorefrontProp
         onSignOut={() => setUser(null)}
         onThemeEdit={() => {}}
       />
+
+      <StorefrontAnnouncementBanner shopId={shopId} primaryColor={theme.primary} />
 
       {/* Hero */}
       <ShopHero theme={theme} slides={content.hero.slides} title={heroTitle} ctaText={content.hero.ctaText} />

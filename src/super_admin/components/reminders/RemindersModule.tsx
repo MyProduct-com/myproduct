@@ -5,6 +5,7 @@ import { SA_THEME as T } from "../../data/theme";
 import type { Reminder, ManagedShop, SystemPackage } from "../../types/index";
 import { Card, Btn, Input, SectionHeader, Badge, Modal, Tabs, Checkbox } from "../layout/UI";
 import { statusColor, fmtDateTime, genId, daysUntil } from "../../utils/helpers";
+import { fanOutPlatformReminder } from "@/lib/notifications/bus";
 
 interface Props {
   reminders: Reminder[];
@@ -65,11 +66,25 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
         recipientCount: recipients.length,
         createdBy: adminName,
         createdAt: new Date().toISOString(),
-        targetShopIds: form.targetType === "specific" ? selectedShops : undefined,
+        targetShopIds: form.targetType === "specific" ? selectedShops : recipients.map((s) => s.id),
       } as Reminder;
       onSend(rem);
+      // Deliver into shared inbox so each Shop Admin sees this reminder.
+      fanOutPlatformReminder({
+        reminderId: rem.id,
+        title: rem.title,
+        message: rem.message,
+        createdBy: adminName,
+        recipients: recipients.map((s) => ({
+          id: s.id,
+          name: s.name,
+          ownerName: s.ownerName,
+          packageName: s.packageName,
+          expiresAt: s.expiresAt,
+        })),
+      });
       setSending(false);
-      addToast(`Reminder sent to ${recipients.length} recipient${recipients.length !== 1 ? "s" : ""}.`, "success");
+      addToast(`Reminder sent to ${recipients.length} shop admin${recipients.length !== 1 ? "s" : ""}.`, "success");
       setForm({ ...BLANK });
       setSelectedShops([]);
       setTab("history");

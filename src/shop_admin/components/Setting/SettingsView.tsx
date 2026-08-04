@@ -1,17 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Store, Palette, Bell, FileText, AlertTriangle, ArrowRight, RotateCcw, CheckCircle2 } from "lucide-react";
+import { Store, Palette, Bell, FileText, AlertTriangle, ArrowRight, RotateCcw, CheckCircle2, Megaphone, Inbox } from "lucide-react";
 import type { Shop } from "../../types/index";
 import { useThemeStore } from "@/store/themeStore";
 import type { ShopTheme } from "@/store/themeStore";
 import { LOGO_ICON_OPTIONS, getLogoIcon } from "@/lib/logoIcons";
 import PageContentTab from "./PageContentTab";
+import { publishShopAnnouncement } from "@/lib/notifications/bus";
+import type { AppNotification } from "@/lib/notifications/types";
 
 interface SettingsViewProps {
   shop: Shop;
   onShop: (shop: Shop) => void;
   onToast: (msg: string, type?: "success" | "error" | "info") => void;
+  adminName?: string;
+  platformNotifications?: AppNotification[];
+  onDismissPlatform?: (id: string) => void;
 }
 
 const COLOR_FIELDS: { key: keyof ShopTheme; label: string }[] = [
@@ -45,12 +50,22 @@ interface PendingChange {
 const inputCls = "w-full px-3 py-2 rounded-org-sm border border-org-border text-org-sm bg-org-surface text-org-text-primary outline-none focus:border-org-primary";
 const labelCls = "block text-org-xs font-org-medium text-org-text-secondary mb-1.5";
 
-export default function SettingsView({ shop, onShop, onToast }: SettingsViewProps) {
+export default function SettingsView({
+  shop,
+  onShop,
+  onToast,
+  adminName = "Shop Admin",
+  platformNotifications = [],
+  onDismissPlatform,
+}: SettingsViewProps) {
   const { theme: shopTheme, updateTheme, resetTheme } = useThemeStore();
 
   const [activeTab, setActiveTab]       = useState<"shop" | "theme" | "content" | "notifications">("shop");
   const [shopForm, setShopForm]         = useState<Shop>({ ...shop });
   const [pending, setPending]           = useState<PendingChange | null>(null);
+  const [announceTitle, setAnnounceTitle] = useState("");
+  const [announceBody, setAnnounceBody] = useState("");
+  const [sendingAnnounce, setSendingAnnounce] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const setShopField = (k: keyof Shop) => (v: string) =>
@@ -291,28 +306,131 @@ export default function SettingsView({ shop, onShop, onToast }: SettingsViewProp
 
       {/* ── NOTIFICATIONS ── */}
       {activeTab === "notifications" && (
-        <div className="max-w-xl bg-org-surface rounded-org-card shadow-org-card p-4">
-          <p className="font-org-bold text-org-md text-org-text-primary mb-4">Alert Preferences</p>
-          {[
-            { label: "New order alerts",     desc: "Notify when a new order is placed"           },
-            { label: "Low stock warnings",    desc: "Alert when stock falls below threshold"      },
-            { label: "Payment confirmations", desc: "Notify on successful payments"               },
-            { label: "Daily sales summary",   desc: "Receive daily sales report at end of day"   },
-            { label: "Staff login alerts",    desc: "Alert when a sub-admin logs in"              },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center justify-between gap-3 py-3.5 border-b border-org-border last:border-0">
-              <div>
-                <p className="font-org-medium text-org-sm text-org-text-primary">{item.label}</p>
-                <p className="text-org-xs text-org-text-secondary">{item.desc}</p>
-              </div>
-              <button
-                onClick={() => onToast("Notification preference saved.", "success")}
-                className="w-11 h-6 rounded-full bg-org-primary relative shrink-0"
-              >
-                <span className="absolute right-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow" />
-              </button>
+        <div className="space-y-4 max-w-2xl">
+          {/* Inbox — Super Admin platform reminders */}
+          <div className="bg-org-surface rounded-org-card shadow-org-card p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Inbox size={16} className="text-org-primary" />
+              <p className="font-org-bold text-org-md text-org-text-primary">Platform messages</p>
+              {platformNotifications.length > 0 && (
+                <span className="text-org-xs font-org-semibold px-2 py-0.5 rounded-org-pill bg-org-warning/15 text-org-warning">
+                  {platformNotifications.length} new
+                </span>
+              )}
             </div>
-          ))}
+            <p className="text-org-xs text-org-text-secondary mb-3">
+              Reminders and notices sent by Super Admin for this shop.
+            </p>
+            {platformNotifications.length === 0 ? (
+              <p className="text-org-sm text-org-text-muted py-4 text-center border border-dashed border-org-border rounded-org-sm">
+                No unread platform messages.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {platformNotifications.map((n) => (
+                  <div key={n.id} className="border border-org-border rounded-org-sm p-3 bg-org-surface-alt/40">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-org-semibold text-org-sm text-org-text-primary">{n.title}</p>
+                        <p className="text-org-xs text-org-text-secondary mt-1 whitespace-pre-wrap">{n.message}</p>
+                        <p className="text-org-xs text-org-text-muted mt-2">
+                          From {n.createdBy} · {new Date(n.createdAt).toLocaleString("en-KE")}
+                        </p>
+                      </div>
+                      {onDismissPlatform && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onDismissPlatform(n.id);
+                            onToast("Message dismissed.", "info");
+                          }}
+                          className="text-org-xs text-org-primary hover:underline shrink-0"
+                        >
+                          Dismiss
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Broadcast to storefront customers */}
+          <div className="bg-org-surface rounded-org-card shadow-org-card p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Megaphone size={16} className="text-org-primary" />
+              <p className="font-org-bold text-org-md text-org-text-primary">Notify shop customers</p>
+            </div>
+            <p className="text-org-xs text-org-text-secondary mb-3">
+              Publish an announcement on your live storefront (promo, new products, restock, etc.).
+            </p>
+            <label className="block text-org-xs font-org-semibold text-org-text-muted uppercase tracking-wide mb-1">Title</label>
+            <input
+              value={announceTitle}
+              onChange={(e) => setAnnounceTitle(e.target.value)}
+              placeholder="e.g. Fresh sukuma in stock today"
+              className="w-full mb-3 px-3 py-2 rounded-org-sm border border-org-border text-org-sm text-org-text-primary bg-org-surface outline-none focus:border-org-primary"
+            />
+            <label className="block text-org-xs font-org-semibold text-org-text-muted uppercase tracking-wide mb-1">Message</label>
+            <textarea
+              value={announceBody}
+              onChange={(e) => setAnnounceBody(e.target.value)}
+              rows={4}
+              placeholder="Write what customers should see on your shop…"
+              className="w-full mb-3 px-3 py-2 rounded-org-sm border border-org-border text-org-sm text-org-text-primary bg-org-surface outline-none focus:border-org-primary resize-y"
+            />
+            <button
+              type="button"
+              disabled={sendingAnnounce}
+              onClick={() => {
+                if (!announceTitle.trim() || !announceBody.trim()) {
+                  onToast("Title and message are required.", "error");
+                  return;
+                }
+                setSendingAnnounce(true);
+                publishShopAnnouncement({
+                  shopId: shop.id,
+                  shopName: shop.name,
+                  title: announceTitle,
+                  message: announceBody,
+                  createdBy: adminName,
+                });
+                setAnnounceTitle("");
+                setAnnounceBody("");
+                setSendingAnnounce(false);
+                onToast("Announcement published to your storefront.", "success");
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-org-sm bg-org-primary text-white text-org-sm font-org-semibold hover:bg-org-primary-hover transition-colors disabled:opacity-60"
+            >
+              <Megaphone size={14} /> Publish to storefront
+            </button>
+          </div>
+
+          {/* Operational prefs (local UI only for now) */}
+          <div className="bg-org-surface rounded-org-card shadow-org-card p-4">
+            <p className="font-org-bold text-org-md text-org-text-primary mb-4">Alert Preferences</p>
+            {[
+              { label: "New order alerts",     desc: "Notify when a new order is placed"           },
+              { label: "Low stock warnings",    desc: "Alert when stock falls below threshold"      },
+              { label: "Payment confirmations", desc: "Notify on successful payments"               },
+              { label: "Daily sales summary",   desc: "Receive daily sales report at end of day"   },
+              { label: "Staff login alerts",    desc: "Alert when a sub-admin logs in"              },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between gap-3 py-3.5 border-b border-org-border last:border-0">
+                <div>
+                  <p className="font-org-medium text-org-sm text-org-text-primary">{item.label}</p>
+                  <p className="text-org-xs text-org-text-secondary">{item.desc}</p>
+                </div>
+                <button
+                  onClick={() => onToast("Notification preference saved.", "success")}
+                  className="w-11 h-6 rounded-full bg-org-primary relative shrink-0"
+                >
+                  <span className="absolute right-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow" />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

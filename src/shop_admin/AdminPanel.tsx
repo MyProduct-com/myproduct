@@ -18,6 +18,8 @@ import {
 } from "./constants/mockData";
 import { genId } from "./utils/helpers";
 import { getLogoIcon } from "@/lib/logoIcons";
+import { useNotifications } from "@/lib/notifications/useNotifications";
+import type { ShellNotification } from "@/components/dashboard/DashboardShell";
 
 import ToastContainer from "./components/layout/ToastContainer";
 import DashboardShell, { type ShellItem } from "@/components/dashboard/DashboardShell";
@@ -63,6 +65,20 @@ export default function AdminPanel() {
   }, []);
 
   const [shop, setShop] = useState<Shop>(INITIAL_SHOP);
+
+  // Platform reminders from Super Admin land here via the shared notification bus.
+  const {
+    notifications: platformNotifications,
+    dismiss: dismissPlatformNotif,
+    clearAll: clearPlatformNotifs,
+  } = useNotifications(shop.id, "shop_admin");
+
+  const shellNotifications: ShellNotification[] = platformNotifications.map((n) => ({
+    id: n.id,
+    title: n.title,
+    message: n.message,
+    tone: n.kind === "platform_reminder" ? "warning" : "info",
+  }));
 
   const [products, setProducts] = useState<AdminProduct[]>(MOCK_PRODUCTS);
 
@@ -183,6 +199,9 @@ export default function AdminPanel() {
             shop={shop}
             onShop={setShop}
             onToast={toast}
+            adminName={MOCK_ADMIN.name}
+            platformNotifications={platformNotifications}
+            onDismissPlatform={dismissPlatformNotif}
           />
         );
       case "subscription":
@@ -216,6 +235,11 @@ export default function AdminPanel() {
         navItems={[]}
         user={{ name: MOCK_ADMIN.name, email: MOCK_ADMIN.email, avatarUrl: null }}
         onSettingsClick={() => goTo("settings")}
+        notifications={shellNotifications}
+        onClearNotifications={() => {
+          clearPlatformNotifs();
+          toast("Notifications cleared.", "info");
+        }}
       >
         {renderView()}
       </DashboardShell>

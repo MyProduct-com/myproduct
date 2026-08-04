@@ -37,7 +37,7 @@ export default async function ShopBySlugPage({
       logoIcon: shop.logoIcon,
     };
 
-    return <ShopStorefront initialTheme={initialTheme} />;
+    return <ShopStorefront initialTheme={initialTheme} shopId={shop.id} />;
   } catch {
     // DB unreachable — fall back to the matching demo shop so the storefront
     // is still reviewable locally without Postgres running. See getSuperAdminDashboardData
@@ -58,6 +58,6 @@ export default async function ShopBySlugPage({
       logoIcon: demo.logoIcon,
     };
 
-    return <ShopStorefront initialTheme={initialTheme} />;
+    return <ShopStorefront initialTheme={initialTheme} shopId={demo.id} />;
   }
 }
