@@ -7,14 +7,14 @@ import {
 import type {
   AdminView, AdminProduct, AdminOrder, SubAdmin, AccountingEntry,
   StockMovement, POSSession, POSTransaction, Subscription,
-  Shop, Toast, AdminPrivilege,
+  Shop, Toast, AdminPrivilege, DashboardNavOptions,
 } from "./types/index";
 
 import {
   MOCK_ADMIN, MOCK_PRODUCTS, MOCK_ORDERS, MOCK_STAFF,
   MOCK_ACCOUNTING, MOCK_STOCK_MOVEMENTS, MOCK_POS_SESSIONS,
   MOCK_POS_TRANSACTIONS, MOCK_SUBSCRIPTION, SUBSCRIPTION_PLANS,
-  MOCK_DAILY_STATS, MOCK_TOP_PRODUCTS,
+  MOCK_TOP_PRODUCTS,
 } from "./constants/mockData";
 import { genId } from "./utils/helpers";
 import { getLogoIcon } from "@/lib/logoIcons";
@@ -56,6 +56,11 @@ const NAV_ITEMS: { view: AdminView; label: string; icon: typeof LayoutDashboard;
 
 export default function AdminPanel() {
   const [activeView, setActiveView] = useState<AdminView>("dashboard");
+  const [navIntent, setNavIntent] = useState<DashboardNavOptions>({});
+  const goTo = useCallback((view: AdminView, opts?: DashboardNavOptions) => {
+    setNavIntent(opts ?? {});
+    setActiveView(view);
+  }, []);
 
   const [shop, setShop] = useState<Shop>(INITIAL_SHOP);
 
@@ -109,18 +114,24 @@ export default function AdminPanel() {
           <Dashboard
             orders={orders}
             products={products}
-            dailyStats={MOCK_DAILY_STATS}
             topProducts={MOCK_TOP_PRODUCTS}
+            movements={movements}
+            subscription={subscription}
+            plans={SUBSCRIPTION_PLANS}
+            accounting={accounting}
+            staffCount={staff.length}
+            onNavigate={goTo}
           />
         );
       case "products":
-        return <ProductsView onToast={toast} />;
+        return <ProductsView onToast={toast} openAddOnMount={navIntent.openAddProduct} focusLowStock={navIntent.lowStockOnly} />;
       case "orders":
         return (
           <OrdersView
             orders={orders}
             onUpdate={setOrders}
             onToast={toast}
+            initialPaymentFilter={navIntent.paymentFilter}
           />
         );
       case "pos":
@@ -193,7 +204,7 @@ export default function AdminPanel() {
     label: item.label,
     icon: item.icon,
     active: activeView === item.view,
-    onClick: () => setActiveView(item.view),
+    onClick: () => goTo(item.view),
     badge: badgeFor(item.view),
   }));
 
@@ -204,7 +215,7 @@ export default function AdminPanel() {
         railItems={railItems}
         navItems={[]}
         user={{ name: MOCK_ADMIN.name, email: MOCK_ADMIN.email, avatarUrl: null }}
-        onSettingsClick={() => setActiveView("settings")}
+        onSettingsClick={() => goTo("settings")}
       >
         {renderView()}
       </DashboardShell>

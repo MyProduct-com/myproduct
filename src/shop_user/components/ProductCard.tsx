@@ -17,10 +17,11 @@ export default function ProductCard({
   return (
     <div
       onClick={onClick}
-      className="group relative block aspect-3/4 rounded-4xl overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.06)] transition-shadow duration-300 hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.28)]"
+      className="group relative block aspect-3/4 overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.06)] transition-shadow duration-300 hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.28)]"
       style={{
         background: theme.bg,
         border: `1px solid ${theme.border}`,
+        borderRadius: theme.radiusCard,
         fontFamily: theme.fontFamily,
         // Bridge the shop's dynamic theme colors into CSS variables so the
         // group-hover: utilities below can reference them without JS state —
@@ -35,7 +36,10 @@ export default function ProductCard({
       } as React.CSSProperties}
     >
       {/* Image — insets on all sides and shrinks up on hover, revealing the card background behind it */}
-      <div className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden rounded-4xl transition-all duration-500 ease-out group-hover:top-2 group-hover:left-2 group-hover:right-2 group-hover:bottom-49">
+      <div
+        className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden transition-all duration-500 ease-out group-hover:top-2 group-hover:left-2 group-hover:right-2 group-hover:bottom-49"
+        style={{ borderRadius: theme.radiusCard }}
+      >
         <img
           src={product.image}
           alt={product.name}
@@ -95,7 +99,7 @@ export default function ProductCard({
         {product.stock === 0 ? null : !cartItem ? (
           <button
             onClick={(e) => { e.stopPropagation(); onAdd(); }}
-            className="mt-1.5 w-full py-3.5 rounded-full text-org-base font-bold transition-all active:scale-95 shrink-0 bg-gray-900 text-white"
+            className="mt-1.5 w-full py-3.5 rounded-full text-org-base font-bold transition-all active:scale-95 shrink-0 bg-white/90 text-gray-900 group-hover:bg-gray-900 group-hover:text-white"
           >
             + Add to Cart
           </button>

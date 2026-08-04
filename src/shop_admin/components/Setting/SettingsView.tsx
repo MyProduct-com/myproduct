@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Store, Palette, Bell, AlertTriangle, ArrowRight, RotateCcw, CheckCircle2 } from "lucide-react";
+import { Store, Palette, Bell, FileText, AlertTriangle, ArrowRight, RotateCcw, CheckCircle2 } from "lucide-react";
 import type { Shop } from "../../types/index";
 import { useThemeStore } from "@/store/themeStore";
 import type { ShopTheme } from "@/store/themeStore";
 import { LOGO_ICON_OPTIONS, getLogoIcon } from "@/lib/logoIcons";
+import PageContentTab from "./PageContentTab";
 
 interface SettingsViewProps {
   shop: Shop;
@@ -47,7 +48,7 @@ const labelCls = "block text-org-xs font-org-medium text-org-text-secondary mb-1
 export default function SettingsView({ shop, onShop, onToast }: SettingsViewProps) {
   const { theme: shopTheme, updateTheme, resetTheme } = useThemeStore();
 
-  const [activeTab, setActiveTab]       = useState<"shop" | "theme" | "notifications">("shop");
+  const [activeTab, setActiveTab]       = useState<"shop" | "theme" | "content" | "notifications">("shop");
   const [shopForm, setShopForm]         = useState<Shop>({ ...shop });
   const [pending, setPending]           = useState<PendingChange | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -85,6 +86,7 @@ export default function SettingsView({ shop, onShop, onToast }: SettingsViewProp
   const tabs = [
     { id: "shop",          label: "Shop Info",        icon: Store },
     { id: "theme",         label: "Storefront Theme", icon: Palette },
+    { id: "content",       label: "Page Content",     icon: FileText },
     { id: "notifications", label: "Notifications",    icon: Bell },
   ] as const;
 
@@ -283,6 +285,9 @@ export default function SettingsView({ shop, onShop, onToast }: SettingsViewProp
           </div>
         </div>
       )}
+
+      {/* ── PAGE CONTENT ── */}
+      {activeTab === "content" && <PageContentTab onToast={onToast} />}
 
       {/* ── NOTIFICATIONS ── */}
       {activeTab === "notifications" && (
