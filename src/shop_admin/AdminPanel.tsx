@@ -71,11 +71,11 @@ export default function AdminPanel() {
     notifications: platformNotifications,
     dismiss: dismissPlatformNotif,
     clearAll: clearPlatformNotifs,
-  } = useNotifications(shop.id, "shop_admin");
+  } = useNotifications(shop.id, "shop_admin", { allShops: true });
 
   const shellNotifications: ShellNotification[] = platformNotifications.map((n) => ({
     id: n.id,
-    title: n.title,
+    title: n.shopId === shop.id ? n.title : `${n.shopName}: ${n.title}`,
     message: n.message,
     tone: n.kind === "platform_reminder" ? "warning" : "info",
   }));

@@ -113,7 +113,7 @@ export const MOCK_SHOPS: ManagedShop[] = [
     packageShopLimit: 2,
     shopsCreated: 1,
     subscribedAt: "2024-05-15",
-    expiresAt: "2026-07-15",
+    expiresAt: "2026-09-15",
     totalRevenue: 1284500,
     totalOrders: 432,
     totalProducts: 87,

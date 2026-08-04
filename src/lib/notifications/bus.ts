@@ -133,10 +133,14 @@ export function publishShopAnnouncement(input: {
   return item;
 }
 
-export function listForShopAdmin(shopId: string): AppNotification[] {
-  return readAllNotifications().filter(
-    (n) => n.audience === "shop_admin" && n.shopId === shopId
-  );
+export function listForShopAdmin(
+  shopId: string,
+  opts?: { /** Demo shop_admin panel: show platform messages for every shop. */
+    allShops?: boolean }
+): AppNotification[] {
+  const rows = readAllNotifications().filter((n) => n.audience === "shop_admin");
+  if (opts?.allShops) return rows;
+  return rows.filter((n) => n.shopId === shopId);
 }
 
 export function listForShopCustomers(shopId: string): AppNotification[] {

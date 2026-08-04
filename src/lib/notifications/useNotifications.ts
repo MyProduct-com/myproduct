@@ -13,12 +13,26 @@ import type { AppNotification } from "./types";
 
 type AudienceMode = "shop_admin" | "shop_customers";
 
+interface Options {
+  /**
+   * Shop Admin demo panel only hosts one tenant (FreshMart). When true, show
+   * platform reminders for every shop so Super Admin “send to all / StyleHub /
+   * …” is visible while testing.
+   */
+  allShops?: boolean;
+}
+
 /**
  * Live notification feed for a role + shop. Reacts to localStorage updates
- * (including other tabs via the `storage` event).
+ * (same tab via custom event, other tabs via `storage`, plus focus/visibility).
  */
-export function useNotifications(shopId: string, mode: AudienceMode) {
-  const consumerKey = `${mode}:${shopId}`;
+export function useNotifications(
+  shopId: string,
+  mode: AudienceMode,
+  options?: Options
+) {
+  const allShops = options?.allShops === true;
+  const consumerKey = allShops ? `${mode}:*` : `${mode}:${shopId}`;
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -33,18 +47,24 @@ export function useNotifications(shopId: string, mode: AudienceMode) {
       }
     };
     window.addEventListener("storage", onStorage);
+    window.addEventListener("focus", bump);
+    document.addEventListener("visibilitychange", bump);
+    // Catch writes that happened before this page mounted.
+    bump();
     return () => {
       window.removeEventListener(NOTIFICATIONS_EVENT, bump);
       window.removeEventListener("storage", onStorage);
+      window.removeEventListener("focus", bump);
+      document.removeEventListener("visibilitychange", bump);
     };
   }, []);
 
   const all = useMemo(() => {
     void tick;
     return mode === "shop_admin"
-      ? listForShopAdmin(shopId)
+      ? listForShopAdmin(shopId, { allShops })
       : listForShopCustomers(shopId);
-  }, [shopId, mode, tick]);
+  }, [shopId, mode, tick, allShops]);
 
   const dismissed = useMemo(() => {
     void tick;

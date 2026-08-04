@@ -331,7 +331,9 @@ export default function SettingsView({
                   <div key={n.id} className="border border-org-border rounded-org-sm p-3 bg-org-surface-alt/40">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="font-org-semibold text-org-sm text-org-text-primary">{n.title}</p>
+                        <p className="font-org-semibold text-org-sm text-org-text-primary">
+                          {n.shopId === shop.id ? n.title : `${n.shopName}: ${n.title}`}
+                        </p>
                         <p className="text-org-xs text-org-text-secondary mt-1 whitespace-pre-wrap">{n.message}</p>
                         <p className="text-org-xs text-org-text-muted mt-2">
                           From {n.createdBy} · {new Date(n.createdAt).toLocaleString("en-KE")}

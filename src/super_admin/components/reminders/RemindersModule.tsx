@@ -70,7 +70,7 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
       } as Reminder;
       onSend(rem);
       // Deliver into shared inbox so each Shop Admin sees this reminder.
-      fanOutPlatformReminder({
+      const delivered = fanOutPlatformReminder({
         reminderId: rem.id,
         title: rem.title,
         message: rem.message,
@@ -84,7 +84,12 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
         })),
       });
       setSending(false);
-      addToast(`Reminder sent to ${recipients.length} shop admin${recipients.length !== 1 ? "s" : ""}.`, "success");
+      const names = recipients.slice(0, 3).map((s) => s.name).join(", ");
+      const more = recipients.length > 3 ? ` +${recipients.length - 3} more` : "";
+      addToast(
+        `Delivered to ${delivered.length} shop admin inbox(es): ${names}${more}. Open /shop_admin (same host) to view the bell.`,
+        "success"
+      );
       setForm({ ...BLANK });
       setSelectedShops([]);
       setTab("history");
