@@ -87,7 +87,7 @@ export function RemindersModule({ reminders, shops, packages, adminName, onSend,
       const names = recipients.slice(0, 3).map((s) => s.name).join(", ");
       const more = recipients.length > 3 ? ` +${recipients.length - 3} more` : "";
       addToast(
-        `Delivered to ${delivered.length} shop admin inbox(es): ${names}${more}. Open /shop_admin (same host) to view the bell.`,
+        `Delivered to ${delivered.length} client shop(s): ${names}${more}. Each Shop Admin sees only their own inbox at /auth/shop-login → /shop_admin.`,
         "success"
       );
       setForm({ ...BLANK });

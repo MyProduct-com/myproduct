@@ -203,7 +203,7 @@ export function IsolationModule({ shops, preloadShop, addToast }: Props) {
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <Btn size="sm" variant="primary" onClick={() => window.open(customUrl || urlInput, "_blank")}><ArrowUpRight size={14} /> Open in New Tab</Btn>
-                  {selectedShop && <Btn size="sm" variant="ghost" onClick={() => window.open(selectedShop.adminUrl, "_blank")}><ArrowUpRight size={14} /> Admin Panel</Btn>}
+                  {selectedShop && <Btn size="sm" variant="ghost" onClick={() => window.open(`/auth/shop-login?shopId=${selectedShop.id}`, "_blank")}><ArrowUpRight size={14} /> Admin Panel</Btn>}
                 </div>
               </div>
             )}

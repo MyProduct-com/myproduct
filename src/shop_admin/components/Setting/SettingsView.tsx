@@ -319,7 +319,7 @@ export default function SettingsView({
               )}
             </div>
             <p className="text-org-xs text-org-text-secondary mb-3">
-              Reminders and notices sent by Super Admin for this shop.
+              Reminders and notices from MyProduct (company) for <strong>this shop client only</strong>.
             </p>
             {platformNotifications.length === 0 ? (
               <p className="text-org-sm text-org-text-muted py-4 text-center border border-dashed border-org-border rounded-org-sm">

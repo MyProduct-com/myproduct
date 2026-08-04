@@ -41,6 +41,8 @@ interface DashboardShellProps {
   onFilterSelect?: (value: string) => void;
   notifications?: ShellNotification[];
   onClearNotifications?: () => void;
+  /** If provided, used instead of NextAuth signOut (e.g. Shop Admin client session). */
+  onSignOut?: () => void;
   onSettingsClick?: () => void;
   defaultRailExpanded?: boolean;
 }
@@ -191,7 +193,7 @@ const NOTIF_TONE: Record<string, string> = {
 export default function DashboardShell({
   brand, railItems, navItems, user, children, headerExtra,
   searchPlaceholder = "Search…", onSearch, filterOptions, onFilterSelect,
-  notifications = [], onClearNotifications, onSettingsClick, defaultRailExpanded = false,
+  notifications = [], onClearNotifications, onSignOut, onSettingsClick, defaultRailExpanded = false,
 }: DashboardShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signOutOpen, setSignOutOpen] = useState(false);
@@ -409,7 +411,11 @@ export default function DashboardShell({
         confirmLabel="Sign out"
         cancelLabel="Cancel"
         onCancel={() => setSignOutOpen(false)}
-        onConfirm={() => { setSignOutOpen(false); signOut({ callbackUrl: "/" }); }}
+        onConfirm={() => {
+          setSignOutOpen(false);
+          if (onSignOut) onSignOut();
+          else signOut({ callbackUrl: "/" });
+        }}
       />
     </div>
   );

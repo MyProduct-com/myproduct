@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     return [
       // Wrong auth-prefixed URLs people typed in the address bar
       { source: "/auth/super_admin", destination: "/super_admin", permanent: false },
-      { source: "/auth/shop_admin", destination: "/shop_admin", permanent: false },
+      { source: "/auth/shop_admin", destination: "/auth/shop-login", permanent: false },
       { source: "/auth/admin", destination: "/admin", permanent: false },
       { source: "/auth/seller", destination: "/seller", permanent: false },
       { source: "/auth/market", destination: "/market", permanent: false },

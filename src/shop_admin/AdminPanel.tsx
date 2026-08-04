@@ -1,8 +1,9 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, ShoppingBag, Package, Monitor,
-  ClipboardList, Wallet, Users, Settings as SettingsIcon, Ticket,
+  ClipboardList, Wallet, Users, Ticket,
 } from "lucide-react";
 import type {
   AdminView, AdminProduct, AdminOrder, SubAdmin, AccountingEntry,
@@ -20,6 +21,7 @@ import { genId } from "./utils/helpers";
 import { getLogoIcon } from "@/lib/logoIcons";
 import { useNotifications } from "@/lib/notifications/useNotifications";
 import type { ShellNotification } from "@/components/dashboard/DashboardShell";
+import { useShopAdminSession } from "@/store/shopAdminSessionStore";
 
 import ToastContainer from "./components/layout/ToastContainer";
 import DashboardShell, { type ShellItem } from "@/components/dashboard/DashboardShell";
@@ -33,18 +35,6 @@ import StaffView      from "./components/staff/StaffView";
 import SettingsView   from "./components/Setting/SettingsView";
 import SubscriptionView from "./components/Subscription/SubscriptionView";
 
-const INITIAL_SHOP: Shop = {
-  id: "shop_001",
-  name: "FreshMart",
-  tagline: "Farm to doorstep, every day.",
-  logoIcon: "ShoppingCart",
-  address: "Westlands, Nairobi, Kenya",
-  phone: "+254 700 123 456",
-  email: "hello@freshmart.co.ke",
-  currency: "KES",
-  timezone: "Africa/Nairobi",
-};
-
 const NAV_ITEMS: { view: AdminView; label: string; icon: typeof LayoutDashboard; privilege: AdminPrivilege | null }[] = [
   { view: "dashboard",    label: "Dashboard",    icon: LayoutDashboard, privilege: null },
   { view: "products",     label: "Products",     icon: ShoppingBag, privilege: "products" },
@@ -57,6 +47,10 @@ const NAV_ITEMS: { view: AdminView; label: string; icon: typeof LayoutDashboard;
 ];
 
 export default function AdminPanel() {
+  const router = useRouter();
+  const clientSession = useShopAdminSession((s) => s.session);
+  const logoutClient = useShopAdminSession((s) => s.logout);
+
   const [activeView, setActiveView] = useState<AdminView>("dashboard");
   const [navIntent, setNavIntent] = useState<DashboardNavOptions>({});
   const goTo = useCallback((view: AdminView, opts?: DashboardNavOptions) => {
@@ -64,34 +58,55 @@ export default function AdminPanel() {
     setActiveView(view);
   }, []);
 
-  const [shop, setShop] = useState<Shop>(INITIAL_SHOP);
+  const [shop, setShop] = useState<Shop>(() => ({
+    id: clientSession?.shopId ?? "shop_001",
+    name: clientSession?.shopName ?? "FreshMart",
+    tagline: clientSession?.tagline ?? "Farm to doorstep, every day.",
+    logoIcon: clientSession?.logoIcon ?? "ShoppingCart",
+    address: clientSession?.address ?? "Westlands, Nairobi, Kenya",
+    phone: clientSession?.phone ?? "+254 700 123 456",
+    email: clientSession?.ownerEmail ?? "hello@freshmart.co.ke",
+    currency: "KES",
+    timezone: "Africa/Nairobi",
+  }));
 
-  // Platform reminders from Super Admin land here via the shared notification bus.
+  useEffect(() => {
+    if (!clientSession) return;
+    setShop((prev) => ({
+      ...prev,
+      id: clientSession.shopId,
+      name: clientSession.shopName,
+      tagline: clientSession.tagline || prev.tagline,
+      logoIcon: clientSession.logoIcon || prev.logoIcon,
+      address: clientSession.address || prev.address,
+      phone: clientSession.phone || prev.phone,
+      email: clientSession.ownerEmail || prev.email,
+    }));
+  }, [clientSession]);
+
+  const adminName = clientSession?.ownerName ?? MOCK_ADMIN.name;
+  const adminEmail = clientSession?.ownerEmail ?? MOCK_ADMIN.email;
+
   const {
     notifications: platformNotifications,
     dismiss: dismissPlatformNotif,
     clearAll: clearPlatformNotifs,
-  } = useNotifications(shop.id, "shop_admin", { allShops: true });
+  } = useNotifications(shop.id, "shop_admin");
 
   const shellNotifications: ShellNotification[] = platformNotifications.map((n) => ({
     id: n.id,
-    title: n.shopId === shop.id ? n.title : `${n.shopName}: ${n.title}`,
+    title: n.title,
     message: n.message,
     tone: n.kind === "platform_reminder" ? "warning" : "info",
   }));
 
   const [products, setProducts] = useState<AdminProduct[]>(MOCK_PRODUCTS);
-
   const [orders, setOrders] = useState<AdminOrder[]>(MOCK_ORDERS);
-
   const [staff, setStaff] = useState<SubAdmin[]>(MOCK_STAFF);
   const [accounting, setAccounting] = useState<AccountingEntry[]>(MOCK_ACCOUNTING);
-
   const [movements, setMovements] = useState<StockMovement[]>(MOCK_STOCK_MOVEMENTS);
-
   const [posSessions, setPosSessions] = useState<POSSession[]>(MOCK_POS_SESSIONS);
   const [posTransactions, setPosTransactions] = useState<POSTransaction[]>(MOCK_POS_TRANSACTIONS);
-
   const [subscription, setSubscription] = useState<Subscription>(MOCK_SUBSCRIPTION);
 
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -121,6 +136,11 @@ export default function AdminPanel() {
     if (view === "orders") return pendingOrders > 0 ? pendingOrders : undefined;
     if (view === "inventory") return lowStockCount > 0 ? lowStockCount : undefined;
     return undefined;
+  };
+
+  const handleSignOut = () => {
+    logoutClient();
+    router.replace("/auth/shop-login");
   };
 
   const renderView = () => {
@@ -156,8 +176,8 @@ export default function AdminPanel() {
             products={products}
             sessions={posSessions}
             transactions={posTransactions}
-            currentUserId={MOCK_ADMIN.id}
-            currentUserName={MOCK_ADMIN.name}
+            currentUserId={clientSession?.shopId ?? MOCK_ADMIN.id}
+            currentUserName={adminName}
             onSessions={setPosSessions}
             onTransactions={setPosTransactions}
             onStockUpdate={updateStock}
@@ -169,8 +189,8 @@ export default function AdminPanel() {
           <InventoryView
             products={products}
             movements={movements}
-            currentUserId={MOCK_ADMIN.id}
-            currentUserName={MOCK_ADMIN.name}
+            currentUserId={clientSession?.shopId ?? MOCK_ADMIN.id}
+            currentUserName={adminName}
             onProducts={setProducts}
             onMovements={setMovements}
             onToast={toast}
@@ -180,7 +200,7 @@ export default function AdminPanel() {
         return (
           <AccountingView
             entries={accounting}
-            currentUserId={MOCK_ADMIN.id}
+            currentUserId={clientSession?.shopId ?? MOCK_ADMIN.id}
             onEntries={setAccounting}
             onToast={toast}
           />
@@ -199,7 +219,7 @@ export default function AdminPanel() {
             shop={shop}
             onShop={setShop}
             onToast={toast}
-            adminName={MOCK_ADMIN.name}
+            adminName={adminName}
             platformNotifications={platformNotifications}
             onDismissPlatform={dismissPlatformNotif}
           />
@@ -233,8 +253,9 @@ export default function AdminPanel() {
         brand={{ name: shop.name, icon: getLogoIcon(shop.logoIcon) }}
         railItems={railItems}
         navItems={[]}
-        user={{ name: MOCK_ADMIN.name, email: MOCK_ADMIN.email, avatarUrl: null }}
+        user={{ name: adminName, email: adminEmail, avatarUrl: null }}
         onSettingsClick={() => goTo("settings")}
+        onSignOut={handleSignOut}
         notifications={shellNotifications}
         onClearNotifications={() => {
           clearPlatformNotifs();
