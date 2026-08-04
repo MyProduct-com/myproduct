@@ -1,6 +1,5 @@
 "use client";
 import {
-  ResponsiveContainer,
   BarChart,
   Bar,
   XAxis,
@@ -9,6 +8,7 @@ import {
   CartesianGrid,
   type TooltipContentProps,
 } from "recharts";
+import { useElementWidth } from "./useElementWidth";
 
 export interface CashflowPoint {
   label: string; // e.g. "Jan"
@@ -35,16 +35,21 @@ function CashflowTooltip({ active, payload, label }: TooltipContentProps<number,
 }
 
 export default function CashflowChart({ data }: { data: CashflowPoint[] }) {
+  const { ref, width } = useElementWidth<HTMLDivElement>();
+  const chartWidth = Math.max(width, 1);
+
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} barGap={4} barCategoryGap="20%">
-        <CartesianGrid vertical={false} stroke="#E4E8E2" strokeDasharray="4 4" />
-        <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#6B716C" }} />
-        <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#6B716C" }} width={36} tickFormatter={(v) => `${v / 1000}k`} />
-        <Tooltip content={(props) => <CashflowTooltip {...(props as TooltipContentProps<number, string>)} />} cursor={{ fill: "#F4F6F2" }} />
-        <Bar dataKey="income" fill="#1B3A2B" radius={[4, 4, 0, 0]} maxBarSize={14} />
-        <Bar dataKey="expense" fill="#6B8F71" radius={[4, 4, 0, 0]} maxBarSize={14} />
-      </BarChart>
-    </ResponsiveContainer>
+    <div ref={ref} className="w-full" style={{ width: "100%", height: 220, minHeight: 220 }}>
+      {width > 0 && (
+        <BarChart width={chartWidth} height={220} data={data} barGap={4} barCategoryGap="20%">
+          <CartesianGrid vertical={false} stroke="#E4E8E2" strokeDasharray="4 4" />
+          <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#6B716C" }} />
+          <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#6B716C" }} width={36} tickFormatter={(v) => `${v / 1000}k`} />
+          <Tooltip content={(props) => <CashflowTooltip {...(props as TooltipContentProps<number, string>)} />} cursor={{ fill: "#F4F6F2" }} />
+          <Bar dataKey="income" fill="#1B3A2B" radius={[4, 4, 0, 0]} maxBarSize={14} />
+          <Bar dataKey="expense" fill="#6B8F71" radius={[4, 4, 0, 0]} maxBarSize={14} />
+        </BarChart>
+      )}
+    </div>
   );
 }

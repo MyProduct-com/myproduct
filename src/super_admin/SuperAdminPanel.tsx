@@ -111,13 +111,22 @@ export default function SuperAdminPanel({ sessionUser, dashboardData }: SuperAdm
   const dismissToast = (id: string) => setToasts(prev => prev.filter(t => t.id !== id));
 
   // ── Navigation ────────────────────────────────────────────────────────────
-  const navigate = (view: string) => {
+  const navigate = (view: string): boolean => {
     // Settings is always reachable — it's account-level, not a privileged module.
     if (view === "settings" || currentAdmin.privileges.includes(view as SuperAdminPrivilege)) {
       setActiveView(view as SuperAdminView);
-    } else {
-      addToast("You do not have permission to access that module.", "error");
+      // Scroll the shell content so Quick Actions / Send Reminder feel responsive.
+      requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>("[data-dashboard-main]")?.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      return true;
     }
+    addToast("You do not have permission to access that module.", "error");
+    return false;
+  };
+
+  const navigateWithToast = (view: string, label: string) => {
+    if (navigate(view)) addToast(`Opened ${label}.`, "success");
   };
 
   const navigateToIsolation = (shop: ManagedShop) => {
@@ -188,6 +197,7 @@ export default function SuperAdminPanel({ sessionUser, dashboardData }: SuperAdm
             metrics={metrics}
             shops={dashboardData.shops}
             onNavigate={navigate}
+            onNavigateWithToast={navigateWithToast}
           />
         );
       case "shops":

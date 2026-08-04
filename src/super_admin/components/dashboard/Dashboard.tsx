@@ -1,17 +1,20 @@
 "use client";
 import {
-  Hand, Sparkles, CircleDot, Store, Users, Wallet, Package,
+  Hand, Store, Users, Wallet, Package,
   ShoppingBag, Eye, Headphones, AlertTriangle,
   Rocket, Megaphone, Globe, Monitor,
+  type LucideIcon,
 } from "lucide-react";
 import { getLogoIcon } from "@/lib/logoIcons";
 import StatCard from "@/components/dashboard/StatCard";
 import ChartCard from "@/components/dashboard/ChartCard";
 import DonutChart from "@/components/dashboard/DonutChart";
 import TrafficPanel from "./TrafficPanel";
+import { useDashboard } from "../../hooks/useDashboard";
+import type { OverviewStatId } from "../../types/adminProfile";
 import type { SuperAdmin, SystemMetrics } from "../../types/index";
 import type { ShopSummary } from "../../data/getDashboardData";
-import { fmt, fmtDate } from "../../utils/helpers";
+import { fmtDate } from "../../utils/helpers";
 
 interface Props {
   admin: SuperAdmin;
@@ -19,10 +22,37 @@ interface Props {
   metrics: SystemMetrics;
   shops: ShopSummary[];
   onNavigate: (v: string) => void;
+  /** Navigates and confirms with a toast — used by Quick Actions / Send Reminder. */
+  onNavigateWithToast?: (view: string, label: string) => void;
 }
 
-export function SuperAdminDashboard({ admin, sessionUser, metrics, shops, onNavigate }: Props) {
-  const firstName = sessionUser.name.split(" ")[0];
+const OVERVIEW_ICONS: Record<OverviewStatId, LucideIcon> = {
+  totalShops: Store,
+  subscribers: Users,
+  totalRevenue: Wallet,
+  totalOrders: Package,
+  abandonedCarts: ShoppingBag,
+  pageViews: Eye,
+  openTickets: Headphones,
+  suspended: AlertTriangle,
+};
+
+export function SuperAdminDashboard({
+  admin,
+  sessionUser,
+  metrics,
+  shops,
+  onNavigate,
+  onNavigateWithToast,
+}: Props) {
+  const { welcomeBanner, overviewStats } = useDashboard(sessionUser, {
+    openTickets: metrics.activeTickets,
+  });
+
+  const go = (view: string, label: string) => {
+    if (onNavigateWithToast) onNavigateWithToast(view, label);
+    else onNavigate(view);
+  };
 
   const expiringShops = shops.filter((s) => {
     if (!s.expiresAt) return false;
@@ -39,10 +69,10 @@ export function SuperAdminDashboard({ admin, sessionUser, metrics, shops, onNavi
       >
         <div className="flex-1 min-w-0">
           <div className="text-org-md font-org-bold flex items-center gap-2">
-            Welcome back, {firstName} <Hand size={18} />
+            Welcome back, {welcomeBanner.firstName} <Hand size={18} />
           </div>
           <div className="text-org-sm opacity-75 mt-0.5">
-            Super Admin &middot; {new Date().toLocaleDateString("en-KE", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            {welcomeBanner.roleLabel} &middot; {welcomeBanner.displayDate}
           </div>
         </div>
       </div>
@@ -51,14 +81,18 @@ export function SuperAdminDashboard({ admin, sessionUser, metrics, shops, onNavi
       <div>
         <h3 className="text-org-xs font-org-semibold text-org-text-muted uppercase tracking-wide mb-3">System Overview</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <StatCard label="Total Shops" value={String(metrics.totalShops)} icon={<Store size={16} />} />
-          <StatCard label="Subscribers" value={metrics.totalSubscribers.toLocaleString()} icon={<Users size={16} />} />
-          <StatCard label="Total Revenue" value={fmt(metrics.totalRevenue)} icon={<Wallet size={16} />} />
-          <StatCard label="Total Orders" value={metrics.totalOrders.toLocaleString()} icon={<Package size={16} />} />
-          <StatCard label="Abandoned Carts" value={metrics.abandonedCarts.toLocaleString()} icon={<ShoppingBag size={16} />} iconBg="bg-org-warning/15 text-org-warning" />
-          <StatCard label="Page Views" value={metrics.totalPageViews.toLocaleString()} icon={<Eye size={16} />} />
-          <StatCard label="Open Tickets" value={String(metrics.activeTickets)} icon={<Headphones size={16} />} iconBg={metrics.activeTickets > 0 ? "bg-org-danger-bg text-org-danger" : "bg-org-success-bg text-org-success"} />
-          <StatCard label="Suspended" value={String(metrics.suspendedShops)} icon={<AlertTriangle size={16} />} iconBg="bg-org-danger-bg text-org-danger" />
+          {overviewStats.map((stat) => {
+            const Icon = OVERVIEW_ICONS[stat.id];
+            return (
+              <StatCard
+                key={stat.id}
+                label={stat.label}
+                value={stat.value}
+                icon={<Icon size={16} />}
+                iconBg={stat.iconBg}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -116,7 +150,11 @@ export function SuperAdminDashboard({ admin, sessionUser, metrics, shops, onNavi
                     <span className={`font-org-semibold flex items-center gap-1 ${days <= 3 ? "text-org-danger" : "text-org-warning"}`}>
                       <AlertTriangle size={12} /> {days}d left ({fmtDate(String(s.expiresAt))})
                     </span>
-                    <button onClick={() => onNavigate("reminders")} className="text-org-xs text-org-primary hover:underline font-org-medium">
+                    <button
+                      type="button"
+                      onClick={() => go("reminders", `Reminders for ${s.name}`)}
+                      className="text-org-xs text-org-primary hover:underline font-org-medium"
+                    >
                       Send Reminder
                     </button>
                   </div>
@@ -130,23 +168,23 @@ export function SuperAdminDashboard({ admin, sessionUser, metrics, shops, onNavi
       {/* Quick actions */}
       <ChartCard title="Quick Actions">
         <div className="flex flex-wrap gap-2.5">
-          <button onClick={() => onNavigate("onboarding")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm bg-org-primary text-white text-org-sm font-org-semibold hover:bg-org-primary-hover transition-colors">
+          <button type="button" onClick={() => go("onboarding", "Onboard New User")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm bg-org-primary text-white text-org-sm font-org-semibold hover:bg-org-primary-hover transition-colors">
             <Rocket size={14} /> Onboard New User
           </button>
-          <button onClick={() => onNavigate("issues")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+          <button type="button" onClick={() => go("issues", "Support Tickets")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
             <Headphones size={14} /> View Support Tickets
           </button>
-          <button onClick={() => onNavigate("reminders")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+          <button type="button" onClick={() => go("reminders", "Reminders")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
             <Megaphone size={14} /> Send Reminder
           </button>
-          <button onClick={() => onNavigate("shops")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+          <button type="button" onClick={() => go("shops", "Shops & Users")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
             <Store size={14} /> Manage Shops
           </button>
-          <button onClick={() => onNavigate("marketplace")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
+          <button type="button" onClick={() => go("marketplace", "Marketplace")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm border border-org-border text-org-sm font-org-medium text-org-text-primary hover:bg-org-surface-alt transition-colors">
             <Globe size={14} /> Marketplace
           </button>
           {admin.privilegeLevel === "full" && (
-            <button onClick={() => onNavigate("dbterminal")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm bg-org-text-primary text-white text-org-sm font-org-semibold hover:opacity-90 transition-opacity">
+            <button type="button" onClick={() => go("dbterminal", "DB Terminal")} className="flex items-center gap-2 px-4 py-2 rounded-org-sm bg-org-text-primary text-white text-org-sm font-org-semibold hover:opacity-90 transition-opacity">
               <Monitor size={14} /> DB Terminal
             </button>
           )}

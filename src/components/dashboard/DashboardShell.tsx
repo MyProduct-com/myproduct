@@ -399,7 +399,7 @@ export default function DashboardShell({
           </div>
         </header>
 
-        <main className="flex-1 min-w-0 overflow-y-auto p-3 sm:p-6">{children}</main>
+        <main data-dashboard-main className="flex-1 min-w-0 overflow-y-auto p-3 sm:p-6">{children}</main>
       </div>
 
       <ConfirmDialog

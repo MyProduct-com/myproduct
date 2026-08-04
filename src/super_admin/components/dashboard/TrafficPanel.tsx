@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { TrendingUp, User, ArrowUpRight, ChevronDown } from "lucide-react";
+import { TrendingUp, User, ArrowUpRight } from "lucide-react";
 import ChartCard from "@/components/dashboard/ChartCard";
 import TrafficLineChart from "@/components/dashboard/TrafficLineChart";
 import type { SystemMetrics } from "../../types/index";
@@ -160,16 +160,23 @@ export default function TrafficPanel({ shopVisits }: Props) {
 
       {showShopVisits ? (
         <div className="flex flex-col gap-2.5">
-          {shopVisits.map((sv) => (
-            <div key={sv.shopId} className="flex items-center gap-3">
-              <div className="w-32 text-org-xs font-org-medium text-org-text-primary shrink-0 truncate">{sv.shopName}</div>
-              <div className="flex-1 h-3 bg-org-primary-light rounded-full overflow-hidden">
-                <div className="h-full bg-org-primary rounded-full" style={{ width: `${(sv.visits / shopVisits[0].visits) * 100}%` }} />
-              </div>
-              <div className="w-16 text-org-xs text-org-text-secondary text-right shrink-0">{sv.visits.toLocaleString()}</div>
-              <div className="w-20 text-org-xs text-org-success font-org-semibold text-right shrink-0">+{sv.today} today</div>
-            </div>
-          ))}
+          {shopVisits.length === 0 ? (
+            <p className="text-org-sm text-org-text-muted py-6 text-center">No shop visit data yet.</p>
+          ) : (
+            shopVisits.map((sv) => {
+              const maxVisits = Math.max(shopVisits[0]?.visits ?? 1, 1);
+              return (
+                <div key={sv.shopId} className="flex items-center gap-3">
+                  <div className="w-32 text-org-xs font-org-medium text-org-text-primary shrink-0 truncate">{sv.shopName}</div>
+                  <div className="flex-1 h-3 bg-org-primary-light rounded-full overflow-hidden">
+                    <div className="h-full bg-org-primary rounded-full" style={{ width: `${(sv.visits / maxVisits) * 100}%` }} />
+                  </div>
+                  <div className="w-16 text-org-xs text-org-text-secondary text-right shrink-0">{sv.visits.toLocaleString()}</div>
+                  <div className="w-20 text-org-xs text-org-success font-org-semibold text-right shrink-0">+{sv.today} today</div>
+                </div>
+              );
+            })
+          )}
         </div>
       ) : (
         <div>
